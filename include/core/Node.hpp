@@ -4,7 +4,6 @@
 
 #include <map>
 #include <vector>
-#include <iostream>
 
 #include "Visitor.hpp"
 
@@ -13,7 +12,6 @@ class Node {
 public:
     template<typename ComponentType_T>
     void addComponent(ComponentType_T* component) {
-        std::cout << sizeof(ComponentVisit) << std::endl;
         components_[&Visitor<ComponentType_T>::castVisit].push_back(component);
     }
 
