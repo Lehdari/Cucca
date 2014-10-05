@@ -1,66 +1,52 @@
 #include <iostream>
 
-
-template<typename T>
-class Visitor {
-public:
-    friend class Node;
-
-private:
-    void visit(T& component) {
-        std::cout << "Base visitor visit" << std::endl;
-    }
-};
-
-class Node {
-public:
-    template<typename T>
-    void acceptVisitor(Visitor<T> visitor) {
-        visitor.visit(getComponent<T>());
-    }
-
-    template<typename T>
-    T& getComponent(void) {
-        static T component;
-        return component;
-    }
-};
+#include "../include/core/Node.hpp"
+#include "../include/core/Component.hpp"
 
 
 //Test app
 
 
-struct TestComponent1 {
+struct TestComponent1 : public ComponentBase {
     int a_;
 };
 
-struct TestComponent2 {
+struct TestComponent2 : public ComponentBase {
     int b_;
 };
 
-template<>
-void Visitor<TestComponent1>::visit(TestComponent1& component) {
-    std::cout << "TestComponent1 visitor visit, component.a_ = " << component.a_ << std::endl;
+VISIT(TestComponent1) {
+    std::cout << "TestComponent1 visitor visit, component.a_ = " << component->a_ << std::endl;
 }
 
-template<>
-void Visitor<TestComponent2>::visit(TestComponent2& component) {
-    std::cout << "TestComponent2 visitor visit, component.b_ = " << component.b_ << std::endl;
+VISIT(TestComponent2) {
+    std::cout << "TestComponent2 visitor visit, component.b_ = " << component->b_ << std::endl;
 }
 
 int main(void) {
     Node n;
-    Visitor<TestComponent1> v1;
-    Visitor<TestComponent2> v2;
+    TestComponent1 c1;
+    c1.a_ = 10;
+    TestComponent2 c2;
+    c2.b_ = 20;
+    n.addComponent(&c1);
+    n.addComponent(&c2);
 
-    n.getComponent<TestComponent1>().a_ = 10;
-    n.acceptVisitor(v1);
+    Node n2;
+    TestComponent1 c3;
+    c3.a_ = 40;
+    TestComponent1 c4;
+    c4.a_ = 80;
+    TestComponent2 c5;
+    c5.b_ = 160;
+    n2.addComponent(&c3);
+    n2.addComponent(&c4);
+    n2.addComponent(&c5);
 
-    n.getComponent<TestComponent1>().a_ += 10;
-    n.acceptVisitor(v1);
-
-    n.getComponent<TestComponent2>().b_ = 100;
-    n.acceptVisitor(v2);
+    n.visitAll<TestComponent1>();
+    n.visitAll<TestComponent2>();
+    n2.visitAll<TestComponent1>();
+    n2.visitAll<TestComponent2>();
 
     return 0;
 }
