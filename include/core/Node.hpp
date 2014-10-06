@@ -21,14 +21,31 @@ public:
     }
 
     template<typename VisitorType_T, typename ComponentType_T>
-    void visitAll(Visitor<VisitorType_T, ComponentType_T>& visitor) {
-        for (auto& component : components_[getComponentTypeId<ComponentType_T>()])
-            visitor.visit(static_cast<ComponentType_T*>(component));
+    void accept(Visitor<VisitorType_T, ComponentType_T>& visitor) {
+        auto& componentVector = components_[getComponentTypeId<ComponentType_T>()];
+
+        for (auto it = componentVector.begin(); it != componentVector.end(); ++it)
+            visitor.nodeEnter(this, static_cast<ComponentType_T*>(*it));
+
+        for (auto& child : childs_)
+            child->accept(visitor);
+
+        for (auto it = componentVector.rbegin(); it != componentVector.rend(); ++it)
+            visitor.nodeExit(this, static_cast<ComponentType_T*>(*it));
+    }
+
+    void addChild(Node* node) {
+        childs_.push_back(node);
+    }
+
+    void addChild(Node& node) {
+        childs_.push_back(&node);
     }
 
 private:
     static unsigned numComponentTypes__;
     std::map<unsigned, std::vector<Component*>> components_;
+    std::vector<Node*> childs_;
 
     template<typename ComponentType_T>
     static unsigned getComponentTypeId(void) {
