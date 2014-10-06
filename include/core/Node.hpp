@@ -31,7 +31,7 @@ private:
     std::map<unsigned, std::vector<Component*>> components_;
 
     template<typename ComponentType_T>
-    unsigned getComponentTypeId(void) {
+    static unsigned getComponentTypeId(void) {
         static unsigned componentTypeId__ = numComponentTypes__++;
         return componentTypeId__;
     }
