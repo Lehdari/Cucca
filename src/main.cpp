@@ -1,27 +1,41 @@
 #include <iostream>
 
-#include "../include/core/Node.hpp"
 #include "../include/core/Component.hpp"
+#include "../include/core/Node.hpp"
 
 
 //Test app
 
 
-struct TestComponent1 : public ComponentBase {
+struct TestComponent1 : public Component {
     int a_;
 };
 
-struct TestComponent2 : public ComponentBase {
+struct TestComponent2 : public Component {
     int b_;
 };
 
-VISIT(TestComponent1) {
-    std::cout << "TestComponent1 visitor visit, component.a_ = " << component->a_ << std::endl;
-}
+VISITOR(TestVisitor1, TestComponent1) {
+public:
+    void visit(TestComponent1* component) {
+        std::cout << "TestVisitor1/TestComponent1 visitor visit, component.a_ = " << component->a_ << std::endl;
+    }
+};
 
-VISIT(TestComponent2) {
-    std::cout << "TestComponent2 visitor visit, component.b_ = " << component->b_ << std::endl;
-}
+VISITOR(TestVisitor2, TestComponent2) {
+public:
+    void visit(TestComponent2* component) {
+        std::cout << "TestVisitor2/TestComponent2 visitor visit, component.b_ = " << component->b_ << std::endl;
+    }
+};
+
+VISITOR(TestVisitor3, TestComponent2) {
+public:
+    void visit(TestComponent2* component) {
+        std::cout << "TestVisitor3/TestComponent2 visitor visit, component.b_*2 = " << component->b_*2 << std::endl;
+    }
+};
+
 
 int main(void) {
     Node n;
@@ -43,10 +57,16 @@ int main(void) {
     n2.addComponent(&c4);
     n2.addComponent(&c5);
 
-    n.visitAll<TestComponent1>();
-    n.visitAll<TestComponent2>();
-    n2.visitAll<TestComponent1>();
-    n2.visitAll<TestComponent2>();
+    TestVisitor1 v1;
+    TestVisitor2 v2;
+    TestVisitor3 v3;
+
+    n.visitAll(v1);
+    n.visitAll(v2);
+    n.visitAll(v3);
+    n2.visitAll(v1);
+    n2.visitAll(v2);
+    n2.visitAll(v3);
 
     return 0;
 }

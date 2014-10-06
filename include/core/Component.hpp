@@ -2,9 +2,9 @@
 #define CUCCA_CORE_COMPONENT_HPP
 
 
-class ComponentBase {
+class Component {
 public:
-    virtual ~ComponentBase(void) {}
+    virtual ~Component(void) {}
 };
 
 
