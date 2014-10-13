@@ -1,7 +1,8 @@
 #include <iostream>
 
-#include "../include/core/Component.hpp"
-#include "../include/core/Node.hpp"
+#include "../include/Core/Component.hpp"
+#include "../include/Core/Node.hpp"
+#include "../include/Core/Event.hpp"
 
 
 //Test app
@@ -46,6 +47,15 @@ public:
     void nodeExit(Node* node, TestComponent2* component) {
         std::cout << "TestVisitor3/TestComponent2 nodeExit()" << std::endl;
     }
+};
+
+
+struct TestEvent1 {
+    unsigned a_;
+};
+
+struct TestEvent2 {
+    unsigned b_;
 };
 
 
@@ -99,6 +109,13 @@ int main(void) {
 
     n2.accept(v1);
     n3.accept(v1);
+
+
+    Event e1, e2;
+    TestEvent1 te1;
+    TestEvent2 te2;
+    e1.setEvent(&te1);
+    e2.setEvent(&te2);
 
     return 0;
 }

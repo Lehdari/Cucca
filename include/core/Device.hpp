@@ -16,8 +16,17 @@
 #define CUCCA_CORE_DEVICE_HPP
 
 
-class Device {
+#include "Canvas.hpp"
 
+
+template<typename CanvasType_T>
+class Device {
+public:
+    Device(void) {};
+    ~Device(void);
+
+private:
+    CanvasType_T canvas_;
 };
 
 

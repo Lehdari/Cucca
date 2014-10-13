@@ -73,6 +73,7 @@ private:
         return componentTypeId__;
     }
 
+    //  Component/child pointer data
     std::map<unsigned, std::vector<Component*>> components_;
     std::vector<Node*> childs_;
 };
