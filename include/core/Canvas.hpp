@@ -11,7 +11,11 @@ public:
     Canvas(void) {}
     ~Canvas(void) {}
 
-    Event* pollEvent(void) {
+    void display(void) {
+        static_cast<CanvasType_T*>(this)->display();
+    }
+
+    Event pollEvent(void) {
         return static_cast<CanvasType_T*>(this)->pollEvent();
     }
 };

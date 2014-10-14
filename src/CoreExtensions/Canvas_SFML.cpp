@@ -12,6 +12,16 @@ Canvas_SFML::Canvas_SFML(void)
     settings.minorVersion = 3;
 
     window_.create(sf::VideoMode(800, 600), "Cucca", sf::Style::Default, settings);
+    window_.setFramerateLimit(60);
 }
 
-Event* Canvas_SFML::pollEvent()
+
+void Canvas_SFML::display(void) {
+    window_.display();
+}
+
+Event Canvas_SFML::pollEvent(void) {
+    sf::Event event;
+    window_.pollEvent(event);
+    return Event(event);
+}

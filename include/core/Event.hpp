@@ -4,12 +4,12 @@
     This file is subject to the terms and conditions defined in
     file 'LICENSE.txt', which is part of this source code package.
 
-    Event class serves as a container for different event types.
+    Event class serves as a shared smart pointer for different event types.
     Type information is stored in similar manner as in Nodes.
 
     @version    0.1
     @author     Miika Lehtimäki
-    @date       2014-10-13
+    @date       2014-10-14
 **/
 
 
@@ -19,27 +19,48 @@
 
 class Event {
 public:
+    //  Standard consturctors/destructors
+    Event(void);
+    Event(const Event& event);
+    ~Event(void);
+
+    //  Template constructor
     template<typename EventType_T>
-    unsigned setEvent(EventType_T* event) {
+    Event(EventType_T& event) :
+        event_(&event),
+        eventType_(getEventTypeId<EventType_T>()),
+        referenceCounter_(new int(1))
+    {}
+
+    //  Set event. Returns type of the event.
+    template<typename EventType_T>
+    int setEvent(const EventType_T& event) {
+        event_ = &event;
         return eventType_ = getEventTypeId<EventType_T>();
     }
 
-    void* getEvent(void);
-    unsigned getEventType(void);
+    //  Get event pointer
+    void* getEvent(void) const;
+    //  Get event type. Will return -1 if no event is stored.
+    int getEventType(void) const;
 
     /*  Event type information system. For every new event type, an
         unique identifier will be created in compile-time. */
     template<typename EventType_T>
-    static unsigned getEventTypeId(void) {
-        static unsigned eventTypeId__ = numEventTypes__++;
+    static int getEventTypeId(void) {
+        static int eventTypeId__ = numEventTypes__++;
         return eventTypeId__;
     }
+
+    Event& operator=(const Event& event);
+
 private:
     static unsigned numEventTypes__;
 
-    //  Stored event and its type identifier
+    //  Stored event and its type identifier and reference counter
     void* event_;
-    unsigned eventType_;
+    int eventType_;
+    int* referenceCounter_;
 };
 
 

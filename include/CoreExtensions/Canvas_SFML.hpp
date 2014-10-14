@@ -6,8 +6,6 @@
 
 #include <memory>
 #include <SFML/Window.hpp>
-#include <SFML/OpenGL.hpp>
-
 
 
 class Canvas_SFML : public Canvas<Canvas_SFML> {
@@ -15,7 +13,8 @@ public:
     Canvas_SFML(void);
     ~Canvas_SFML(void) {}
 
-    Event* pollEvent(void);
+    void display(void);
+    Event pollEvent(void);
 
 private:
     sf::Window window_;

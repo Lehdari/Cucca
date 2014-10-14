@@ -18,6 +18,9 @@
 
 #include "Node.hpp"
 #include "Canvas.hpp"
+#include "Event.hpp"
+
+#include <queue>
 
 
 template<typename CanvasType_T>
@@ -26,9 +29,24 @@ public:
     Device(void) {};
     ~Device(void);
 
+    void renderLoop(void) {
+
+    }
+
+    void eventLoop(void) {
+
+    }
+
+    // Push an event into event queue
+    void pushEvent(Event& event) {
+        eventQueue_.push_back(std::make_shared(event));
+    }
+
 private:
     Node* root_;
     CanvasType_T canvas_;
+
+    std::queue<std::shared_ptr<Event>> eventQueue_;
 };
 
 
