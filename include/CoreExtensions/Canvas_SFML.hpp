@@ -13,10 +13,12 @@
 class Canvas_SFML : public Canvas<Canvas_SFML> {
 public:
     Canvas_SFML(void);
-    ~Canvas_SFML(void);
+    ~Canvas_SFML(void) {}
+
+    Event* pollEvent(void);
 
 private:
-    sf::Window* window_;
+    sf::Window window_;
 };
 
 

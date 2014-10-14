@@ -11,9 +11,7 @@ Canvas_SFML::Canvas_SFML(void)
     settings.majorVersion = 3;
     settings.minorVersion = 3;
 
-    window_ = new sf::Window(sf::VideoMode(800, 600), "Cucca", sf::Style::Default, settings);
+    window_.create(sf::VideoMode(800, 600), "Cucca", sf::Style::Default, settings);
 }
 
-Canvas_SFML::~Canvas_SFML(void) {
-    delete window_;
-}
+Event* Canvas_SFML::pollEvent()

@@ -21,29 +21,26 @@ class Event {
 public:
     template<typename EventType_T>
     unsigned setEvent(EventType_T* event) {
-        eventType_ = getEventTypeId<EventType_T>();
+        return eventType_ = getEventTypeId<EventType_T>();
     }
 
     void* getEvent(void);
     unsigned getEventType(void);
 
-private:
     /*  Event type information system. For every new event type, an
         unique identifier will be created in compile-time. */
-    static unsigned numEventTypes__;
-
     template<typename EventType_T>
     static unsigned getEventTypeId(void) {
         static unsigned eventTypeId__ = numEventTypes__++;
         return eventTypeId__;
     }
+private:
+    static unsigned numEventTypes__;
 
     //  Stored event and its type identifier
     void* event_;
     unsigned eventType_;
 };
-
-unsigned Event::numEventTypes__;
 
 
 #endif // CUCCA_CORE_EVENT_HPP

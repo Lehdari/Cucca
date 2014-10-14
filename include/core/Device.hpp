@@ -16,6 +16,7 @@
 #define CUCCA_CORE_DEVICE_HPP
 
 
+#include "Node.hpp"
 #include "Canvas.hpp"
 
 
@@ -26,6 +27,7 @@ public:
     ~Device(void);
 
 private:
+    Node* root_;
     CanvasType_T canvas_;
 };
 

@@ -1,6 +1,9 @@
 #include "../../include/Core/Event.hpp"
 
 
+unsigned Event::numEventTypes__;
+
+
 void* Event::getEvent(void) {
     return event_;
 }
