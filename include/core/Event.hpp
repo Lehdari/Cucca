@@ -5,11 +5,11 @@
     file 'LICENSE.txt', which is part of this source code package.
 
     Event class serves as a shared smart pointer for different event types.
-    Type information is stored in similar manner as in Nodes.
+    Event will destroy itself once the number of references reaches 0.
 
     @version    0.1
     @author     Miika Lehtimäki
-    @date       2014-10-14
+    @date       2014-10-15
 **/
 
 

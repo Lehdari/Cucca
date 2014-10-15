@@ -7,7 +7,6 @@
 
 //Test app
 
-
 struct TestComponent1 : public Component {
     int a_;
 };
@@ -113,6 +112,7 @@ int main(void) {
 
     Event<TestEvent1> e1();
     Event<TestEvent2> e2();
+
 
     return 0;
 }
