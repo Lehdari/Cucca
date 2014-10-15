@@ -11,6 +11,10 @@ public:
     Canvas(void) {}
     ~Canvas(void) {}
 
+    bool isOpen(void) {
+        return static_cast<CanvasType_T*>(this)->isOpen();
+    }
+
     void display(void) {
         static_cast<CanvasType_T*>(this)->display();
     }

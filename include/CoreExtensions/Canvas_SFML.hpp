@@ -13,6 +13,7 @@ public:
     Canvas_SFML(void);
     ~Canvas_SFML(void) {}
 
+    bool isOpen(void);
     void display(void);
     EventBase pollEvent(void);
 

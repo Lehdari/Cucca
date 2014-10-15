@@ -20,7 +20,9 @@
 class EventBase {
 public:
     //  Standard constructors/destructors
-    EventBase(void);
+    EventBase(void) :
+        eventType_(-1)
+        {}
     virtual ~EventBase(void) {}
 
     /*  Template constructor

@@ -27,26 +27,28 @@ template<typename CanvasType_T>
 class Device {
 public:
     Device(void) {};
-    ~Device(void);
+    ~Device(void) {};
 
     void renderLoop(void) {
-
+        while (canvas_.isOpen()) {
+            canvas_.display();
+        }
     }
 
-    void eventLoop(void) {
-
-    }
+    /*void eventLoop(void) {
+        canvas_.pollEvent();
+    }*/
 
     // Push an event into event queue
-    void pushEvent(Event& event) {
-        eventQueue_.push_back(std::make_shared(event));
+    void pushEvent(EventBase& event) {
+        eventQueue_.push(event);
     }
 
 private:
     Node* root_;
     CanvasType_T canvas_;
 
-    std::queue<std::shared_ptr<Event>> eventQueue_;
+    std::queue<EventBase> eventQueue_;
 };
 
 

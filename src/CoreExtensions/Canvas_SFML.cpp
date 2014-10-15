@@ -15,6 +15,9 @@ Canvas_SFML::Canvas_SFML(void)
     window_.setFramerateLimit(60);
 }
 
+bool Canvas_SFML::isOpen(void) {
+    return window_.isOpen();
+}
 
 void Canvas_SFML::display(void) {
     window_.display();
@@ -22,6 +25,10 @@ void Canvas_SFML::display(void) {
 
 EventBase Canvas_SFML::pollEvent(void) {
     sf::Event event;
-    window_.pollEvent(event);
-    return Event<sf::Event>(event);
+    if (window_.pollEvent(event))
+        return Event<sf::Event>(event);
+    else {
+        EventBase eventBase;
+        return eventBase;
+    }
 }

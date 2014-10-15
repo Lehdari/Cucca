@@ -23,6 +23,9 @@
 #include "Visitor.hpp"
 
 
+class Component;
+
+
 class Node {
 public:
     //  Add new component
