@@ -17,49 +17,55 @@
 #define CUCCA_CORE_EVENT_HPP
 
 
-class Event {
-public:
-    //  Standard consturctors/destructors
-    Event(void);
-    Event(const Event& event);
-    ~Event(void);
+#include "EventBase.hpp"
 
-    //  Template constructor
-    template<typename EventType_T>
+
+template<typename EventType_T>
+class Event : public EventBase {
+public:
+    //  Constructors/destructors
+    Event(const Event<EventType_T>& event) {
+        EventBase(event.event_),
+        event_ = event.event_;
+        referenceCounter_ = event.referenceCounter_;
+        ++*referenceCounter_;
+    }
+
     Event(EventType_T& event) :
+        EventBase(&event),
         event_(&event),
-        eventType_(getEventTypeId<EventType_T>()),
         referenceCounter_(new int(1))
     {}
 
-    //  Set event. Returns type of the event.
-    template<typename EventType_T>
-    int setEvent(const EventType_T& event) {
-        event_ = &event;
-        return eventType_ = getEventTypeId<EventType_T>();
+    ~Event(void) {
+        if (--*referenceCounter_ == 0) {
+            delete event_;
+            delete referenceCounter_;
+        }
     }
 
     //  Get event pointer
-    void* getEvent(void) const;
-    //  Get event type. Will return -1 if no event is stored.
-    int getEventType(void) const;
-
-    /*  Event type information system. For every new event type, an
-        unique identifier will be created in compile-time. */
-    template<typename EventType_T>
-    static int getEventTypeId(void) {
-        static int eventTypeId__ = numEventTypes__++;
-        return eventTypeId__;
+    EventType_T* getEvent(void) const {
+        return event_;
     }
 
-    Event& operator=(const Event& event);
+    Event& operator=(const Event& event) {
+        if (this != &event) {
+            if (--*referenceCounter_ == 0) {
+                delete event_;
+                delete referenceCounter_;
+            }
+            event_ = event.event_;
+            eventType_ = event.eventType_;
+            referenceCounter_ = event.referenceCounter_;
+            ++*referenceCounter_;
+        }
+        return this;
+    }
 
 private:
-    static unsigned numEventTypes__;
-
     //  Stored event and its type identifier and reference counter
-    void* event_;
-    int eventType_;
+    EventType_T* event_;
     int* referenceCounter_;
 };
 

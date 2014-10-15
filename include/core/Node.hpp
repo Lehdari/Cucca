@@ -65,10 +65,9 @@ public:
 private:
     /*  Component type information system. For every new component type, an
         unique identifier will be created in compile-time. */
-    static unsigned numComponentTypes__;
-
     template<typename ComponentType_T>
     static unsigned getComponentTypeId(void) {
+        static unsigned numComponentTypes__;
         static unsigned componentTypeId__ = numComponentTypes__++;
         return componentTypeId__;
     }
@@ -77,8 +76,6 @@ private:
     std::map<unsigned, std::vector<Component*>> components_;
     std::vector<Node*> childs_;
 };
-
-unsigned Node::numComponentTypes__;
 
 
 #endif // CUCCA_CORE_NODE_HPP

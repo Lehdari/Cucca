@@ -15,7 +15,7 @@ public:
         static_cast<CanvasType_T*>(this)->display();
     }
 
-    Event pollEvent(void) {
+    EventBase pollEvent(void) {
         return static_cast<CanvasType_T*>(this)->pollEvent();
     }
 };

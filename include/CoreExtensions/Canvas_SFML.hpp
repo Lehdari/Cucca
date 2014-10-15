@@ -14,7 +14,7 @@ public:
     ~Canvas_SFML(void) {}
 
     void display(void);
-    Event pollEvent(void);
+    EventBase pollEvent(void);
 
 private:
     sf::Window window_;

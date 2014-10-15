@@ -111,11 +111,8 @@ int main(void) {
     n3.accept(v1);
 
 
-    Event e1, e2;
-    TestEvent1 te1;
-    TestEvent2 te2;
-    e1.setEvent(&te1);
-    e2.setEvent(&te2);
+    Event<TestEvent1> e1();
+    Event<TestEvent2> e2();
 
     return 0;
 }

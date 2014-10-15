@@ -20,8 +20,8 @@ void Canvas_SFML::display(void) {
     window_.display();
 }
 
-Event Canvas_SFML::pollEvent(void) {
+EventBase Canvas_SFML::pollEvent(void) {
     sf::Event event;
     window_.pollEvent(event);
-    return Event(event);
+    return Event<sf::Event>(event);
 }
