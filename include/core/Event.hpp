@@ -4,12 +4,11 @@
     This file is subject to the terms and conditions defined in
     file 'LICENSE.txt', which is part of this source code package.
 
-    Event class serves as a shared smart pointer for different event types.
-    Event will destroy itself once the number of references reaches 0.
+    Event class stores events of arbitrary type.
 
     @version    0.1
     @author     Miika Lehtimäki
-    @date       2014-10-15
+    @date       2014-10-16
 **/
 
 
@@ -19,53 +18,25 @@
 
 #include "EventBase.hpp"
 
+#include <memory>
+
 
 template<typename EventType_T>
 class Event : public EventBase {
 public:
-    //  Constructors/destructors
-    Event(const Event<EventType_T>& event) {
-        EventBase(event.event_),
-        event_ = event.event_;
-        referenceCounter_ = event.referenceCounter_;
-        ++*referenceCounter_;
-    }
-
-    Event(EventType_T& event) :
-        EventBase(&event),
-        event_(&event),
-        referenceCounter_(new int(1))
+    Event(const EventType_T& event) :
+        EventBase(event),
+        event_(std::unique_ptr<EventType_T>(new EventType_T(event)))
     {}
-
-    ~Event(void) {
-        if (--*referenceCounter_ == 0) {
-            delete event_;
-            delete referenceCounter_;
-        }
-    }
 
     //  Get event pointer
     EventType_T* getEvent(void) const {
-        return event_;
-    }
-
-    Event& operator=(const Event& event) {
-        if (this != &event) {
-            if (--*referenceCounter_ == 0) {
-                delete event_;
-                delete referenceCounter_;
-            }
-            event_ = event.event_;
-            eventType_ = event.eventType_;
-            referenceCounter_ = event.referenceCounter_;
-            ++*referenceCounter_;
-        }
-        return this;
+        return event_.get();
     }
 
 private:
     //  Stored event and its type identifier and reference counter
-    EventType_T* event_;
+    std::unique_ptr<EventType_T> event_;
     int* referenceCounter_;
 };
 

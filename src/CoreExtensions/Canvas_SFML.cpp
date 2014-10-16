@@ -1,4 +1,17 @@
+/**
+    Cucca Game Engine - CoreExtensions - Canvas_SFML.cpp
+
+    This file is subject to the terms and conditions defined in
+    file 'LICENSE.txt', which is part of this source code package.
+
+    @version    0.1
+    @author     Miika Lehtimäki
+    @date       2014-10-17
+**/
+
+
 #include "../../include/CoreExtensions/Canvas_SFML.hpp"
+#include "../../include/Core/Event.hpp"
 
 
 Canvas_SFML::Canvas_SFML(void)
@@ -23,12 +36,14 @@ void Canvas_SFML::display(void) {
     window_.display();
 }
 
-EventBase Canvas_SFML::pollEvent(void) {
+void Canvas_SFML::close(void) {
+    window_.close();
+}
+
+std::shared_ptr<EventBase> Canvas_SFML::pollEvent(void) {
     sf::Event event;
     if (window_.pollEvent(event))
-        return Event<sf::Event>(event);
-    else {
-        EventBase eventBase;
-        return eventBase;
-    }
+        return std::shared_ptr<EventBase>(new Event<sf::Event>(event));
+    else
+        return std::shared_ptr<EventBase>(nullptr);
 }

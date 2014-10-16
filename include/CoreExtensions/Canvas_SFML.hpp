@@ -1,10 +1,24 @@
+/**
+    Cucca Game Engine - CoreExtensions - Canvas_SFML.hpp
+
+    This file is subject to the terms and conditions defined in
+    file 'LICENSE.txt', which is part of this source code package.
+
+    Canvas_SFML class is an implementation of canvas interface for SFML
+    library.
+
+    @version    0.1
+    @author     Miika Lehtimäki
+    @date       2014-10-17
+**/
+
+
 #ifndef CUCCA_COREEXTENSIONS_CANVAS_SFML_HPP
 #define CUCCA_COREEXTENSIONS_CANVAS_SFML_HPP
 
 
 #include "../Core/Canvas.hpp"
 
-#include <memory>
 #include <SFML/Window.hpp>
 
 
@@ -15,7 +29,8 @@ public:
 
     bool isOpen(void);
     void display(void);
-    EventBase pollEvent(void);
+    void close(void);
+    std::shared_ptr<EventBase> pollEvent(void);
 
 private:
     sf::Window window_;

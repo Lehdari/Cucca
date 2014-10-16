@@ -9,7 +9,7 @@
 
     @version    0.1
     @author     Miika Lehtimäki
-    @date       2014-10-07
+    @date       2014-10-17
 **/
 
 
@@ -17,27 +17,31 @@
 #define CUCCA_CORE_NODE_HPP
 
 
-#include <map>
-#include <vector>
-
+#include "Component.hpp"
 #include "Visitor.hpp"
 
-
-class Component;
+#include <map>
+#include <vector>
+#include <memory>
+#include <utility>
 
 
 class Node {
 public:
-    //  Add new component
+    //  Add new component (uses move semantics)
     template<typename ComponentType_T>
-    void addComponent(ComponentType_T* component) {
-        components_[getComponentTypeId<ComponentType_T>()].push_back(component);
+    void addComponent(ComponentType_T&& component) {
+        components_[getComponentTypeId<ComponentType_T>()].push_back(std::unique_ptr<Component>(new ComponentType_T(std::forward<ComponentType_T>(component))));
     }
 
-    //  Get reference to a vector of given type of components the node contains
+
+    //  Get vector of given type of components the node contains
     template<typename ComponentType_T>
-    std::vector<ComponentType_T*>& getComponents(void) {
-        return components_[getComponentTypeId<ComponentType_T>()];
+    std::vector<ComponentType_T*> getComponents(void) {
+        std::vector<ComponentType_T*> components;
+        for (auto& component : components_[getComponentTypeId<ComponentType_T>()])
+            components.push_back(static_cast<ComponentType_T*>(component.get()));
+        return components;
     }
 
     /*  Accept a visitor. Visitor will visit every component of given type in
@@ -47,23 +51,20 @@ public:
         auto& componentVector = components_[getComponentTypeId<ComponentType_T>()];
 
         for (auto it = componentVector.begin(); it != componentVector.end(); ++it)
-            visitor.nodeEnter(this, static_cast<ComponentType_T*>(*it));
+            visitor.nodeEnter(this, static_cast<ComponentType_T*>(it->get()));
 
         for (auto& child : childs_)
             child->accept(visitor);
 
         for (auto it = componentVector.rbegin(); it != componentVector.rend(); ++it)
-            visitor.nodeExit(this, static_cast<ComponentType_T*>(*it));
+            visitor.nodeExit(this, static_cast<ComponentType_T*>(it->get()));
     }
 
-    //  Add a child node
-    void addChild(Node* node) {
-        childs_.push_back(node);
-    }
+    //  Add a child node (uses move semantics)
+    void addChild(Node&& node);
 
-    void addChild(Node& node) {
-        childs_.push_back(&node);
-    }
+    //  Get reference to a vector of childs of the node
+    std::vector<std::unique_ptr<Node>>& getChilds(void);
 
 private:
     /*  Component type information system. For every new component type, an
@@ -76,8 +77,8 @@ private:
     }
 
     //  Component/child pointer data
-    std::map<unsigned, std::vector<Component*>> components_;
-    std::vector<Node*> childs_;
+    std::map<unsigned, std::vector<std::unique_ptr<Component>>> components_;
+    std::vector<std::unique_ptr<Node>> childs_;
 };
 
 
