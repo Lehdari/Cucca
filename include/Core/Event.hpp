@@ -21,24 +21,26 @@
 #include <memory>
 
 
-template<typename EventType_T>
-class Event : public EventBase {
-public:
-    Event(const EventType_T& event) :
-        EventBase(event),
-        event_(std::unique_ptr<EventType_T>(new EventType_T(event)))
-    {}
+namespace Cucca {
+    template<typename EventType_T>
+    class Event : public EventBase {
+    public:
+        Event(const EventType_T& event) :
+            EventBase(event),
+            event_(std::unique_ptr<EventType_T>(new EventType_T(event)))
+        {}
 
-    //  Get event pointer
-    EventType_T* getEvent(void) const {
-        return event_.get();
-    }
+        //  Get event pointer
+        EventType_T* getEvent(void) const {
+            return event_.get();
+        }
 
-private:
-    //  Stored event and its type identifier and reference counter
-    std::unique_ptr<EventType_T> event_;
-    int* referenceCounter_;
-};
+    private:
+        //  Stored event and its type identifier and reference counter
+        std::unique_ptr<EventType_T> event_;
+        int* referenceCounter_;
+    };
+}
 
 
 #endif // CUCCA_CORE_EVENT_HPP

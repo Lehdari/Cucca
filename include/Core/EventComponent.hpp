@@ -23,14 +23,16 @@
 #include <memory>
 
 
-class EventComponent : public Component {
-public:
-    void pushEvent(std::shared_ptr<EventBase> event);
-    std::shared_ptr<EventBase> pullEvent(void);
+namespace Cucca {
+    class EventComponent : public Component {
+    public:
+        void pushEvent(std::shared_ptr<EventBase> event);
+        std::shared_ptr<EventBase> pullEvent(void);
 
-private:
-    std::queue<std::shared_ptr<EventBase>> eventQueue_;
-};
+    private:
+        std::queue<std::shared_ptr<EventBase>> eventQueue_;
+    };
+}
 
 
 #endif // CUCCA_CORE_EVENTCOMPONENT_HPP

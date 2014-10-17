@@ -9,6 +9,9 @@
 #include "../../include/CoreExtensions/EventVisitor_SFML.hpp"
 
 
+using namespace Cucca;
+
+
 int unitTest(void) {
     Device<Canvas_SFML>* device = Device<Canvas_SFML>::getInstance();
 

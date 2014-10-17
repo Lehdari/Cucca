@@ -14,7 +14,10 @@
 #include "../../include/Core/Event.hpp"
 
 
-Canvas_SFML::Canvas_SFML(void)
+using namespace Cucca;
+
+
+Cucca::Canvas_SFML::Canvas_SFML(void)
 {
     // window settings
     sf::ContextSettings settings;
@@ -28,19 +31,19 @@ Canvas_SFML::Canvas_SFML(void)
     window_.setFramerateLimit(60);
 }
 
-bool Canvas_SFML::isOpen(void) {
+bool Cucca::Canvas_SFML::isOpen(void) {
     return window_.isOpen();
 }
 
-void Canvas_SFML::display(void) {
+void Cucca::Canvas_SFML::display(void) {
     window_.display();
 }
 
-void Canvas_SFML::close(void) {
+void Cucca::Canvas_SFML::close(void) {
     window_.close();
 }
 
-std::shared_ptr<EventBase> Canvas_SFML::pollEvent(void) {
+std::shared_ptr<EventBase> Cucca::Canvas_SFML::pollEvent(void) {
     sf::Event event;
     if (window_.pollEvent(event))
         return std::shared_ptr<EventBase>(new Event<sf::Event>(event));

@@ -26,60 +26,62 @@
 #include <utility>
 
 
-class Node {
-public:
-    //  Add new component (uses move semantics)
-    template<typename ComponentType_T>
-    void addComponent(ComponentType_T&& component) {
-        components_[getComponentTypeId<ComponentType_T>()].push_back(std::unique_ptr<Component>(new ComponentType_T(std::forward<ComponentType_T>(component))));
-    }
+namespace Cucca {
+    class Node {
+    public:
+        //  Add new component (uses move semantics)
+        template<typename ComponentType_T>
+        void addComponent(ComponentType_T&& component) {
+            components_[getComponentTypeId<ComponentType_T>()].push_back(std::unique_ptr<Component>(new ComponentType_T(std::forward<ComponentType_T>(component))));
+        }
 
 
-    //  Get vector of given type of components the node contains
-    template<typename ComponentType_T>
-    std::vector<ComponentType_T*> getComponents(void) {
-        std::vector<ComponentType_T*> components;
-        for (auto& component : components_[getComponentTypeId<ComponentType_T>()])
-            components.push_back(static_cast<ComponentType_T*>(component.get()));
-        return components;
-    }
+        //  Get vector of given type of components the node contains
+        template<typename ComponentType_T>
+        std::vector<ComponentType_T*> getComponents(void) {
+            std::vector<ComponentType_T*> components;
+            for (auto& component : components_[getComponentTypeId<ComponentType_T>()])
+                components.push_back(static_cast<ComponentType_T*>(component.get()));
+            return components;
+        }
 
-    /*  Accept a visitor. Visitor will visit every component of given type in
-        the node and its childs in hierarchical order. */
-    template<typename VisitorType_T, typename ComponentType_T>
-    void accept(Visitor<VisitorType_T, ComponentType_T>& visitor) {
-        auto& componentVector = components_[getComponentTypeId<ComponentType_T>()];
+        /*  Accept a visitor. Visitor will visit every component of given type in
+            the node and its childs in hierarchical order. */
+        template<typename VisitorType_T, typename ComponentType_T>
+        void accept(Visitor<VisitorType_T, ComponentType_T>& visitor) {
+            auto& componentVector = components_[getComponentTypeId<ComponentType_T>()];
 
-        for (auto it = componentVector.begin(); it != componentVector.end(); ++it)
-            visitor.nodeEnter(this, static_cast<ComponentType_T*>(it->get()));
+            for (auto it = componentVector.begin(); it != componentVector.end(); ++it)
+                visitor.nodeEnter(this, static_cast<ComponentType_T*>(it->get()));
 
-        for (auto& child : childs_)
-            child->accept(visitor);
+            for (auto& child : childs_)
+                child->accept(visitor);
 
-        for (auto it = componentVector.rbegin(); it != componentVector.rend(); ++it)
-            visitor.nodeExit(this, static_cast<ComponentType_T*>(it->get()));
-    }
+            for (auto it = componentVector.rbegin(); it != componentVector.rend(); ++it)
+                visitor.nodeExit(this, static_cast<ComponentType_T*>(it->get()));
+        }
 
-    //  Add a child node (uses move semantics)
-    void addChild(Node&& node);
+        //  Add a child node (uses move semantics)
+        void addChild(Node&& node);
 
-    //  Get reference to a vector of childs of the node
-    std::vector<std::unique_ptr<Node>>& getChilds(void);
+        //  Get reference to a vector of childs of the node
+        std::vector<std::unique_ptr<Node>>& getChilds(void);
 
-private:
-    /*  Component type information system. For every new component type, an
-        unique identifier will be created in compile-time. */
-    template<typename ComponentType_T>
-    static unsigned getComponentTypeId(void) {
-        static unsigned numComponentTypes__;
-        static unsigned componentTypeId__ = numComponentTypes__++;
-        return componentTypeId__;
-    }
+    private:
+        /*  Component type information system. For every new component type, an
+            unique identifier will be created in compile-time. */
+        template<typename ComponentType_T>
+        static unsigned getComponentTypeId(void) {
+            static unsigned numComponentTypes__;
+            static unsigned componentTypeId__ = numComponentTypes__++;
+            return componentTypeId__;
+        }
 
-    //  Component/child pointer data
-    std::map<unsigned, std::vector<std::unique_ptr<Component>>> components_;
-    std::vector<std::unique_ptr<Node>> childs_;
-};
+        //  Component/child pointer data
+        std::map<unsigned, std::vector<std::unique_ptr<Component>>> components_;
+        std::vector<std::unique_ptr<Node>> childs_;
+    };
+}
 
 
 #endif // CUCCA_CORE_NODE_HPP

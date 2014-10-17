@@ -1,6 +1,9 @@
 #include "../../include/Core/EventBase.hpp"
 
 
-int EventBase::getEventType(void) const {
+using namespace Cucca;
+
+
+int Cucca::EventBase::getEventType(void) const {
     return eventType_;
 }
