@@ -19,14 +19,16 @@
 #include "Resource.hpp"
 
 
-class ResourceManager {
-public:
+namespace Cucca {
+    class ResourceManager {
+    public:
 
-    template<typename ResourceType_T>
-    shared_ptr<Resource<ResourceType_T>> giveResource(ResourceInfo<ResourceType_T>::Info info) {
-        return shared_ptr<ResourceType_T>(nullptr);
-    }
-};
+        template<typename ResourceType_T>
+        shared_ptr<Resource<ResourceType_T>> giveResource(ResourceInfo<ResourceType_T>::Info info) {
+            return shared_ptr<ResourceType_T>(nullptr);
+        }
+    };
+}
 
 
 #endif // CUCCA_CORE_RESOURCEMANAGER_HPP

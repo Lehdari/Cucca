@@ -13,11 +13,14 @@
 #include "../../include/Core/EventComponent.hpp"
 
 
-void EventComponent::pushEvent(std::shared_ptr<EventBase> event) {
+using namespace Cucca;
+
+
+void Cucca::EventComponent::pushEvent(std::shared_ptr<EventBase> event) {
     eventQueue_.push(event);
 }
 
-std::shared_ptr<EventBase> EventComponent::pullEvent(void) {
+std::shared_ptr<EventBase> Cucca::EventComponent::pullEvent(void) {
     if (eventQueue_.empty())
         return std::shared_ptr<EventBase>(nullptr);
 

@@ -22,11 +22,13 @@
 #include <SFML/Window/Event.hpp>
 
 
-VISITOR(EventVisitor_SFML, EventComponent) {
-public:
-    void nodeEnter(Node* node, EventComponent* component);
-    void nodeExit(Node* node, EventComponent* component) {}
-};
+namespace Cucca {
+    VISITOR(EventVisitor_SFML, EventComponent) {
+    public:
+        void nodeEnter(Cucca::Node* node, Cucca::EventComponent* component);
+        void nodeExit(Cucca::Node* node, Cucca::EventComponent* component) {}
+    };
+}
 
 
 #endif // CUCCA_CORE_EVENTVISITOR_SFML_HPP

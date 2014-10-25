@@ -17,37 +17,39 @@
 #define CUCCA_CORE_RESOURCEBASE_HPP
 
 
-class ResourceBase {
-public:
-    //  Standard constructors/destructors
-    ResourceBase(void) :
-        resourceType_(-1)
-        {}
-    virtual ~ResourceBase(void) {}
+namespace Cucca {
+    class ResourceBase {
+    public:
+        //  Standard constructors/destructors
+        ResourceBase(void) :
+            resourceType_(-1)
+            {}
+        virtual ~ResourceBase(void) {}
 
-    //  Get resource type. Will return -1 if no resource is stored.
-    int getResourceType(void) const;
+        //  Get resource type. Will return -1 if no resource is stored.
+        int getResourceType(void) const;
 
-    //  Resource type id system. Similar to the one in the Node class.
-    template<typename ResourceType_T>
-    static int getResourceTypeId(void) {
-        static unsigned numResourceTypes__ = 0;
-        static int resourceTypeId__ = numResourceTypes__++;
-        return resourceTypeId__;
-    }
+        //  Resource type id system. Similar to the one in the Node class.
+        template<typename ResourceType_T>
+        static int getResourceTypeId(void) {
+            static unsigned numResourceTypes__ = 0;
+            static int resourceTypeId__ = numResourceTypes__++;
+            return resourceTypeId__;
+        }
 
-protected:
-    /*  Template constructor
-        Constructors cannot be called with template parameters, that's why
-        an argument is required for automatic deduction. */
-    template<typename ResourceType_T>
-    ResourceBase(const ResourceType_T& resource) :
-        resourceType_(getResourceTypeId<ResourceType_T>())
-        {}
+    protected:
+        /*  Template constructor
+            Constructors cannot be called with template parameters, that's why
+            an argument is required for automatic deduction. */
+        template<typename ResourceType_T>
+        ResourceBase(const ResourceType_T& resource) :
+            resourceType_(getResourceTypeId<ResourceType_T>())
+            {}
 
-    //  Stored resource type identifier
-    int resourceType_;
-};
+        //  Stored resource type identifier
+        int resourceType_;
+    };
+}
 
 
 #endif // CUCCA_CORE_RESOURCEBASE_HPP

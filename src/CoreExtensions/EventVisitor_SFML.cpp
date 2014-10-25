@@ -22,7 +22,10 @@
 #include <iostream> // TEMP
 
 
-void EventVisitor_SFML::nodeEnter(Node* node, EventComponent* component) {
+using namespace Cucca;
+
+
+void Cucca::EventVisitor_SFML::nodeEnter(Node* node, EventComponent* component) {
     std::shared_ptr<EventBase> eventBase(component->pullEvent());
     if (!eventBase)
         return;

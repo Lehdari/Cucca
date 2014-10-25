@@ -22,19 +22,21 @@
 #include <SFML/Window.hpp>
 
 
-class Canvas_SFML : public Canvas<Canvas_SFML> {
-public:
-    Canvas_SFML(void);
-    ~Canvas_SFML(void) {}
+namespace Cucca {
+    class Canvas_SFML : public Canvas<Canvas_SFML> {
+    public:
+        Canvas_SFML(void);
+        ~Canvas_SFML(void) {}
 
-    bool isOpen(void);
-    void display(void);
-    void close(void);
-    std::shared_ptr<EventBase> pollEvent(void);
+        bool isOpen(void);
+        void display(void);
+        void close(void);
+        std::shared_ptr<EventBase> pollEvent(void);
 
-private:
-    sf::Window window_;
-};
+    private:
+        sf::Window window_;
+    };
+}
 
 
 #endif // CUCCA_COREEXTENSIONS_CANVAS_SFML_HPP

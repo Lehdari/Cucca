@@ -19,26 +19,27 @@
 #include "ResourceBase.hpp"
 
 
-template<typename ResourceType_T>
-class Resource : public ResourceBase {
-public:
-    struct Info {
+namespace Cucca {
+    template<typename ResourceType_T>
+    class Resource : public ResourceBase {
+    public:
+        struct Info {
+        };
+
+        Resource(const ResourceType_T& resource) :
+            ResourceBase(resource),
+            resource_(std::unique_ptr<ResourceType_T>(new ResourceType_T(resource)))
+        {}
+
+        //  Get resource pointer
+        ResourceType_T* getResource(void) const {
+            return resource_.get();
+        }
+
+    private:
+        //  Stored resource
+        std::unique_ptr<ResourceType_T> resource_;
     };
-
-    Resource(const ResourceType_T& resource) :
-        ResourceBase(resource),
-        resource_(std::unique_ptr<ResourceType_T>(new ResourceType_T(resource)))
-    {}
-
-    //  Get resource pointer
-    ResourceType_T* getResource(void) const {
-        return resource_.get();
-    }
-
-private:
-    //  Stored resource
-    std::unique_ptr<ResourceType_T> resource_;
-};
-
+}
 
 #endif // CUCCA_CORE_RESOURCE_HPP
