@@ -4,12 +4,12 @@
     This file is subject to the terms and conditions defined in
     file 'LICENSE.txt', which is part of this source code package.
 
-    EventBase class acts as a pointer storage for events.
+    EventBase class acts as a base class for templated Events.
     It has a type identifier system similar to Node class. @see Node.hpp
 
     @version    0.1
     @author     Miika Lehtimäki
-    @date       2014-10-17
+    @date       2014-10-26
 **/
 
 
@@ -28,7 +28,7 @@ public:
     //  Get event type. Will return -1 if no event is stored.
     int getEventType(void) const;
 
-    //  Event Type system. Similar to the one in the Node class.
+    //  Event type id system. Similar to the one in the Node class.
     template<typename EventType_T>
     static int getEventTypeId(void) {
         static unsigned numEventTypes__ = 0;

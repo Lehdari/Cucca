@@ -8,7 +8,7 @@
 
     @version    0.1
     @author     Miika Lehtimäki
-    @date       2014-10-16
+    @date       2014-10-26
 **/
 
 
@@ -35,9 +35,8 @@ public:
     }
 
 private:
-    //  Stored event and its type identifier and reference counter
+    //  Stored event
     std::unique_ptr<EventType_T> event_;
-    int* referenceCounter_;
 };
 
 
