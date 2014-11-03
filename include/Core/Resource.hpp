@@ -4,11 +4,13 @@
     This file is subject to the terms and conditions defined in
     file 'LICENSE.txt', which is part of this source code package.
 
-    Resource class stores resources of arbitrary type.
+    Resource is a CRTP class for user-defined resources. For each Resource
+    user should also define a ResourceLoadInfo template specialization.
+    This data structure is used to initialize the resource correctly.
 
     @version    0.1
     @author     Miika Lehtimäki
-    @date       2014-10-26
+    @date       2014-11-03
 **/
 
 
@@ -18,28 +20,44 @@
 
 #include "ResourceBase.hpp"
 
+#include <vector>
+
 
 namespace Cucca {
+
+    struct ResourceInitInfoBase {
+        virtual ~ResourceInitInfoBase(void) {}
+    };
+
+
     template<typename ResourceType_T>
+    struct ResourceInitInfo : public ResourceInitInfoBase {};
+
+
+    template<typename ResourceType_T, typename ResourceIdType_T>
     class Resource : public ResourceBase {
     public:
-        struct Info {
-        };
-
-        Resource(const ResourceType_T& resource) :
-            ResourceBase(resource),
-            resource_(std::unique_ptr<ResourceType_T>(new ResourceType_T(resource)))
-        {}
-
-        //  Get resource pointer
-        ResourceType_T* getResource(void) const {
-            return resource_.get();
-        }
-
-    private:
-        //  Stored resource
-        std::unique_ptr<ResourceType_T> resource_;
+        void init(ResourceInitInfo<ResourceType_T>& initInfo,
+                  const std::vector<ResourceIdType_T>& initResources,
+                  const std::vector<ResourceIdType_T>& depResources);
+        void destroy(void);
     };
-}
+
+
+    // Member definitions
+    template<typename ResourceType_T, typename ResourceIdType_T>
+    void Resource<ResourceType_T, ResourceIdType_T>::init(ResourceInitInfo<ResourceType_T>& initInfo,
+                                                          const std::vector<ResourceIdType_T>& initResources,
+                                                          const std::vector<ResourceIdType_T>& depResources) {
+        static_cast<ResourceType_T>(this)->init(initInfo, initResources, depResources);
+    }
+
+    template<typename ResourceType_T, typename ResourceIdType_T>
+    void Resource<ResourceType_T, ResourceIdType_T>::destroy(void) {
+        static_cast<ResourceType_T>(this)->destroy();
+    }
+
+} // namespace Cucca
+
 
 #endif // CUCCA_CORE_RESOURCE_HPP

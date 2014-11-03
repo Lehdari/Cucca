@@ -9,7 +9,7 @@
 
     @version    0.1
     @author     Miika Lehtimäki
-    @date       2014-10-17
+    @date       2014-10-28
 **/
 
 
@@ -20,7 +20,7 @@
 #include "Component.hpp"
 #include "Visitor.hpp"
 
-#include <map>
+#include <unordered_map>
 #include <vector>
 #include <memory>
 #include <utility>
@@ -34,7 +34,6 @@ namespace Cucca {
         void addComponent(ComponentType_T&& component) {
             components_[getComponentTypeId<ComponentType_T>()].push_back(std::unique_ptr<Component>(new ComponentType_T(std::forward<ComponentType_T>(component))));
         }
-
 
         //  Get vector of given type of components the node contains
         template<typename ComponentType_T>
@@ -78,8 +77,10 @@ namespace Cucca {
         }
 
         //  Component/child pointer data
-        std::map<unsigned, std::vector<std::unique_ptr<Component>>> components_;
+        std::unordered_map<unsigned, std::vector<std::unique_ptr<Component>>> components_;
         std::vector<std::unique_ptr<Node>> childs_;
+
+
     };
 }
 

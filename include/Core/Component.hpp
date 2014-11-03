@@ -9,7 +9,7 @@
 
     @version    0.1
     @author     Miika Lehtimäki
-    @date       2014-10-07
+    @date       2014-11-02
 **/
 
 
@@ -17,10 +17,19 @@
 #define CUCCA_CORE_COMPONENT_HPP
 
 
-class Component {
-public:
-    virtual ~Component(void) {}
-};
+namespace Cucca {
+
+    class Component {
+    public:
+        Component(void) = default;
+        Component(const Component&) = default;
+        Component(Component&&) = default;
+        Component& operator=(const Component&) & = default;
+        Component& operator=(Component&&) & = default;
+        virtual ~Component(void) {}
+    };
+
+} // namespace Cucca
 
 
 #endif // CUCCA_CORE_COMPONENT_HPP

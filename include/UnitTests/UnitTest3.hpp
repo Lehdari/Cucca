@@ -14,4 +14,4 @@ int unitTest(void);
 #endif // CURRENT_TEST
 
 
-#endif // CUCCA_UNITTESTS_UNITTEST2_HPP
+#endif // CUCCA_UNITTESTS_UNITTEST3_HPP
