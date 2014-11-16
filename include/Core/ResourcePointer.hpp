@@ -10,7 +10,7 @@
 
     @version    0.1
     @author     Miika Lehtimäki
-    @date       2014-11-03
+    @date       2014-11-16
 **/
 
 
@@ -29,6 +29,7 @@ namespace Cucca {
     template<typename ResourceType_T, typename ResourceIdType_T>
     class ResourcePointer {
     public:
+        ResourcePointer(void);
         ResourcePointer(ResourceType_T* resource,
                         const ResourceIdType_T& resourceId,
                         ResourceManager<ResourceIdType_T>* resourceManager,
@@ -54,6 +55,15 @@ namespace Cucca {
 
     //  Member definitions
     template<typename ResourceType_T, typename ResourceIdType_T>
+    ResourcePointer<ResourceType_T, ResourceIdType_T>::ResourcePointer(void) :
+        resource_(nullptr),
+        resourceId_(),
+        resourceManager_(nullptr),
+        outOfReferences_(nullptr),
+        referenceCount_(nullptr)
+    {}
+
+    template<typename ResourceType_T, typename ResourceIdType_T>
     ResourcePointer<ResourceType_T, ResourceIdType_T>::ResourcePointer(ResourceType_T* resource,
                                                                        const ResourceIdType_T& resourceId,
                                                                        ResourceManager<ResourceIdType_T>* resourceManager,
@@ -65,7 +75,8 @@ namespace Cucca {
         outOfReferences_(outOfReferences),
         referenceCount_(referenceCount)
     {
-        ++*referenceCount_;
+        if (referenceCount_)
+            ++*referenceCount_;
         std::cout << "Resource " << resourceId_ << " reference count: " << *referenceCount_ << std::endl; // TEMP
     }
 
@@ -77,7 +88,8 @@ namespace Cucca {
         outOfReferences_(resourcePointer.outOfReferences_),
         referenceCount_(resourcePointer.referenceCount_)
     {
-        ++*referenceCount_;
+        if (referenceCount_)
+            ++*referenceCount_;
         std::cout << "Resource " << resourceId_ << " reference count: " << *referenceCount_ << std::endl; // TEMP
     }
 
@@ -91,6 +103,7 @@ namespace Cucca {
     {
         resourcePointer.resource_ = nullptr;
         resourcePointer.resourceManager_ = nullptr;
+        resourcePointer.outOfReferences_ = nullptr;
         resourcePointer.referenceCount_ = nullptr;
     }
 
@@ -106,17 +119,21 @@ namespace Cucca {
 
     template<typename ResourceType_T, typename ResourceIdType_T>
     ResourcePointer<ResourceType_T, ResourceIdType_T>& ResourcePointer<ResourceType_T, ResourceIdType_T>::operator=(const ResourcePointer<ResourceType_T, ResourceIdType_T>& resourcePointer) {
-        if (--*referenceCount_ == 0)
-            (resourceManager_->*outOfReferences_)(resourceId_);
-        else // TEMP
-            std::cout << "Resource " << resourceId_ << " reference count: " << *referenceCount_ << std::endl; // TEMP
+        if (resource_) {
+            if (--*referenceCount_ == 0)
+                (resourceManager_->*outOfReferences_)(resourceId_);
+            else // TEMP
+                std::cout << "Resource " << resourceId_ << " reference count: " << *referenceCount_ << std::endl; // TEMP
+        }
 
         resource_ = resourcePointer.resource_;
         resourceId_ = resourcePointer.resourceId_;
         resourceManager_ = resourcePointer.resourceManager_;
         outOfReferences_ = resourcePointer.outOfReferences_;
         referenceCount_ = resourcePointer.referenceCount_;
-        ++*referenceCount_;
+
+        if (referenceCount_)
+            ++*referenceCount_;
         std::cout << "Resource " << resourceId_ << " reference count: " << *referenceCount_ << std::endl; // TEMP
 
         return *this;
@@ -124,10 +141,12 @@ namespace Cucca {
 
     template<typename ResourceType_T, typename ResourceIdType_T>
     ResourcePointer<ResourceType_T, ResourceIdType_T>& ResourcePointer<ResourceType_T, ResourceIdType_T>::operator=(ResourcePointer<ResourceType_T, ResourceIdType_T>&& resourcePointer) {
-        if (--*referenceCount_ == 0)
-            (resourceManager_->*outOfReferences_)(resourceId_);
-        else // TEMP
-            std::cout << "Resource " << resourceId_ << " reference count: " << *referenceCount_ << std::endl; // TEMP
+        if (resource_) {
+            if (--*referenceCount_ == 0)
+                (resourceManager_->*outOfReferences_)(resourceId_);
+            else // TEMP
+                std::cout << "Resource " << resourceId_ << " reference count: " << *referenceCount_ << std::endl; // TEMP
+        }
 
         resource_ = resourcePointer.resource_;
         resourceId_ = resourcePointer.resourceId_;
@@ -137,6 +156,7 @@ namespace Cucca {
 
         resourcePointer.resource_ = nullptr;
         resourcePointer.resourceManager_ = nullptr;
+        resourcePointer.outOfReferences_ = nullptr;
         resourcePointer.referenceCount_ = nullptr;
 
         return *this;

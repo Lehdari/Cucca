@@ -8,7 +8,7 @@
 
     @version    0.1
     @author     Miika Lehtimäki
-    @date       2014-11-03
+    @date       2014-11-16
 **/
 
 
@@ -40,6 +40,12 @@ namespace Cucca {
                              ResourceInitInfo<ResourceType_T>& initInfo,
                              const std::vector<ResourceIdType_T>& initResources,
                              const std::vector<ResourceIdType_T>& depResources);
+
+        template<typename ResourceType_T>
+        void addResourceInfo(const ResourceIdType_T& resourceId,
+                             ResourceInitInfo<ResourceType_T>&& initInfo,
+                             std::vector<ResourceIdType_T>&& initResources,
+                             std::vector<ResourceIdType_T>&& depResources);
 
         template<typename ResourceType_T>
         void loadResource(const ResourceIdType_T& resourceId);
@@ -113,16 +119,26 @@ namespace Cucca {
 
     template<typename ResourceIdType_T>
     template<typename ResourceType_T>
+    void ResourceManager<ResourceIdType_T>::addResourceInfo(const ResourceIdType_T& resourceId,
+                                                            ResourceInitInfo<ResourceType_T>&& initInfo,
+                                                            std::vector<ResourceIdType_T>&& initResources,
+                                                            std::vector<ResourceIdType_T>&& depResources) {
+        addResourceInfo(resourceId, initInfo, initResources, depResources);
+    }
+
+    template<typename ResourceIdType_T>
+    template<typename ResourceType_T>
     void ResourceManager<ResourceIdType_T>::loadResource(const ResourceIdType_T& resourceId) {
         if (resources_.find(resourceId) != resources_.end())
             return;
 
         if (resourceInfos_.find(resourceId) == resourceInfos_.end())
-            throw "ResourceManager: cannot load resource (no resource info)"; // TODO_EXCEPTION: throw a proper exception
+            throw "ResourceManager: unable to load resource (no resource info)"; // TODO_EXCEPTION: throw a proper exception
 
         auto resource = std::unique_ptr<ResourceBase>(new ResourceType_T());
         auto& resourceInfo = resourceInfos_[resourceId];
         static_cast<ResourceType_T*>(resource.get())->init(*static_cast<ResourceInitInfo<ResourceType_T>*>(resourceInfo.initInfo.get()),
+                                                           *this,
                                                            resourceInfo.initResources,
                                                            resourceInfo.depResources);
 
