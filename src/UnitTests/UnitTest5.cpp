@@ -8,36 +8,39 @@
 
 #include <iostream>
 #include <chrono>
-#include <cstdlib>
-#include <ctime>
+#include <random>
 
 
 using namespace Cucca;
 
 
+std::default_random_engine r;
+
+
 void testFunction1(void) {
-    std::cout << "testFunction1() working.. " << std::endl;
-    std::this_thread::sleep_for(std::chrono::milliseconds(rand() % 50));
+    unsigned time = r() % 500;
+    std::cout << "thread " << std::this_thread::get_id() << ": testFunction1() working for " << time << "ms\n";
+    std::this_thread::sleep_for(std::chrono::milliseconds(time));
 }
 
 void testFunction2(void) {
-    std::cout << "testFunction2() working.. " << std::endl;
-    std::this_thread::sleep_for(std::chrono::milliseconds(rand() % 50));
+    unsigned time = r() % 500;
+    std::cout << "thread " << std::this_thread::get_id() << ": testFunction2() working for " << time << "ms\n";
+    std::this_thread::sleep_for(std::chrono::milliseconds(time));
 }
 
 
 class TestClass {
 public:
     void testMemberFunction(void) {
-        std::cout << "TestClass::testMemberFunction() working.. " << std::endl;
-        std::this_thread::sleep_for(std::chrono::milliseconds(rand() % 50));
+        unsigned time = r() % 500;
+        std::cout << "thread " << std::this_thread::get_id() << ": TestClass::testMemberFunction() working for " << time << "ms\n";
+        std::this_thread::sleep_for(std::chrono::milliseconds(time));
     }
 };
 
 
 int unitTest(void) {
-    srand(time(NULL));
-
     TestClass test;
 
     Task task1(testFunction1);
@@ -45,23 +48,52 @@ int unitTest(void) {
     Task task3(&test, &TestClass::testMemberFunction);
 
     ThreadPool pool;
-    std::cout << "Launching 4 threads.. ";
+    std::cout << "Launching 2 threads\n";
     pool.launchThreads(4);
-    std::cout << "done" << std::endl;
+    std::cout << "Joining 2 threads\n";
+    pool.joinThreads(2);
 
-    std::this_thread::sleep_for(std::chrono::seconds(1)); // add a bit of wait before terminating
-
-    unsigned n = 200 + (rand() % 200);
-    std::cout << "Queueing " << n << " tasks.. " << std::endl;
+    unsigned n = 140 + (r() % 10);
+    std::cout << "Queueing " << n << " tasks\n";
     for (auto i=0u; i<n; ++i) {
-        switch (rand() % 3) {
+        switch (r() % 3) {
         case 0: pool.pushTask(std::move(Task(task1))); break;
         case 1: pool.pushTask(std::move(Task(task2))); break;
         case 2: pool.pushTask(std::move(Task(task3))); break;
         }
     }
 
-    std::this_thread::sleep_for(std::chrono::seconds(10)); // add a bit of wait before terminating
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+
+    std::cout << "Launching 2 threads\n";
+    pool.launchThreads(2);
+
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+
+    std::cout << "Launching 2 threads\n";
+    pool.launchThreads(2);
+
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+
+    std::cout << "Launching 2 threads\n";
+    pool.launchThreads(2);
+
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+
+    std::cout << "Joining 2 threads\n";
+    pool.joinThreads(2);
+
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+
+    std::cout << "Joining 2 threads\n";
+    pool.joinThreads(2);
+
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+
+    std::cout << "Joining 2 threads\n";
+    pool.joinThreads(2);
+
+    std::this_thread::sleep_for(std::chrono::seconds(5)); // add a bit of wait before terminating
 
     return 0;
 }
