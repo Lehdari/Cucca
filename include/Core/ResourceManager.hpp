@@ -8,7 +8,7 @@
 
     @version    0.1
     @author     Miika Lehtimäki
-    @date       2014-11-16
+    @date       2014-11-17
 **/
 
 
@@ -22,7 +22,6 @@
 #include <unordered_map>
 #include <vector>
 #include <memory>
-#include <iostream> // TEMP
 
 
 namespace Cucca {
@@ -82,10 +81,6 @@ namespace Cucca {
             std::unique_ptr<unsigned> referenceCount;
         };
 
-        //  Resource info and resource maps
-        std::unordered_map<ResourceIdType_T, ResourceInfo> resourceInfos_;
-        std::unordered_map<ResourceIdType_T, std::unique_ptr<ResourceBase>> resources_;
-
         //  Resource type id system. Similar to the one in the Node class.
         template<typename ResourceType_T>
         static int getResourceTypeId(void) {
@@ -96,6 +91,10 @@ namespace Cucca {
 
         //  Callback function for resource pointers to signal they've run out of references
         void pointerOutOfReferences(const ResourceIdType_T& resourceId);
+
+        //  Resource info and resource maps
+        std::unordered_map<ResourceIdType_T, ResourceInfo> resourceInfos_;
+        std::unordered_map<ResourceIdType_T, std::unique_ptr<ResourceBase>> resources_;
     };
 
 
@@ -107,8 +106,7 @@ namespace Cucca {
                                                             const std::vector<ResourceIdType_T>& initResources,
                                                             const std::vector<ResourceIdType_T>& depResources) {
         ResourceInfo resourceInfo;
-        resourceInfo.initInfo = std::unique_ptr<ResourceInitInfoBase>(new ResourceInitInfo<ResourceType_T>); // TODO_UNIQUE, TODO_ALLOCATOR
-        *resourceInfo.initInfo = initInfo;
+        resourceInfo.initInfo = std::unique_ptr<ResourceInitInfoBase>(new ResourceInitInfo<ResourceType_T>(initInfo)); // TODO_UNIQUE, TODO_ALLOCATOR
         resourceInfo.initResources = initResources;
         resourceInfo.depResources = depResources;
         resourceInfo.typeId = getResourceTypeId<ResourceType_T>();
@@ -160,7 +158,7 @@ namespace Cucca {
 
     template<typename ResourceIdType_T>
     void ResourceManager<ResourceIdType_T>::pointerOutOfReferences(const ResourceIdType_T& resourceId) {
-        std::cout << "Resource " << resourceId << " out of references" << std::endl; // TEMP
+        // TODO_IMPLEMENT
     }
 
 } // namespace Cucca

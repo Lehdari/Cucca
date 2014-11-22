@@ -11,8 +11,6 @@
 #include "../Core/Resource.hpp"
 #include "../Core/ResourcePointer.hpp"
 
-#include <string>
-
 
 namespace Cucca {
 
@@ -25,12 +23,12 @@ namespace Cucca {
     template<> struct ResourceInitInfo<TestResource_Movement>;
 
 
-    class TestResource_Vec2f : public Resource<TestResource_Vec2f, std::string> {
+    class TestResource_Vec2f : public Resource<TestResource_Vec2f, ResourceId> {
     public:
         void init(const ResourceInitInfo<TestResource_Vec2f>& initInfo,
-                  ResourceManager<std::string>& resourceManager,
-                  const std::vector<std::string>& initResources,
-                  const std::vector<std::string>& depResources);
+                  ResourceManager<ResourceId>& resourceManager,
+                  const std::vector<ResourceId>& initResources,
+                  const std::vector<ResourceId>& depResources);
         void destroy(void);
 
     private:
@@ -40,16 +38,15 @@ namespace Cucca {
 
     template<>
     struct ResourceInitInfo<TestResource_Vec2f> : public ResourceInitInfoBase {
-        float a;
-        float b;
+        float a, b;
     };
 
-    class TestResource_Array : public Resource<TestResource_Array, std::string> {
+    class TestResource_Array : public Resource<TestResource_Array, ResourceId> {
     public:
         void init(const ResourceInitInfo<TestResource_Array>& initInfo,
-                  ResourceManager<std::string>& resourceManager,
-                  const std::vector<std::string>& initResources,
-                  const std::vector<std::string>& depResources);
+                  ResourceManager<ResourceId>& resourceManager,
+                  const std::vector<ResourceId>& initResources,
+                  const std::vector<ResourceId>& depResources);
         void destroy(void);
 
     private:
@@ -64,19 +61,19 @@ namespace Cucca {
     };
 
     //  hierarchical resource example
-    class TestResource_Movement : public Resource<TestResource_Movement, std::string> {
+    class TestResource_Movement : public Resource<TestResource_Movement, ResourceId> {
     public:
         void init(const ResourceInitInfo<TestResource_Movement>& initInfo,
-                  ResourceManager<std::string>& resourceManager,
-                  const std::vector<std::string>& initResources,
-                  const std::vector<std::string>& depResources);
+                  ResourceManager<ResourceId>& resourceManager,
+                  const std::vector<ResourceId>& initResources,
+                  const std::vector<ResourceId>& depResources);
         void destroy(void);
 
     private:
         //  child resources
-        ResourcePointer<TestResource_Vec2f, std::string> position_;
-        ResourcePointer<TestResource_Vec2f, std::string> velocity_;
-        ResourcePointer<TestResource_Vec2f, std::string> acceleration_;
+        ResourcePointer<TestResource_Vec2f, ResourceId> position_;
+        ResourcePointer<TestResource_Vec2f, ResourceId> velocity_;
+        ResourcePointer<TestResource_Vec2f, ResourceId> acceleration_;
     };
 
     template<>

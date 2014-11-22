@@ -10,7 +10,7 @@
 
     @version    0.1
     @author     Miika Lehtimäki
-    @date       2014-11-16
+    @date       2014-11-17
 **/
 
 
@@ -20,15 +20,22 @@
 
 #include "ResourceBase.hpp"
 
+#include <string>
 #include <vector>
 
 
 namespace Cucca {
 
+    //  Typedefs
+    typedef std::string ResourceId;
+
+
+    //  Forward Declarations
     template <typename ResourceIdType_T>
     class ResourceManager;
 
 
+    //  Structs and Classes
     struct ResourceInitInfoBase {
         virtual ~ResourceInitInfoBase(void) {}
     };
@@ -39,7 +46,7 @@ namespace Cucca {
 
 
     template<typename ResourceType_T, typename ResourceIdType_T>
-    class Resource : public ResourceBase { // TODO_RO5
+    class Resource : public ResourceBase { // TODO_RO5 (?)
     public:
         enum Status {
             STATUS_UNINITIALIZED,
@@ -55,12 +62,12 @@ namespace Cucca {
                   const std::vector<ResourceIdType_T>& depResources);
         void destroy(void);
 
-    private:
+    protected:
         Status status_;
     };
 
 
-    // Member definitions
+    //  Member Definitions
     template<typename ResourceType_T, typename ResourceIdType_T>
     Resource<ResourceType_T, ResourceIdType_T>::Resource(void) :
         status_(STATUS_UNINITIALIZED)
@@ -71,7 +78,7 @@ namespace Cucca {
                                                           ResourceManager<ResourceIdType_T>& resourceManager,
                                                           const std::vector<ResourceIdType_T>& initResources,
                                                           const std::vector<ResourceIdType_T>& depResources) {
-        static_cast<ResourceType_T>(this)->init(initInfo, initResources, depResources);
+        static_cast<ResourceType_T>(this)->init(initInfo, resourceManager, initResources, depResources);
         status_ = STATUS_INITIALIZED;
     }
 

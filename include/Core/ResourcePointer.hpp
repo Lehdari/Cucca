@@ -18,9 +18,6 @@
 #define CUCCA_CORE_RESOURCEPOINTER_HPP
 
 
-#include <iostream> // TEMP
-
-
 namespace Cucca {
 
     template<typename ResourceIdType_T>
@@ -41,6 +38,8 @@ namespace Cucca {
 
         ResourcePointer<ResourceType_T, ResourceIdType_T>& operator=(const ResourcePointer<ResourceType_T, ResourceIdType_T>& resourcePointer);
         ResourcePointer<ResourceType_T, ResourceIdType_T>& operator=(ResourcePointer<ResourceType_T, ResourceIdType_T>&& resourcePointer);
+
+        ResourceType_T* get(void);
 
     private:
         ResourceType_T* resource_;
@@ -77,7 +76,6 @@ namespace Cucca {
     {
         if (referenceCount_)
             ++*referenceCount_;
-        std::cout << "Resource " << resourceId_ << " reference count: " << *referenceCount_ << std::endl; // TEMP
     }
 
     template<typename ResourceType_T, typename ResourceIdType_T>
@@ -90,7 +88,6 @@ namespace Cucca {
     {
         if (referenceCount_)
             ++*referenceCount_;
-        std::cout << "Resource " << resourceId_ << " reference count: " << *referenceCount_ << std::endl; // TEMP
     }
 
     template<typename ResourceType_T, typename ResourceIdType_T>
@@ -109,22 +106,16 @@ namespace Cucca {
 
     template<typename ResourceType_T, typename ResourceIdType_T>
     ResourcePointer<ResourceType_T, ResourceIdType_T>::~ResourcePointer(void) {
-        if (resource_) {
+        if (resource_)
             if (--*referenceCount_ == 0)
                 (resourceManager_->*outOfReferences_)(resourceId_);
-            else // TEMP
-                std::cout << "Resource " << resourceId_ << " reference count: " << *referenceCount_ << std::endl; // TEMP
-        }
     }
 
     template<typename ResourceType_T, typename ResourceIdType_T>
     ResourcePointer<ResourceType_T, ResourceIdType_T>& ResourcePointer<ResourceType_T, ResourceIdType_T>::operator=(const ResourcePointer<ResourceType_T, ResourceIdType_T>& resourcePointer) {
-        if (resource_) {
+        if (resource_)
             if (--*referenceCount_ == 0)
                 (resourceManager_->*outOfReferences_)(resourceId_);
-            else // TEMP
-                std::cout << "Resource " << resourceId_ << " reference count: " << *referenceCount_ << std::endl; // TEMP
-        }
 
         resource_ = resourcePointer.resource_;
         resourceId_ = resourcePointer.resourceId_;
@@ -134,19 +125,15 @@ namespace Cucca {
 
         if (referenceCount_)
             ++*referenceCount_;
-        std::cout << "Resource " << resourceId_ << " reference count: " << *referenceCount_ << std::endl; // TEMP
 
         return *this;
     }
 
     template<typename ResourceType_T, typename ResourceIdType_T>
     ResourcePointer<ResourceType_T, ResourceIdType_T>& ResourcePointer<ResourceType_T, ResourceIdType_T>::operator=(ResourcePointer<ResourceType_T, ResourceIdType_T>&& resourcePointer) {
-        if (resource_) {
+        if (resource_)
             if (--*referenceCount_ == 0)
                 (resourceManager_->*outOfReferences_)(resourceId_);
-            else // TEMP
-                std::cout << "Resource " << resourceId_ << " reference count: " << *referenceCount_ << std::endl; // TEMP
-        }
 
         resource_ = resourcePointer.resource_;
         resourceId_ = resourcePointer.resourceId_;
@@ -160,6 +147,11 @@ namespace Cucca {
         resourcePointer.referenceCount_ = nullptr;
 
         return *this;
+    }
+
+    template<typename ResourceType_T, typename ResourceIdType_T>
+    ResourceType_T* ResourcePointer<ResourceType_T, ResourceIdType_T>::get(void) {
+        return resource_;
     }
 
 } // namespace Cucca

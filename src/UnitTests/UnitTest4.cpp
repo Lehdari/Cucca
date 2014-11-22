@@ -5,6 +5,7 @@
 
 
 #include "../../include/Core/ResourceManager.hpp"
+#include "../../include/Core/Binary.hpp"
 
 #include <iostream>
 
@@ -13,9 +14,9 @@ using namespace Cucca;
 
 
 void TestResource_Vec2f::init(const ResourceInitInfo<TestResource_Vec2f>& initInfo,
-                              ResourceManager<std::string>& resourceManager,
-                              const std::vector<std::string>& initResources,
-                              const std::vector<std::string>& depResources) {
+                              ResourceManager<ResourceId>& resourceManager,
+                              const std::vector<ResourceId>& initResources,
+                              const std::vector<ResourceId>& depResources) {
     a_ = initInfo.a;
     b_ = initInfo.b;
 }
@@ -26,9 +27,9 @@ void TestResource_Vec2f::destroy(void) {
 
 
 void TestResource_Array::init(const ResourceInitInfo<TestResource_Array>& initInfo,
-                              ResourceManager<std::string>& resourceManager,
-                              const std::vector<std::string>& initResources,
-                              const std::vector<std::string>& depResources) {
+                              ResourceManager<ResourceId>& resourceManager,
+                              const std::vector<ResourceId>& initResources,
+                              const std::vector<ResourceId>& depResources) {
     arr = new int[initInfo.arrSize];
     arr[0] = initInfo.first;
     for (unsigned i=1; i<initInfo.arrSize; ++i)
@@ -42,9 +43,9 @@ void TestResource_Array::destroy(void) {
 
 
 void TestResource_Movement::init(const ResourceInitInfo<TestResource_Movement>& initInfo,
-                                 ResourceManager<std::string>& resourceManager,
-                                 const std::vector<std::string>& initResources,
-                                 const std::vector<std::string>& depResources) {
+                                 ResourceManager<ResourceId>& resourceManager,
+                                 const std::vector<ResourceId>& initResources,
+                                 const std::vector<ResourceId>& depResources) {
     if (depResources.size() < 3)
         throw "TestResource_Movement: unable to initialize resource (insufficient dependency resources provided)"; // TODO_EXCEPTION: throw a proper exception
 
@@ -59,40 +60,61 @@ void TestResource_Movement::destroy(void) {
 
 
 int unitTest(void) {
-    ResourceInitInfo<TestResource_Vec2f> vecInitInfo1;
-    vecInitInfo1.a = 0.25f;
-    vecInitInfo1.b = 0.50f;
+    {
+        ResourceManager<ResourceId> manager;
 
-    ResourceInitInfo<TestResource_Vec2f> vecInitInfo2;
-    vecInitInfo2.a = 0.45f;
-    vecInitInfo2.b = 0.20f;
+        ResourceInitInfo<TestResource_Vec2f> vecInitInfo1;
+        vecInitInfo1.a = 0.25f;
+        vecInitInfo1.b = 0.50f;
+        ResourceInitInfo<TestResource_Vec2f> vecInitInfo2;
+        vecInitInfo1.a = 0.45f;
+        vecInitInfo1.b = 0.20f;
+        ResourceInitInfo<TestResource_Vec2f> vecInitInfo3;
+        vecInitInfo1.a = -0.8f;
+        vecInitInfo1.b = 0.65f;
 
-    ResourceInitInfo<TestResource_Vec2f> vecInitInfo3;
-    vecInitInfo3.a = -0.8f;
-    vecInitInfo3.b = 0.65f;
+        manager.addResourceInfo<TestResource_Vec2f>("VEC2F_1", vecInitInfo1, std::vector<ResourceId>(), std::vector<ResourceId>());
+        manager.addResourceInfo<TestResource_Vec2f>("VEC2F_2", vecInitInfo2, std::vector<ResourceId>(), std::vector<ResourceId>());
+        manager.addResourceInfo<TestResource_Vec2f>("VEC2F_3", vecInitInfo3, std::vector<ResourceId>(), std::vector<ResourceId>());
+        manager.addResourceInfo<TestResource_Movement>("MOVEMENT_1",
+                                                       ResourceInitInfo<TestResource_Movement>(),
+                                                       std::vector<ResourceId>(),
+                                                       std::vector<ResourceId> {"VEC2F_1", "VEC2F_2", "VEC2F_3"});
 
-    ResourceManager<std::string> manager;
-    manager.addResourceInfo<TestResource_Vec2f>("VEC2F_1", vecInitInfo1, std::vector<std::string>(), std::vector<std::string>());
-    manager.addResourceInfo<TestResource_Vec2f>("VEC2F_2", vecInitInfo2, std::vector<std::string>(), std::vector<std::string>());
-    manager.addResourceInfo<TestResource_Vec2f>("VEC2F_3", vecInitInfo3, std::vector<std::string>(), std::vector<std::string>());
+        //  hierarchic resource test
+        auto movement_ref1 = manager.getResource<TestResource_Movement>("MOVEMENT_1");
 
-    auto vec_ref1 = manager.getResource<TestResource_Vec2f>("VEC2F_1");
-    auto vec_ref2 = manager.getResource<TestResource_Vec2f>("VEC2F_1");
-    auto vec_ref3 = manager.getResource<TestResource_Vec2f>("VEC2F_2");
-    auto vec_ref4 = manager.getResource<TestResource_Vec2f>("VEC2F_2");
-    auto vec_ref5(vec_ref1);
-    auto vec_ref6(std::move(vec_ref1));
-    auto vec_ref7 = vec_ref2;
-    auto vec_ref8 = std::move(vec_ref2);
-    vec_ref3 = vec_ref4;
-    vec_ref4 = std::move(vec_ref3);
+        //  some additional RO5 tests
+        auto vec_ref1 = manager.getResource<TestResource_Vec2f>("VEC2F_1");
+        auto vec_ref2 = manager.getResource<TestResource_Vec2f>("VEC2F_1");
+        auto vec_ref3 = manager.getResource<TestResource_Vec2f>("VEC2F_2");
+        auto vec_ref4 = manager.getResource<TestResource_Vec2f>("VEC2F_2");
+        auto vec_ref5(vec_ref1);
+        auto vec_ref6(std::move(vec_ref1));
+        auto vec_ref7 = vec_ref2;
+        auto vec_ref8 = std::move(vec_ref2);
+        vec_ref3 = vec_ref4;
+        vec_ref4 = std::move(vec_ref3);
+    }
 
-    manager.addResourceInfo<TestResource_Movement>("MOVEMENT_1",
-                                                   ResourceInitInfo<TestResource_Movement>(),
-                                                   std::vector<std::string>(),
-                                                   std::vector<std::string> {"VEC2F_1", "VEC2F_2", "VEC2F_3"});
+    {
+        ResourceManager<ResourceId> manager;
 
-    auto movement_ref1 = manager.getResource<TestResource_Movement>("MOVEMENT_1");
+        ResourceInitInfo<Binary> testTXTInfo;
+        testTXTInfo.source = ResourceInitInfo<Binary>::FILE;
+        testTXTInfo.fileName = "res/test.txt";
+
+        manager.addResourceInfo("TEST_TXT", testTXTInfo, std::vector<ResourceId>(), std::vector<ResourceId>());
+        ResourcePointer<Binary, ResourceId> testTXT = manager.getResource<Binary>("TEST_TXT");
+
+        unsigned long s = testTXT.get()->getBufferSize();
+        char* str = new char[s+1];
+        memcpy(str, testTXT.get()->getBufferPtr(), s);
+        str[s] = '\0';
+
+        std::cout << str << std::endl;
+    }
+
 
     return 0;
 }
