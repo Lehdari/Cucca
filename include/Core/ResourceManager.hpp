@@ -50,13 +50,10 @@ namespace Cucca {
                              std::vector<ResourceIdType_T>&& initResources,
                              std::vector<ResourceIdType_T>&& depResources);
 
-        //  Loads resource with calling thread
+        //  Loads resource asynchronously if pointer to running thread pool has been provided,
+        //  synchronously with calling thread otherwise.
         template<typename ResourceType_T>
         void loadResource(const ResourceIdType_T& resourceId);
-
-        //  Loads resource with thread pool, returns instantly. Pointer to running ThreadPool required
-        //template<typename ResourceType_T>
-        //void loadResourceAsync(const ResourceIdType_T& resourceId);
 
         //  For getting the actual resource. Loads it with calling thread if it doesn't exist
         template<typename ResourceType_T>
@@ -98,22 +95,6 @@ namespace Cucca {
 
         //  Asynchronous loading stuff
         ThreadPool* threadPool_;
-
-        /*template<typename ResourceIdType_U>
-        class ResourceInitializer : public Task {
-        public:
-            ResourceInitializer(ResourceManager& resourceManager, const ResourceIdType_U& resourceId) :
-                Task(task(this, &this->initResource)),
-                resourceManager_(resourceManager), resourceId_(resourceId)
-            {}
-
-            void initResource(void) {
-                resourceManager_->initResource(resourceId_);
-            }
-        private:
-            ResourceManager& resourceManager_;
-            const ResourceIdType_U& resourceId_;
-        };*/
     };
 
 
@@ -178,25 +159,6 @@ namespace Cucca {
             initResource<ResourceType_T>(resourceId);
     }
 
-    /*template<typename ResourceIdType_T>
-    template<typename ResourceType_T>
-    void ResourceManager<ResourceIdType_T>::loadResourceAsync(const ResourceIdType_T& resourceId) {
-        if (resources_.find(resourceId) != resources_.end())
-            return;
-
-        if (resourceInfos_.find(resourceId) == resourceInfos_.end())
-            throw "ResourceManager: unable to load resource (no resource info)"; // TODO_EXCEPTION: throw a proper exception
-
-        auto resource = std::unique_ptr<ResourceBase>(new ResourceType_T());
-        auto& resourceInfo = resourceInfos_[resourceId];
-        static_cast<ResourceType_T*>(resource.get())->init(*static_cast<ResourceInitInfo<ResourceType_T>*>(resourceInfo.initInfo.get()),
-                                                           *this,
-                                                           resourceInfo.initResources,
-                                                           resourceInfo.depResources);
-
-        resources_[resourceId] = std::move(resource);
-    }*/
-
     template<typename ResourceIdType_T>
     template<typename ResourceType_T>
     ResourcePointer<ResourceType_T, ResourceIdType_T> ResourceManager<ResourceIdType_T>::getResource(const ResourceIdType_T& resourceId) {
@@ -230,6 +192,7 @@ namespace Cucca {
 
             resource = static_cast<ResourceType_T*>(resources_[resourceId].get());
         }
+
         //  resource is just a pointer to a resource and resourceInfo was copied, so
         //  now it should be safe to initialize the resource without mutexing
         resource->init(*static_cast<ResourceInitInfo<ResourceType_T>*>(initInfo),

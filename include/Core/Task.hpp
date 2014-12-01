@@ -21,19 +21,6 @@
 
 namespace Cucca {
 
-    /*class TaskBase {
-    public:
-        TaskBase(void) = default;
-        TaskBase(const TaskBase&) = default;
-        TaskBase(TaskBase&&) = default;
-        TaskBase& operator=(const TaskBase&) & = default;
-        TaskBase& operator=(TaskBase&&) & = default;
-
-        virtual void operator()(void) const = 0;
-
-        virtual ~TaskBase(void) {}
-    };*/
-
     class Task {
     public:
         Task(const Task& other);
