@@ -57,7 +57,7 @@ namespace Cucca {
         unsigned threadsPerformingTask(void) const;
 
     private:
-        /// loop for worker threads
+        // loop for worker threads
         void loop(void);
 
         Status status_;
@@ -75,7 +75,7 @@ namespace Cucca {
     };
 
 
-    /// Member definitions
+    // Member definitions
     ThreadPool::ThreadPool(void) :
         status_(STATUS_INITIALIZED),
         threadsToJoin_(0),
