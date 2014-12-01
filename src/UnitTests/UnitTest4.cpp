@@ -60,7 +60,7 @@ void TestResource_Movement::destroy(void) {
 
 
 int unitTest(void) {
-    {
+    {   //  resource management basics
         ResourceManager<ResourceId> manager;
 
         ResourceInitInfo<TestResource_Vec2f> vecInitInfo1;
@@ -97,7 +97,7 @@ int unitTest(void) {
         vec_ref4 = std::move(vec_ref3);
     }
 
-    {
+    {   //  loading a binary resource
         ResourceManager<ResourceId> manager;
 
         ResourceInitInfo<Binary> testTXTInfo;
@@ -105,6 +105,31 @@ int unitTest(void) {
         testTXTInfo.fileName = "res/test.txt";
 
         manager.addResourceInfo("TEST_TXT", testTXTInfo, std::vector<ResourceId>(), std::vector<ResourceId>());
+        ResourcePointer<Binary, ResourceId> testTXT = manager.getResource<Binary>("TEST_TXT");
+
+        unsigned long s = testTXT.get()->getBufferSize();
+        char* str = new char[s+1];
+        memcpy(str, testTXT.get()->getBufferPtr(), s);
+        str[s] = '\0';
+
+        std::cout << str << std::endl;
+    }
+
+    {   //  loading a binary resource asynchronously
+        ThreadPool pool;
+        pool.launchThreads(1);
+
+        ResourceManager<ResourceId> manager(&pool);
+
+        ResourceInitInfo<Binary> testTXTInfo;
+        testTXTInfo.source = ResourceInitInfo<Binary>::FILE;
+        testTXTInfo.fileName = "res/test.txt";
+
+        manager.addResourceInfo("TEST_TXT", testTXTInfo, std::vector<ResourceId>(), std::vector<ResourceId>());
+        manager.loadResource<Binary>("TEST_TXT");
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
+
         ResourcePointer<Binary, ResourceId> testTXT = manager.getResource<Binary>("TEST_TXT");
 
         unsigned long s = testTXT.get()->getBufferSize();

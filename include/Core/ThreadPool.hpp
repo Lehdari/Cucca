@@ -6,7 +6,7 @@
 
     @version    0.1
     @author     Miika Lehtimäki
-    @date       2014-11-22
+    @date       2014-12-01
 **/
 
 
@@ -53,10 +53,11 @@ namespace Cucca {
         void pushTask(const Task& task);
         void pushTask(Task&& task);
 
-        unsigned threadsPerformingTask(void);
+        Status status(void) const;
+        unsigned threadsPerformingTask(void) const;
 
     private:
-        // loop for worker threads
+        /// loop for worker threads
         void loop(void);
 
         Status status_;
@@ -74,7 +75,7 @@ namespace Cucca {
     };
 
 
-    //  Member definitions
+    /// Member definitions
     ThreadPool::ThreadPool(void) :
         status_(STATUS_INITIALIZED),
         threadsToJoin_(0),
@@ -143,7 +144,11 @@ namespace Cucca {
         taskCV_.notify_one();
     }
 
-    unsigned ThreadPool::threadsPerformingTask(void) {
+    ThreadPool::Status ThreadPool::status(void) const {
+        return status_;
+    }
+
+    unsigned ThreadPool::threadsPerformingTask(void) const {
         return threadsPerformingTask_;
     }
 
@@ -168,13 +173,13 @@ namespace Cucca {
                 return;
             }
 
-            Task task(tasks_.front());
+            Task task(std::move(tasks_.front()));
             tasks_.pop();
 
             lock.unlock(); // end of synchronization
 
             ++threadsPerformingTask_;
-            task.run();
+            task();
             --threadsPerformingTask_;
         }
     }

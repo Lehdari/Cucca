@@ -8,7 +8,7 @@
 
     @version    0.1
     @author     Miika Lehtimäki
-    @date       2014-11-22
+    @date       2014-12-01
 **/
 
 
@@ -21,38 +21,70 @@
 
 namespace Cucca {
 
+    /*class TaskBase {
+    public:
+        TaskBase(void) = default;
+        TaskBase(const TaskBase&) = default;
+        TaskBase(TaskBase&&) = default;
+        TaskBase& operator=(const TaskBase&) & = default;
+        TaskBase& operator=(TaskBase&&) & = default;
+
+        virtual void operator()(void) const = 0;
+
+        virtual ~TaskBase(void) {}
+    };*/
+
     class Task {
     public:
         Task(const Task& other);
 
-        //  Constructor for plain function
-        Task(void(*f)(void));
-        //  Constructor for member function
-        template<typename T>
-        Task(T* object, void(T::*f)(void));
+        /// Constructors for plain function
+        template <typename... Arguments_T>
+        Task(void(*f)(Arguments_T...), Arguments_T... args);
 
-        void run(void);
+        template <typename... Arguments_T>
+        Task(void(*f)(const Arguments_T&...), Arguments_T... args);
+
+        /// Constructors for member function
+        template <typename ObjectType_T, typename... Arguments_T>
+        Task(ObjectType_T* object, void(ObjectType_T::*f)(Arguments_T...), Arguments_T... args);
+
+        template <typename ObjectType_T, typename... Arguments_T>
+        Task(ObjectType_T* object, void(ObjectType_T::*f)(const Arguments_T&...), Arguments_T... args);
+
+        void operator()(void) const;
 
     private:
-        std::function<void()> f_;
+        std::function<void(void)> f_;
     };
 
 
-    //  Member definitions
+    /// Member definitions
     Task::Task(const Task& other) :
         f_(other.f_)
     {}
 
-    template<typename T>
-    Task::Task(T* object, void(T::*f)(void)) :
-        f_(std::bind(f, object))
+    template <typename... Arguments_T>
+    Task::Task(void(*f)(Arguments_T...), Arguments_T... args) :
+        f_(std::bind(f, args...))
     {}
 
-    Task::Task(void(*f)(void)) :
-        f_(std::bind(f))
+    template <typename... Arguments_T>
+    Task::Task(void(*f)(const Arguments_T&...), Arguments_T... args) :
+        f_(std::bind(f, args...))
     {}
 
-    void Task::run(void) {
+    template <typename ObjectType_T, typename... Arguments_T>
+    Task::Task(ObjectType_T* object, void(ObjectType_T::*f)(Arguments_T...), Arguments_T... args) :
+        f_(std::bind(f, object, args...))
+    {}
+
+    template <typename ObjectType_T, typename... Arguments_T>
+    Task::Task(ObjectType_T* object, void(ObjectType_T::*f)(const Arguments_T&...), Arguments_T... args) :
+        f_(std::bind(f, object, args...))
+    {}
+
+    void Task::operator()(void) const {
         f_();
     }
 

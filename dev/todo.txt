@@ -1,0 +1,8 @@
+TODO:
+
+Check thread safety
+	resources
+
+Add comments and documentation
+
+Unify the layout of files

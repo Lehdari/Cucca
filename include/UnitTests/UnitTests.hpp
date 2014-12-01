@@ -2,7 +2,7 @@
 #define CUCCA_UNITTESTS_UNITTESTS_HPP
 
 
-#define CURRENT_TEST 5
+#define CURRENT_TEST 4
 
 
 #include "UnitTest1.hpp"
