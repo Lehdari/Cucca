@@ -8,7 +8,7 @@
 
     @version    0.1
     @author     Miika Lehtimäki
-    @date       2014-12-01
+    @date       2014-12-03
 **/
 
 
@@ -23,52 +23,100 @@ namespace Cucca {
 
     class Task {
     public:
+        enum Flag { //  flags for identification
+            FLAG_DEFAULT,
+            //  tasks created by a ResourceManager, used to remove tasks
+            //  from the queue when ResourceManager is destroying
+            FLAG_RESOURCEMANAGER
+        };
+
+        friend class ThreadPool;
+
         Task(const Task& other);
 
         /// Constructors for plain function
         template <typename... Arguments_T>
         Task(void(*f)(Arguments_T...), Arguments_T... args);
-
         template <typename... Arguments_T>
         Task(void(*f)(const Arguments_T&...), Arguments_T... args);
+
+        template <typename... Arguments_T>
+        Task(Flag flag, void(*f)(Arguments_T...), Arguments_T... args);
+        template <typename... Arguments_T>
+        Task(Flag flag, void(*f)(const Arguments_T&...), Arguments_T... args);
 
         /// Constructors for member function
         template <typename ObjectType_T, typename... Arguments_T>
         Task(ObjectType_T* object, void(ObjectType_T::*f)(Arguments_T...), Arguments_T... args);
-
         template <typename ObjectType_T, typename... Arguments_T>
         Task(ObjectType_T* object, void(ObjectType_T::*f)(const Arguments_T&...), Arguments_T... args);
+
+        template <typename ObjectType_T, typename... Arguments_T>
+        Task(Flag flag, ObjectType_T* object, void(ObjectType_T::*f)(Arguments_T...), Arguments_T... args);
+        template <typename ObjectType_T, typename... Arguments_T>
+        Task(Flag flag, ObjectType_T* object, void(ObjectType_T::*f)(const Arguments_T&...), Arguments_T... args);
 
         void operator()(void) const;
 
     private:
         std::function<void(void)> f_;
+
+        Flag flag_;
     };
 
 
     /// Member definitions
     Task::Task(const Task& other) :
-        f_(other.f_)
+        f_(other.f_),
+        flag_(other.flag_)
     {}
 
     template <typename... Arguments_T>
     Task::Task(void(*f)(Arguments_T...), Arguments_T... args) :
-        f_(std::bind(f, args...))
+        f_(std::bind(f, args...)),
+        flag_(FLAG_DEFAULT)
     {}
 
     template <typename... Arguments_T>
     Task::Task(void(*f)(const Arguments_T&...), Arguments_T... args) :
-        f_(std::bind(f, args...))
+        f_(std::bind(f, args...)),
+        flag_(FLAG_DEFAULT)
+    {}
+
+    template <typename... Arguments_T>
+    Task::Task(Flag flag, void(*f)(Arguments_T...), Arguments_T... args) :
+        f_(std::bind(f, args...)),
+        flag_(flag)
+    {}
+
+    template <typename... Arguments_T>
+    Task::Task(Flag flag, void(*f)(const Arguments_T&...), Arguments_T... args) :
+        f_(std::bind(f, args...)),
+        flag_(flag)
     {}
 
     template <typename ObjectType_T, typename... Arguments_T>
     Task::Task(ObjectType_T* object, void(ObjectType_T::*f)(Arguments_T...), Arguments_T... args) :
-        f_(std::bind(f, object, args...))
+        f_(std::bind(f, object, args...)),
+        flag_(FLAG_DEFAULT)
     {}
 
     template <typename ObjectType_T, typename... Arguments_T>
     Task::Task(ObjectType_T* object, void(ObjectType_T::*f)(const Arguments_T&...), Arguments_T... args) :
-        f_(std::bind(f, object, args...))
+        f_(std::bind(f, object, args...)),
+        flag_(FLAG_DEFAULT)
+    {}
+
+    template <typename ObjectType_T, typename... Arguments_T>
+    Task::Task(Flag flag, ObjectType_T* object, void(ObjectType_T::*f)(Arguments_T...), Arguments_T... args) :
+        f_(std::bind(f, object, args...)),
+        flag_(flag)
+    {}
+
+    template <typename ObjectType_T, typename... Arguments_T>
+    Task::Task(Flag flag, ObjectType_T* object, void(ObjectType_T::*f)(const Arguments_T&...), Arguments_T... args) :
+        f_(std::bind(f, object, args...)),
+        flag_(flag)
     {}
 
     void Task::operator()(void) const {

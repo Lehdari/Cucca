@@ -146,11 +146,12 @@ int unitTest(void) {
         std::cout << str << std::endl;
     }
 
+
     {   //  loading a binary resource asynchronously
         std::cout << "\n\n[ Test Part " << ++testPart << " ]" << std::endl;
+
         ThreadPool pool;
         pool.launchThreads(1);
-
         ResourceManager<ResourceId> manager(&pool);
 
         ResourceInitInfo<Binary> testTXTInfo;

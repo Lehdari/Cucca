@@ -1,9 +1,17 @@
 TODO:
 
+Find more ways to break the resource system
+	recursive resources
+		loops
+	multiple resource managers
+		-> Task / ThreadPool flagging system will cause havoc (removal of all Tasks originated from any manager)
+			possible fixes?
+				store a void pointer to creator object to Task
+
 ResourceManager
 	! thread safety
 		handling data structures when destructing(res. infos espec.)
-	make smarter destructor (multithreaded, skip destruction of destructed resources[add removeDestructedResources member function perhaps?])
+	(lo-prio) make smarter destructor (multithreaded, skip destruction of destructed resources[add removeDestructedResources member function perhaps?])
 	make graphics resource initialization pipeline (Device, Resource)
 	make buffer for unreferenced resources and implement lazy uninitialization
 	

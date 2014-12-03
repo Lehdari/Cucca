@@ -6,7 +6,7 @@
 
     @version    0.1
     @author     Miika Lehtimäki
-    @date       2014-12-01
+    @date       2014-12-03
 **/
 
 
@@ -21,7 +21,7 @@
 #include <condition_variable>
 #include <atomic>
 #include <unordered_map>
-#include <queue>
+#include <deque>
 #include <vector>
 
 
@@ -53,6 +53,8 @@ namespace Cucca {
         void pushTask(const Task& task);
         void pushTask(Task&& task);
 
+        void removeTasks(Task::Flag flag);
+
         Status status(void) const;
         unsigned threadsPerformingTask(void) const;
 
@@ -68,7 +70,7 @@ namespace Cucca {
         std::mutex threadsJoiningMutex_; // for use with condition variable
         std::condition_variable threadsJoiningCV_; // for threads to signal they're joining
 
-        std::queue<Task> tasks_;
+        std::deque<Task> tasks_;
         std::atomic_uint threadsPerformingTask_;
         std::mutex taskMutex_;
         std::condition_variable taskCV_;
@@ -131,7 +133,7 @@ namespace Cucca {
     void ThreadPool::pushTask(const Task& task) {
         {
             std::lock_guard<std::mutex> lock(taskMutex_);
-            tasks_.push(task);
+            tasks_.push_back(task);
         }
         taskCV_.notify_one();
     }
@@ -139,9 +141,21 @@ namespace Cucca {
     void ThreadPool::pushTask(Task&& task) {
         {
             std::lock_guard<std::mutex> lock(taskMutex_);
-            tasks_.push(task);
+            tasks_.push_back(task);
         }
         taskCV_.notify_one();
+    }
+
+    void ThreadPool::removeTasks(Task::Flag flag) {
+            std::lock_guard<std::mutex> lock(taskMutex_);
+
+            for (auto it = tasks_.begin(); it != tasks_.end(); it++) {
+                if (it->flag_ == flag) {
+                    it = tasks_.erase(it);
+                    if (it == tasks_.end()) // WTF does not work without this?
+                        break;
+                }
+            }
     }
 
     ThreadPool::Status ThreadPool::status(void) const {
@@ -174,7 +188,7 @@ namespace Cucca {
             }
 
             Task task(std::move(tasks_.front()));
-            tasks_.pop();
+            tasks_.pop_front();
 
             lock.unlock(); // end of synchronization
 

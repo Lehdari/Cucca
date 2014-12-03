@@ -118,6 +118,13 @@ namespace Cucca {
 
     template<typename ResourceIdType_T>
     ResourceManager<ResourceIdType_T>::~ResourceManager(void) {
+        std::lock_guard<std::recursive_mutex> lock(resourceMutex_); // no changes allowed during destructor
+
+        //  remove any pending tasks that'd cause changes to ResourceManager or resources which are
+        //  about to be destructed
+        if (threadPool_ && threadPool_->status() == ThreadPool::STATUS_RUNNING)
+            threadPool_->removeTasks(Task::FLAG_RESOURCEMANAGER);
+
         for (auto& resourceInfo : resourceInfos_) { // TODO make smarter, asynchronous(multithreaded)
             resourceInfo.second.destroy(); // call destroy member function stored in info
 
@@ -170,13 +177,15 @@ namespace Cucca {
                 throw "ResourceManager: unable to load resource (no resource info)"; // TODO_EXCEPTION: throw a proper exception
 
             resources_.insert(std::make_pair(resourceId, std::unique_ptr<ResourceBase>(new ResourceType_T())));
-            //  store the destroy function for ResourceManager destructor
+
+            //  store the destroy function for ResourceManager destructor, this is valid because pointers to either
+            //  key or data stored in the std::unordered_map are only invalidated by erasing that element
             resourceInfos_[resourceId].destroy = std::bind(&Resource<ResourceType_T, ResourceIdType_T>::destroy,
                                                            static_cast<Resource<ResourceType_T, ResourceIdType_T>*>(resources_[resourceId].get()));
         }
 
         if (!forceSynchronous && threadPool_ && threadPool_->status() == ThreadPool::STATUS_RUNNING) {
-            threadPool_->pushTask(Task(this, &ResourceManager<ResourceIdType_T>::initResource<ResourceType_T>, resourceId));
+            threadPool_->pushTask(Task(Task::FLAG_RESOURCEMANAGER, this, &ResourceManager<ResourceIdType_T>::initResource<ResourceType_T>, resourceId));
         }
         else
             initResource<ResourceType_T>(resourceId);
@@ -242,7 +251,8 @@ namespace Cucca {
             resource = static_cast<Resource<ResourceType_T, ResourceIdType_T>*>(resources_[resourcePointer.getId()].get());
         }
 
-        resource->destroy();
+        if (threadPool_ && threadPool_->status() == ThreadPool::STATUS_RUNNING)
+            threadPool_->pushTask(Task(Task::FLAG_RESOURCEMANAGER, resource, &resource->destroy));
     }
 
 } // namespace Cucca
