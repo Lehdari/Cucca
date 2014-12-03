@@ -13,6 +13,10 @@
 using namespace Cucca;
 
 
+TestResource_Vec2f::~TestResource_Vec2f(void) {
+    std::cout << "~TestResource_Vec2f" << std::endl;
+}
+
 void TestResource_Vec2f::init(const ResourceInitInfo<TestResource_Vec2f>& initInfo,
                               ResourceManager<ResourceId>& resourceManager,
                               const std::vector<ResourceId>& initResources,
@@ -28,6 +32,9 @@ void TestResource_Vec2f::destroy(void) {
     std::cout << "TestResource_Vec2f::destroy" << std::endl;
 }
 
+TestResource_Array::~TestResource_Array(void) {
+    std::cout << "~TestResource_Array" << std::endl;
+}
 
 void TestResource_Array::init(const ResourceInitInfo<TestResource_Array>& initInfo,
                               ResourceManager<ResourceId>& resourceManager,
@@ -154,10 +161,10 @@ int unitTest(void) {
         manager.loadResource<Binary>("TEST_TXT");
         auto testTXT = manager.getResource<Binary>("TEST_TXT");
         std::cout << "testTXT->status(): " << testTXT->status() << std::endl;
-        for (int i=0; i<10; ++i)
-            std::cout << "testTXT->status(): " << testTXT->status() << std::endl;
+        std::cout << "testTXT->status(): " << testTXT->status() << std::endl;
+        std::cout << "testTXT->status(): " << testTXT->status() << std::endl;
 
-        std::this_thread::sleep_for(std::chrono::milliseconds(500));
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
         unsigned long s = testTXT.get()->getBufferSize();
         char* str = new char[s+1];

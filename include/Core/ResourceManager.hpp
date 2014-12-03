@@ -25,7 +25,6 @@
 #include <memory>
 #include <functional>
 #include <mutex>
-#include <cstdio> // TEMP
 
 
 namespace Cucca {
@@ -38,7 +37,7 @@ namespace Cucca {
 
         ResourceManager(void);
         ResourceManager(ThreadPool* threadPool);
-        ~ResourceManager(void); // TEMP
+        ~ResourceManager(void);
 
         //  Resource infos are required to load resources with their identifier
         template<typename ResourceType_T>
@@ -119,8 +118,6 @@ namespace Cucca {
 
     template<typename ResourceIdType_T>
     ResourceManager<ResourceIdType_T>::~ResourceManager(void) {
-        printf("~ResourceManager\n"); // TEMP
-
         for (auto& resourceInfo : resourceInfos_) { // TODO make smarter, asynchronous(multithreaded)
             resourceInfo.second.destroy(); // call destroy member function stored in info
 

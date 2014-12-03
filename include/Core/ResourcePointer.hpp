@@ -24,9 +24,6 @@
 #define CUCCA_CORE_RESOURCEPOINTER_HPP
 
 
-#include <cstdio> // TEMP
-
-
 namespace Cucca {
 
     template<typename ResourceIdType_T>
@@ -118,17 +115,15 @@ namespace Cucca {
 
     template<typename ResourceType_T, typename ResourceIdType_T>
     ResourcePointer<ResourceType_T, ResourceIdType_T>::~ResourcePointer(void) {
-        if (resource_) {
-            printf("Resource %s Ref. Count: %i\n", resourceId_.c_str(), *referenceCount_-1); //TEMP
-            if (--*referenceCount_ == 0)
+        if (resource_)
+            if (--*referenceCount_ == 0) // note: can go to negative values
                 (resourceManager_->*outOfReferences_)(*this);
-        } // TEMP
     }
 
     template<typename ResourceType_T, typename ResourceIdType_T>
     ResourcePointer<ResourceType_T, ResourceIdType_T>& ResourcePointer<ResourceType_T, ResourceIdType_T>::operator=(const ResourcePointer<ResourceType_T, ResourceIdType_T>& resourcePointer) {
         if (resource_)
-            if (--*referenceCount_ == 0)
+            if (--*referenceCount_ == 0) // note: can go to negative values
                 (resourceManager_->*outOfReferences_)(*this);
 
         resource_ = resourcePointer.resource_;
@@ -146,7 +141,7 @@ namespace Cucca {
     template<typename ResourceType_T, typename ResourceIdType_T>
     ResourcePointer<ResourceType_T, ResourceIdType_T>& ResourcePointer<ResourceType_T, ResourceIdType_T>::operator=(ResourcePointer<ResourceType_T, ResourceIdType_T>&& resourcePointer) {
         if (resource_)
-            if (--*referenceCount_ == 0)
+            if (--*referenceCount_ == 0) // note: can go to negative values
                 (resourceManager_->*outOfReferences_)(*this);
 
         resource_ = resourcePointer.resource_;

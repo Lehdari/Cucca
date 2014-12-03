@@ -25,6 +25,8 @@ namespace Cucca {
 
     class TestResource_Vec2f : public Resource<TestResource_Vec2f, ResourceId> {
     public:
+        ~TestResource_Vec2f(void);
+
         void init(const ResourceInitInfo<TestResource_Vec2f>& initInfo,
                   ResourceManager<ResourceId>& resourceManager,
                   const std::vector<ResourceId>& initResources,
@@ -42,6 +44,8 @@ namespace Cucca {
 
     class TestResource_Array : public Resource<TestResource_Array, ResourceId> {
     public:
+        ~TestResource_Array(void);
+
         void init(const ResourceInitInfo<TestResource_Array>& initInfo,
                   ResourceManager<ResourceId>& resourceManager,
                   const std::vector<ResourceId>& initResources,
