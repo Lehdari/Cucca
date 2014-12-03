@@ -72,7 +72,7 @@ namespace Cucca {
                   const std::vector<ResourceIdType_T>& depResources);
         void destroy(void);
 
-        Status status(void) const;
+        Status status(void);
 
     protected:
         Status status_;
@@ -96,7 +96,7 @@ namespace Cucca {
         if (status() != STATUS_UNINITIALIZED)
             return;
         setStatus(STATUS_INITIALIZING);
-        static_cast<ResourceType_T>(this)->init(initInfo, resourceManager, initResources, depResources);
+        static_cast<ResourceType_T*>(this)->init(initInfo, resourceManager, initResources, depResources);
         setStatus(STATUS_READY);
     }
 
@@ -105,12 +105,12 @@ namespace Cucca {
         if (status() != STATUS_READY)
             return;
         setStatus(STATUS_DESTROYING);
-        static_cast<ResourceType_T>(this)->destroy();
+        static_cast<ResourceType_T*>(this)->destroy();
         setStatus(STATUS_DESTROYED);
     }
 
     template<typename ResourceType_T, typename ResourceIdType_T>
-    ResourceBase::Status Resource<ResourceType_T, ResourceIdType_T>::status(void) const {
+    ResourceBase::Status Resource<ResourceType_T, ResourceIdType_T>::status(void) {
         std::lock_guard<std::mutex> lock(statusMutex_);
         return status_;
     }

@@ -4,18 +4,27 @@
     This file is subject to the terms and conditions defined in
     file 'LICENSE.txt', which is part of this source code package.
 
+
     ResourcePointer is a shared smart pointer used in cooperation with
-    ResourceManager. It provides an out of references callback to
-    ResourceManager upon destruction.
+    ResourceManager. Its main purpose is to enable ResourceManager to
+    perform garbage collection.
+
+    In addition to get() member function it also provides overloads for
+    asterisk(*) and arrow(->) operators to gain access to the Resource
+    itself.
+
 
     @version    0.1
     @author     Miika Lehtimäki
-    @date       2014-11-16
+    @date       2014-12-03
 **/
 
 
 #ifndef CUCCA_CORE_RESOURCEPOINTER_HPP
 #define CUCCA_CORE_RESOURCEPOINTER_HPP
+
+
+#include <cstdio> // TEMP
 
 
 namespace Cucca {
@@ -30,8 +39,8 @@ namespace Cucca {
         ResourcePointer(ResourceType_T* resource,
                         const ResourceIdType_T& resourceId,
                         ResourceManager<ResourceIdType_T>* resourceManager,
-                        void (ResourceManager<ResourceIdType_T>::*outOfReferences)(const ResourceIdType_T&),
-                        unsigned* referenceCount);
+                        void (ResourceManager<ResourceIdType_T>::*outOfReferences)(ResourcePointer<ResourceType_T, ResourceIdType_T>&),
+                        int* referenceCount);
         ResourcePointer(const ResourcePointer<ResourceType_T, ResourceIdType_T>& resourcePointer);
         ResourcePointer(ResourcePointer<ResourceType_T, ResourceIdType_T>&& resourcePointer);
         ~ResourcePointer(void);
@@ -39,16 +48,19 @@ namespace Cucca {
         ResourcePointer<ResourceType_T, ResourceIdType_T>& operator=(const ResourcePointer<ResourceType_T, ResourceIdType_T>& resourcePointer);
         ResourcePointer<ResourceType_T, ResourceIdType_T>& operator=(ResourcePointer<ResourceType_T, ResourceIdType_T>&& resourcePointer);
 
-        ResourceType_T* get(void);
+        ResourceType_T& operator*(void);
+        ResourceType_T* operator->(void);
 
+        ResourceType_T* get(void);
+        const ResourceIdType_T& getId(void);
     private:
         ResourceType_T* resource_;
         ResourceIdType_T resourceId_;
 
         ResourceManager<ResourceIdType_T>* resourceManager_;
-        void (ResourceManager<ResourceIdType_T>::*outOfReferences_)(const ResourceIdType_T&);
+        void (ResourceManager<ResourceIdType_T>::*outOfReferences_)(ResourcePointer<ResourceType_T, ResourceIdType_T>&);
 
-        unsigned* referenceCount_;
+        int* referenceCount_;
     };
 
 
@@ -66,8 +78,8 @@ namespace Cucca {
     ResourcePointer<ResourceType_T, ResourceIdType_T>::ResourcePointer(ResourceType_T* resource,
                                                                        const ResourceIdType_T& resourceId,
                                                                        ResourceManager<ResourceIdType_T>* resourceManager,
-                                                                       void (ResourceManager<ResourceIdType_T>::*outOfReferences)(const ResourceIdType_T& resourceId),
-                                                                       unsigned* referenceCount) :
+                                                                       void (ResourceManager<ResourceIdType_T>::*outOfReferences)(ResourcePointer<ResourceType_T, ResourceIdType_T>&),
+                                                                       int* referenceCount) :
         resource_(resource),
         resourceId_(resourceId),
         resourceManager_(resourceManager),
@@ -106,16 +118,18 @@ namespace Cucca {
 
     template<typename ResourceType_T, typename ResourceIdType_T>
     ResourcePointer<ResourceType_T, ResourceIdType_T>::~ResourcePointer(void) {
-        if (resource_)
+        if (resource_) {
+            printf("Resource %s Ref. Count: %i\n", resourceId_.c_str(), *referenceCount_-1); //TEMP
             if (--*referenceCount_ == 0)
-                (resourceManager_->*outOfReferences_)(resourceId_);
+                (resourceManager_->*outOfReferences_)(*this);
+        } // TEMP
     }
 
     template<typename ResourceType_T, typename ResourceIdType_T>
     ResourcePointer<ResourceType_T, ResourceIdType_T>& ResourcePointer<ResourceType_T, ResourceIdType_T>::operator=(const ResourcePointer<ResourceType_T, ResourceIdType_T>& resourcePointer) {
         if (resource_)
             if (--*referenceCount_ == 0)
-                (resourceManager_->*outOfReferences_)(resourceId_);
+                (resourceManager_->*outOfReferences_)(*this);
 
         resource_ = resourcePointer.resource_;
         resourceId_ = resourcePointer.resourceId_;
@@ -133,7 +147,7 @@ namespace Cucca {
     ResourcePointer<ResourceType_T, ResourceIdType_T>& ResourcePointer<ResourceType_T, ResourceIdType_T>::operator=(ResourcePointer<ResourceType_T, ResourceIdType_T>&& resourcePointer) {
         if (resource_)
             if (--*referenceCount_ == 0)
-                (resourceManager_->*outOfReferences_)(resourceId_);
+                (resourceManager_->*outOfReferences_)(*this);
 
         resource_ = resourcePointer.resource_;
         resourceId_ = resourcePointer.resourceId_;
@@ -150,8 +164,23 @@ namespace Cucca {
     }
 
     template<typename ResourceType_T, typename ResourceIdType_T>
+    ResourceType_T& ResourcePointer<ResourceType_T, ResourceIdType_T>::operator*(void) {
+        return *resource_;
+    }
+
+    template<typename ResourceType_T, typename ResourceIdType_T>
+    ResourceType_T* ResourcePointer<ResourceType_T, ResourceIdType_T>::operator->(void) {
+        return resource_;
+    }
+
+    template<typename ResourceType_T, typename ResourceIdType_T>
     ResourceType_T* ResourcePointer<ResourceType_T, ResourceIdType_T>::get(void) {
         return resource_;
+    }
+
+    template<typename ResourceType_T, typename ResourceIdType_T>
+    const ResourceIdType_T& ResourcePointer<ResourceType_T, ResourceIdType_T>::getId(void) {
+        return resourceId_;
     }
 
 } // namespace Cucca

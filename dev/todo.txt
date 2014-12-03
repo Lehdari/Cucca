@@ -1,7 +1,14 @@
 TODO:
 
+ResourceManager
+	! thread safety
+		handling data structures when destructing(res. infos espec.)
+	make smarter destructor (multithreaded, skip destruction of destructed resources[add removeDestructedResources member function perhaps?])
+	make graphics resource initialization pipeline (Device, Resource)
+	make buffer for unreferenced resources and implement lazy uninitialization
+	
 Check thread safety
-	resources
+	nodes/components/visitors?
 
 Add comments and documentation
 

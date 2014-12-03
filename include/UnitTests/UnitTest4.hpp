@@ -31,7 +31,6 @@ namespace Cucca {
                   const std::vector<ResourceId>& depResources);
         void destroy(void);
 
-    private:
         float a_;
         float b_;
     };
@@ -49,8 +48,7 @@ namespace Cucca {
                   const std::vector<ResourceId>& depResources);
         void destroy(void);
 
-    private:
-        int* arr;
+        int* arr_;
     };
 
     template<>
@@ -63,14 +61,14 @@ namespace Cucca {
     //  hierarchical resource example
     class TestResource_Movement : public Resource<TestResource_Movement, ResourceId> {
     public:
+        ~TestResource_Movement(void);
+
         void init(const ResourceInitInfo<TestResource_Movement>& initInfo,
                   ResourceManager<ResourceId>& resourceManager,
                   const std::vector<ResourceId>& initResources,
                   const std::vector<ResourceId>& depResources);
         void destroy(void);
 
-    private:
-        //  child resources
         ResourcePointer<TestResource_Vec2f, ResourceId> position_;
         ResourcePointer<TestResource_Vec2f, ResourceId> velocity_;
         ResourcePointer<TestResource_Vec2f, ResourceId> acceleration_;
