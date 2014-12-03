@@ -8,6 +8,7 @@ ResourceManager
 	make buffer for unreferenced resources and implement lazy uninitialization
 	
 Check thread safety
+	ResourcePointers / ResourceManager
 	nodes/components/visitors?
 
 Add comments and documentation
