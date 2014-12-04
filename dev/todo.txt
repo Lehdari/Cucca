@@ -10,10 +10,13 @@ Find more ways to break the resource system
 
 ResourceManager
 	! thread safety
-		handling data structures when destructing(res. infos espec.)
+		handling data structures when destructing(res. infos espec.[shared pointer])
 	(lo-prio) make smarter destructor (multithreaded, skip destruction of destructed resources[add removeDestructedResources member function perhaps?])
 	make graphics resource initialization pipeline (Device, Resource)
 	make buffer for unreferenced resources and implement lazy uninitialization
+
+Resource
+	add conditional variable notification when the initialization is done
 	
 Check thread safety
 	ResourcePointers / ResourceManager

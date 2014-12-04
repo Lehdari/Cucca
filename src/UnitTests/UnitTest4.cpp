@@ -32,26 +32,6 @@ void TestResource_Vec2f::destroy(void) {
     std::cout << "TestResource_Vec2f::destroy" << std::endl;
 }
 
-TestResource_Array::~TestResource_Array(void) {
-    std::cout << "~TestResource_Array" << std::endl;
-}
-
-void TestResource_Array::init(const ResourceInitInfo<TestResource_Array>& initInfo,
-                              ResourceManager<ResourceId>& resourceManager,
-                              const std::vector<ResourceId>& initResources,
-                              const std::vector<ResourceId>& depResources) {
-    std::cout << "TestResource_Array::init" << std::endl;
-    arr_ = new int[initInfo.arrSize];
-    arr_[0] = initInfo.first;
-    for (unsigned i=1; i<initInfo.arrSize; ++i)
-        arr_[i] = arr_[i-1]+initInfo.step;
-}
-
-void TestResource_Array::destroy(void) {
-    delete[] arr_;
-    std::cout << "TestResource_Array::destroy" << std::endl;
-}
-
 
 TestResource_Movement::~TestResource_Movement(void) {
     std::cout << "~TestResource_Movement" << std::endl;
@@ -75,6 +55,41 @@ void TestResource_Movement::destroy(void) {
 }
 
 
+TestResource_Vec2fTree::~TestResource_Vec2fTree(void) {
+    std::cout << "~TestResource_Vec2fTree" << std::endl;
+}
+
+void TestResource_Vec2fTree::init(const ResourceInitInfo<TestResource_Vec2fTree>& initInfo,
+                                 ResourceManager<ResourceId>& resourceManager,
+                                 const std::vector<ResourceId>& initResources,
+                                 const std::vector<ResourceId>& depResources) {
+    std::cout << "TestResource_Vec2fTree::init" << std::endl;
+    if (depResources.size() == 0)
+        return;
+
+    if (depResources.size() < 3)
+        throw "TestResource_Vec2fTree: unable to initialize resource (insufficient dependency resources provided)"; // TODO_EXCEPTION: throw a proper exception
+
+    if (depResources[0] != "")
+        resourceManager.loadResource<TestResource_Vec2fTree>(depResources[0]);
+    if (depResources[1] != "")
+        resourceManager.loadResource<TestResource_Vec2fTree>(depResources[1]);
+    if (depResources[2] != "")
+        resourceManager.loadResource<TestResource_Vec2f>(depResources[2]);
+
+    if (depResources[0] != "")
+        leftNode_ = resourceManager.getResource<TestResource_Vec2fTree>(depResources[0]);
+    if (depResources[1] != "")
+        rightNode_ = resourceManager.getResource<TestResource_Vec2fTree>(depResources[1]);
+    if (depResources[2] != "")
+        data_ = resourceManager.getResource<TestResource_Vec2f>(depResources[2]);
+}
+
+void TestResource_Vec2fTree::destroy(void) {
+    std::cout << "TestResource_Vec2fTree::destroy" << std::endl;
+}
+
+
 int unitTest(void) {
     auto testPart = 0u;
 
@@ -82,19 +97,19 @@ int unitTest(void) {
         std::cout << "[ Test Part " << ++testPart << " ]" << std::endl;
         ResourceManager<ResourceId> manager;
 
-        ResourceInitInfo<TestResource_Vec2f> vecInitInfo1;
-        vecInitInfo1.a = 0.25f;
-        vecInitInfo1.b = 0.50f;
-        ResourceInitInfo<TestResource_Vec2f> vecInitInfo2;
-        vecInitInfo2.a = -0.45f;
-        vecInitInfo2.b = -0.20f;
-        ResourceInitInfo<TestResource_Vec2f> vecInitInfo3;
-        vecInitInfo3.a = -0.7f;
-        vecInitInfo3.b = 0.65f;
+        ResourceInitInfo<TestResource_Vec2f> vecInfo1;
+        vecInfo1.a = 0.25f;
+        vecInfo1.b = 0.50f;
+        ResourceInitInfo<TestResource_Vec2f> vecInfo2;
+        vecInfo2.a = -0.45f;
+        vecInfo2.b = -0.20f;
+        ResourceInitInfo<TestResource_Vec2f> vecInfo3;
+        vecInfo3.a = -0.7f;
+        vecInfo3.b = 0.65f;
 
-        manager.addResourceInfo<TestResource_Vec2f>("VEC2F_1", vecInitInfo1, std::vector<ResourceId>(), std::vector<ResourceId>());
-        manager.addResourceInfo<TestResource_Vec2f>("VEC2F_2", vecInitInfo2, std::vector<ResourceId>(), std::vector<ResourceId>());
-        manager.addResourceInfo<TestResource_Vec2f>("VEC2F_3", vecInitInfo3, std::vector<ResourceId>(), std::vector<ResourceId>());
+        manager.addResourceInfo<TestResource_Vec2f>("VEC2F_1", vecInfo1);
+        manager.addResourceInfo<TestResource_Vec2f>("VEC2F_2", vecInfo2);
+        manager.addResourceInfo<TestResource_Vec2f>("VEC2F_3", vecInfo3);
         manager.addResourceInfo<TestResource_Movement>("MOVEMENT_1",
                                                        ResourceInitInfo<TestResource_Movement>(),
                                                        std::vector<ResourceId>(),
@@ -135,7 +150,7 @@ int unitTest(void) {
         testTXTInfo.source = ResourceInitInfo<Binary>::FILE;
         testTXTInfo.fileName = "res/test.txt";
 
-        manager.addResourceInfo("TEST_TXT", testTXTInfo, std::vector<ResourceId>(), std::vector<ResourceId>());
+        manager.addResourceInfo("TEST_TXT", testTXTInfo);
         ResourcePointer<Binary, ResourceId> testTXT = manager.getResource<Binary>("TEST_TXT");
 
         unsigned long s = testTXT.get()->getBufferSize();
@@ -145,7 +160,6 @@ int unitTest(void) {
 
         std::cout << str << std::endl;
     }
-
 
     {   //  loading a binary resource asynchronously
         std::cout << "\n\n[ Test Part " << ++testPart << " ]" << std::endl;
@@ -158,7 +172,7 @@ int unitTest(void) {
         testTXTInfo.source = ResourceInitInfo<Binary>::FILE;
         testTXTInfo.fileName = "res/test.txt";
 
-        manager.addResourceInfo("TEST_TXT", testTXTInfo, std::vector<ResourceId>(), std::vector<ResourceId>());
+        manager.addResourceInfo("TEST_TXT", testTXTInfo);
         manager.loadResource<Binary>("TEST_TXT");
         auto testTXT = manager.getResource<Binary>("TEST_TXT");
         std::cout << "testTXT->status(): " << testTXT->status() << std::endl;
@@ -173,6 +187,42 @@ int unitTest(void) {
         str[s] = '\0';
 
         std::cout << str << std::endl;
+    }
+
+    {   //  Vec2f binary tree test
+        std::cout << "\n\n[ Test Part " << ++testPart << " ]" << std::endl;
+
+        ThreadPool pool;
+        pool.launchThreads(1);
+        ResourceManager<ResourceId> manager(&pool);
+
+        ResourceInitInfo<TestResource_Vec2f> vecInfo1;
+        vecInfo1.a = 0.25f;
+        vecInfo1.b = 0.50f;
+        manager.addResourceInfo("VEC2F_1", vecInfo1);
+
+        ResourceInitInfo<TestResource_Vec2fTree> nodeInfo2;
+        nodeInfo2.leftNode = "";
+        nodeInfo2.rightNode = "";
+        nodeInfo2.data = "";
+        manager.addResourceInfo("NODE_2", nodeInfo2);
+
+        ResourceInitInfo<TestResource_Vec2fTree> nodeInfo1;
+        nodeInfo1.leftNode = "";
+        nodeInfo1.rightNode = "";
+        nodeInfo1.data = "";
+        manager.addResourceInfo("NODE_1", nodeInfo1);
+
+        ResourceInitInfo<TestResource_Vec2fTree> rootInfo;
+        rootInfo.leftNode = "NODE_1";
+        rootInfo.rightNode = "NODE_2";
+        rootInfo.data = "VEC2F_1";
+        manager.addResourceInfo("ROOTNODE", rootInfo, std::vector<ResourceId>(), std::vector<ResourceId>{"NODE_1", "NODE_2", "VEC2F_1"});
+
+        auto root = manager.getResource<TestResource_Vec2fTree>("ROOTNODE");
+        std::cout << "rootnode ready" << std::endl;
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     }
 
     return 0;

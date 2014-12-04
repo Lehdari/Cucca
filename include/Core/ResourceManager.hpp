@@ -8,7 +8,7 @@
 
     @version    0.1
     @author     Miika Lehtimäki
-    @date       2014-12-03
+    @date       2014-12-04
 **/
 
 
@@ -25,6 +25,7 @@
 #include <memory>
 #include <functional>
 #include <mutex>
+#include <cstdio> // TEMP
 
 
 namespace Cucca {
@@ -43,14 +44,14 @@ namespace Cucca {
         template<typename ResourceType_T>
         void addResourceInfo(const ResourceIdType_T& resourceId,
                              ResourceInitInfo<ResourceType_T>& initInfo,
-                             const std::vector<ResourceIdType_T>& initResources,
-                             const std::vector<ResourceIdType_T>& depResources);
+                             const std::vector<ResourceIdType_T>& initResources = std::vector<ResourceIdType_T>(),
+                             const std::vector<ResourceIdType_T>& depResources = std::vector<ResourceIdType_T>());
 
         template<typename ResourceType_T>
         void addResourceInfo(const ResourceIdType_T& resourceId,
                              ResourceInitInfo<ResourceType_T>&& initInfo,
-                             std::vector<ResourceIdType_T>&& initResources,
-                             std::vector<ResourceIdType_T>&& depResources);
+                             std::vector<ResourceIdType_T>&& initResources = std::vector<ResourceIdType_T>(),
+                             std::vector<ResourceIdType_T>&& depResources = std::vector<ResourceIdType_T>());
 
         //  Loads resource asynchronously if pointer to running thread pool has been provided,
         //  synchronously with calling thread otherwise. Forcing synchronous loading also possible.
@@ -236,6 +237,8 @@ namespace Cucca {
     template<typename ResourceIdType_T>
     template<typename ResourceType_T>
     void ResourceManager<ResourceIdType_T>::pointerOutOfReferences(ResourcePointer<ResourceType_T, ResourceIdType_T>& resourcePointer) {
+        printf("%s: pointer out of references\n", resourcePointer.getId().c_str()); // TEMP
+
         // TODO_IMPLEMENT
         // for now, we just delete the resource once it goes out of references.
         // make buffer for unreferenced resources and implement lazy uninitialization

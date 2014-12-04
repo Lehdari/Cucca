@@ -15,12 +15,12 @@
 namespace Cucca {
 
     class TestResource_Vec2f;
-    class TestResource_Array;
     class TestResource_Movement;
+    class TestResource_Vec2fTree;
 
     template<> struct ResourceInitInfo<TestResource_Vec2f>;
-    template<> struct ResourceInitInfo<TestResource_Array>;
     template<> struct ResourceInitInfo<TestResource_Movement>;
+    template<> struct ResourceInitInfo<TestResource_Vec2fTree>;
 
 
     class TestResource_Vec2f : public Resource<TestResource_Vec2f, ResourceId> {
@@ -42,26 +42,6 @@ namespace Cucca {
         float a, b;
     };
 
-    class TestResource_Array : public Resource<TestResource_Array, ResourceId> {
-    public:
-        ~TestResource_Array(void);
-
-        void init(const ResourceInitInfo<TestResource_Array>& initInfo,
-                  ResourceManager<ResourceId>& resourceManager,
-                  const std::vector<ResourceId>& initResources,
-                  const std::vector<ResourceId>& depResources);
-        void destroy(void);
-
-        int* arr_;
-    };
-
-    template<>
-    struct ResourceInitInfo<TestResource_Array> : public ResourceInitInfoBase {
-        unsigned arrSize;
-        int first;
-        int step;
-    };
-
     //  hierarchical resource example
     class TestResource_Movement : public Resource<TestResource_Movement, ResourceId> {
     public:
@@ -73,6 +53,7 @@ namespace Cucca {
                   const std::vector<ResourceId>& depResources);
         void destroy(void);
 
+    private:
         ResourcePointer<TestResource_Vec2f, ResourceId> position_;
         ResourcePointer<TestResource_Vec2f, ResourceId> velocity_;
         ResourcePointer<TestResource_Vec2f, ResourceId> acceleration_;
@@ -80,8 +61,33 @@ namespace Cucca {
 
     template<>
     struct ResourceInitInfo<TestResource_Movement> : public ResourceInitInfoBase {
-        ResourceInitInfo(void) {};
+        //ResourceInitInfo(void) {};
     };
+
+    class TestResource_Vec2fTree : public Resource<TestResource_Vec2fTree, ResourceId> {
+    public:
+        ~TestResource_Vec2fTree(void);
+
+        void init(const ResourceInitInfo<TestResource_Vec2fTree>& initInfo,
+                  ResourceManager<ResourceId>& resourceManager,
+                  const std::vector<ResourceId>& initResources,
+                  const std::vector<ResourceId>& depResources);
+        void destroy(void);
+
+    private:
+        ResourcePointer<TestResource_Vec2fTree, ResourceId> leftNode_;
+        ResourcePointer<TestResource_Vec2fTree, ResourceId> rightNode_;
+        ResourcePointer<TestResource_Vec2f, ResourceId> data_;
+    };
+
+    template<>
+    struct ResourceInitInfo<TestResource_Vec2fTree> : public ResourceInitInfoBase {
+        ResourceId leftNode;
+        ResourceId rightNode;
+        ResourceId data;
+    };
+
+
 
 } // namespace Cucca
 
