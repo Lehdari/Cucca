@@ -82,17 +82,20 @@ namespace Cucca {
 
     template<>
     struct ResourceInitInfo<TestResource_Vec2fTree> : public ResourceInitInfoBase {
-        ResourceId leftNode;
-        ResourceId rightNode;
-        ResourceId data;
+        //ResourceId leftNode;
+        //ResourceId rightNode;
+        //ResourceId data;
     };
-
-
 
 } // namespace Cucca
 
+Cucca::ResourceId makeRecursiveVec2fTreeInfo(Cucca::ResourceManager<Cucca::ResourceId>& resourceManager,
+                                             unsigned* nodeId = nullptr,
+                                             unsigned* vec2fId = nullptr,
+                                             unsigned layer = 0);
 
 int unitTest(void);
+
 
 
 #endif // CURRENT_TEST
