@@ -8,7 +8,7 @@
 
     @version    0.1
     @author     Miika Lehtimäki
-    @date       2014-12-03
+    @date       2014-12-06
 **/
 
 
@@ -55,6 +55,17 @@ namespace Cucca {
         Task(Flag flag, ObjectType_T* object, void(ObjectType_T::*f)(Arguments_T...), Arguments_T... args);
         template <typename ObjectType_T, typename... Arguments_T>
         Task(Flag flag, ObjectType_T* object, void(ObjectType_T::*f)(const Arguments_T&...), Arguments_T... args);
+
+        /// Constructors for std::function
+        template <typename... Arguments_T>
+        Task(const std::function<void(Arguments_T...)>& f, Arguments_T... args);
+        template <typename... Arguments_T>
+        Task(const std::function<void(const Arguments_T&...)>& f, const Arguments_T&... args);
+
+        template <typename... Arguments_T>
+        Task(Flag flag, const std::function<void(Arguments_T...)>& f, Arguments_T... args);
+        template <typename... Arguments_T>
+        Task(Flag flag, const std::function<void(const Arguments_T&...)>& f, const Arguments_T&... args);
 
         void operator()(void) const;
 
@@ -116,6 +127,30 @@ namespace Cucca {
     template <typename ObjectType_T, typename... Arguments_T>
     Task::Task(Flag flag, ObjectType_T* object, void(ObjectType_T::*f)(const Arguments_T&...), Arguments_T... args) :
         f_(std::bind(f, object, args...)),
+        flag_(flag)
+    {}
+
+    template <typename... Arguments_T>
+    Task::Task(const std::function<void(Arguments_T...)>& f, Arguments_T... args) :
+        f_(std::bind(f, args...)),
+        flag_(FLAG_DEFAULT)
+    {}
+
+    template <typename... Arguments_T>
+    Task::Task(const std::function<void(const Arguments_T&...)>& f, const Arguments_T&... args) :
+        f_(std::bind(f, args...)),
+        flag_(FLAG_DEFAULT)
+    {}
+
+    template <typename... Arguments_T>
+    Task::Task(Flag flag, const std::function<void(Arguments_T...)>& f, Arguments_T... args) :
+        f_(std::bind(f, args...)),
+        flag_(flag)
+    {}
+
+    template <typename... Arguments_T>
+    Task::Task(Flag flag, const std::function<void(const Arguments_T&...)>& f, const Arguments_T&... args) :
+        f_(std::bind(f, args...)),
         flag_(flag)
     {}
 

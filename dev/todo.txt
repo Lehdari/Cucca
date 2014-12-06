@@ -1,15 +1,12 @@
 TODO:
 
 Find more ways to break the resource system
-	recursive resources
-		loops
 	multiple resource managers
 		-> Task / ThreadPool flagging system will cause havoc (removal of all Tasks originated from any manager)
 			possible fixes?
-				store a void pointer to creator object to Task
+				store a void pointer to creator object to Task (kinda hack)
 
 ResourceManager
-	convert to using std::bind when making resources to archieve template-free loadResource
 	! thread safety
 		handling data structures when destructing(res. infos espec.[shared pointer])
 	(lo-prio) make smarter destructor (multithreaded, skip destruction of destructed resources[add removeDestructedResources member function perhaps?])
@@ -17,7 +14,7 @@ ResourceManager
 	make buffer for unreferenced resources and implement lazy uninitialization
 
 Resource
-	add conditional variable notification when the initialization is done
+	! add conditional variable notification when the initialization is done
 	
 Check thread safety
 	ResourcePointers / ResourceManager

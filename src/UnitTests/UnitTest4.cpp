@@ -24,8 +24,6 @@ void TestResource_Vec2f::init(const ResourceInitInfo<TestResource_Vec2f>& initIn
                               const std::vector<ResourceId>& initResources,
                               const std::vector<ResourceId>& depResources) {
     std::cout << "TestResource_Vec2f::init" << std::endl;
-    std::cout << "  initInfo.a=" << initInfo.a << std::endl;
-    std::cout << "  initInfo.b=" << initInfo.b << std::endl;
     a_ = initInfo.a;
     b_ = initInfo.b;
 
@@ -76,13 +74,6 @@ void TestResource_Vec2fTree::init(const ResourceInitInfo<TestResource_Vec2fTree>
         throw "TestResource_Vec2fTree: unable to initialize resource (insufficient dependency resources provided)"; // TODO_EXCEPTION: throw a proper exception
 
     if (depResources[0] != "")
-        resourceManager.loadResource<TestResource_Vec2fTree>(depResources[0]);
-    if (depResources[1] != "")
-        resourceManager.loadResource<TestResource_Vec2fTree>(depResources[1]);
-    if (depResources[2] != "")
-        resourceManager.loadResource<TestResource_Vec2f>(depResources[2]);
-
-    if (depResources[0] != "")
         leftNode_ = resourceManager.getResource<TestResource_Vec2fTree>(depResources[0]);
     if (depResources[1] != "")
         rightNode_ = resourceManager.getResource<TestResource_Vec2fTree>(depResources[1]);
@@ -98,7 +89,7 @@ void TestResource_Vec2fTree::destroy(void) {
 }
 
 
-std::default_random_engine rnd(71551);
+std::default_random_engine rnd(715517);
 
 
 ResourceId makeRecursiveVec2fTreeInfo(ResourceManager<ResourceId>& resourceManager, unsigned* nodeId, unsigned* vec2fId, unsigned layer) {
@@ -239,7 +230,7 @@ int unitTest(void) {
         testTXTInfo.fileName = "res/test.txt";
 
         manager.addResourceInfo("TEST_TXT", testTXTInfo);
-        manager.loadResource<Binary>("TEST_TXT");
+        manager.loadResource("TEST_TXT");
         auto testTXT = manager.getResource<Binary>("TEST_TXT");
         std::cout << "testTXT->status(): " << testTXT->status() << std::endl;
         std::cout << "testTXT->status(): " << testTXT->status() << std::endl;
@@ -259,7 +250,7 @@ int unitTest(void) {
         std::cout << "\n\n[ Test Part " << ++testPart << " ]" << std::endl;
 
         ThreadPool pool;
-        pool.launchThreads(4);
+        pool.launchThreads(1);
         ResourceManager<ResourceId> manager(&pool);
 
         ResourceId rootNodeId = makeRecursiveVec2fTreeInfo(manager);

@@ -5,18 +5,21 @@
     file 'LICENSE.txt', which is part of this source code package.
 
 
-    ResourceBase class is just a dummy base class for the user-defined
-    components.
+    ResourceBase class is a dummy-ish base class with some status info
+    for the user-defined resources.
 
 
     @version    0.1
     @author     Miika Lehtimäki
-    @date       2014-12-01
+    @date       2014-12-06
 **/
 
 
 #ifndef CUCCA_CORE_RESOURCEBASE_HPP
 #define CUCCA_CORE_RESOURCEBASE_HPP
+
+
+#include <mutex>
 
 
 namespace Cucca {
@@ -31,12 +34,20 @@ namespace Cucca {
             STATUS_DESTROYED
         };
 
-        ResourceBase(void) = default;
+        ResourceBase(void);
         ResourceBase(const ResourceBase&) = default;
         ResourceBase(ResourceBase&&) = default;
         ResourceBase& operator=(const ResourceBase&) & = default;
         ResourceBase& operator=(ResourceBase&&) & = default;
         virtual ~ResourceBase(void) {}
+
+        Status status(void);
+
+    protected:
+        Status status_;
+        std::mutex statusMutex_;
+
+        void setStatus(Status status);
     };
 
 } // namespace Cucca

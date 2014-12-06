@@ -81,18 +81,11 @@ namespace Cucca {
             std::function<void(ResourceBase*)> destroy; // call to ResourceManager::destroyResource
         };
 
-        //  Resource type id system. Similar to the one in the Node class.
-        //template<typename ResourceType_T>
-        //static int getResourceTypeId(void);
-
         template<typename ResourceType_T>
         void initResource(const ResourceId& resourceId);
 
         template<typename ResourceType_T>
         void destroyResource(ResourceBase* resource);
-
-        //template<typename ResourceType_T>
-        //void initResource(const ResourceIdType_T& resourceId);
 
         //  Callback function for resource pointers to signal they've run out of references
         template<typename ResourceType_T>
@@ -129,7 +122,7 @@ namespace Cucca {
             threadPool_->removeTasks(Task::FLAG_RESOURCEMANAGER);
 
         for (auto& resourceInfo : resourceInfos_) { // TODO make smarter, asynchronous(multithreaded)
-            resourceInfo.second.destroy(); // call destroy member function stored in info
+            resourceInfo.second.destroy(resources_[resourceInfo.first].get()); // call destroy member function stored in info
 
             //  these will exist until all of the resources have been deleted (member destruction order),
             //  so in case of ResourcePointer going out of references it should go to negative
@@ -151,7 +144,7 @@ namespace Cucca {
         resourceInfo.depResources = depResources;
         //resourceInfo.typeId = getResourceTypeId<ResourceType_T>();
         resourceInfo.referenceCount = std::unique_ptr<int>(new int(0));
-        resourceInfo.init = std::bind(&ResourceManager<ResourceIdType_T>::initResource<ResourceType_T>, this, std::placeholders::_1, std::placeholders::_2);
+        resourceInfo.init = std::bind(&ResourceManager<ResourceIdType_T>::initResource<ResourceType_T>, this, std::placeholders::_1);
         resourceInfo.destroy = std::bind(&ResourceManager<ResourceIdType_T>::destroyResource<ResourceType_T>, this, std::placeholders::_1);
 
         {
@@ -171,6 +164,8 @@ namespace Cucca {
 
     template<typename ResourceIdType_T>
     void ResourceManager<ResourceIdType_T>::loadResource(const ResourceIdType_T& resourceId, bool forceSynchronous) {
+        std::function<void(const ResourceId&)> init;
+
         {
             std::lock_guard<std::recursive_mutex> lock(resourceMutex_);
 
@@ -179,13 +174,17 @@ namespace Cucca {
 
             if (resourceInfos_.find(resourceId) == resourceInfos_.end())
                 throw "ResourceManager: unable to load resource (no resource info)"; // TODO_EXCEPTION: throw a proper exception
+
+            //  Add just pointer to ResourceBase (it has status info though)
+            resources_.insert(std::make_pair(resourceId, std::unique_ptr<ResourceBase>(new ResourceBase())));
+            init = resourceInfos_[resourceId].init;
         }
 
         if (!forceSynchronous && threadPool_ && threadPool_->status() == ThreadPool::STATUS_RUNNING) {
-            threadPool_->pushTask(Task(Task::FLAG_RESOURCEMANAGER, this, &ResourceManager<ResourceIdType_T>::initResource<ResourceType_T>, resourceId));
+            threadPool_->pushTask(Task(Task::FLAG_RESOURCEMANAGER, init, resourceId));
         }
         else
-            initResource<ResourceType_T>(resourceId);
+            init(resourceId);
     }
 
     template<typename ResourceIdType_T>
@@ -196,6 +195,8 @@ namespace Cucca {
         if (resources_.find(resourceId) == resources_.end())
             loadResource(resourceId, true);
 
+        //  TODO: wait before the resource has been loaded, implement CV notification
+
         return ResourcePointer<ResourceType_T, ResourceIdType_T>(static_cast<ResourceType_T*>(resources_[resourceId].get()),
                                                                  resourceId,
                                                                  this,
@@ -203,17 +204,11 @@ namespace Cucca {
                                                                  resourceInfos_[resourceId].referenceCount.get());
     }
 
-    /*template<typename ResourceIdType_T>
-    template<typename ResourceType_T>
-    int ResourceManager<ResourceIdType_T>::getResourceTypeId(void) {
-        static unsigned numResourceTypes__ = 0;
-        static int resourceTypeId__ = numResourceTypes__++;
-        return resourceTypeId__;
-    }*/
-
     template<typename ResourceIdType_T>
     template<typename ResourceType_T>
     void ResourceManager<ResourceIdType_T>::initResource(const ResourceId& resourceId) {
+        printf("Initializing %s\n", resourceId.c_str());
+
         Resource<ResourceType_T, ResourceIdType_T>* resource;
 
         ResourceInitInfoBase* initInfo;
@@ -223,13 +218,22 @@ namespace Cucca {
         {
             std::lock_guard<std::recursive_mutex> lock(resourceMutex_);
 
-            resources_[resourceId].insert(std::make_pair(resourceId, std::unique_ptr<ResourceBase>(new ResourceType_T())));
-            resource = &resources_[resourceId];
+            resources_[resourceId] = std::unique_ptr<ResourceBase>(new ResourceType_T());
+            resource = static_cast<Resource<ResourceType_T, ResourceIdType_T>*>(resources_[resourceId].get());
 
             initInfo = resourceInfos_[resourceId].initInfo.get();
             initResources = resourceInfos_[resourceId].initResources;
             depResources = resourceInfos_[resourceId].depResources;
         }
+
+        //  load dependency and initialization resources
+        for (auto& depResourceId : depResources)
+            loadResource(depResourceId);
+
+        for (auto& initResourceId : initResources)
+            loadResource(initResourceId);
+
+        //  TODO: wait until all resources have been loaded (CV notification)
 
         //  now it should be safe to initialize the resource without mutexing
         resource->init(*static_cast<ResourceInitInfo<ResourceType_T>*>(initInfo),
@@ -238,32 +242,11 @@ namespace Cucca {
                        depResources);
     }
 
-    /*template<typename ResourceIdType_T>
+    template<typename ResourceIdType_T>
     template<typename ResourceType_T>
-    void ResourceManager<ResourceIdType_T>::initResource(const ResourceIdType_T& resourceId) {
-        ResourceInitInfoBase* initInfo;
-        std::vector<ResourceIdType_T> initResources;
-        std::vector<ResourceIdType_T> depResources;
-
-        Resource<ResourceType_T, ResourceIdType_T>* resource;
-
-        {
-            std::lock_guard<std::recursive_mutex> lock(resourceMutex_);
-
-            initInfo = resourceInfos_[resourceId].initInfo.get();
-            initResources = resourceInfos_[resourceId].initResources;
-            depResources = resourceInfos_[resourceId].depResources;
-
-            resource = static_cast<Resource<ResourceType_T, ResourceIdType_T>*>(resources_[resourceId].get());
-        }
-
-        //  resource is just a pointer to a resource and resourceInfo was copied, so
-        //  now it should be safe to initialize the resource without mutexing
-        resource->init(*static_cast<ResourceInitInfo<ResourceType_T>*>(initInfo),
-                       *this,
-                       initResources,
-                       depResources);
-    }*/
+    void ResourceManager<ResourceIdType_T>::destroyResource(ResourceBase* resource) {
+        static_cast<Resource<ResourceType_T, ResourceIdType_T>*>(resource)->destroy();
+    }
 
     template<typename ResourceIdType_T>
     template<typename ResourceType_T>
@@ -273,7 +256,8 @@ namespace Cucca {
         // TODO_IMPLEMENT
         // for now, we just delete the resource once it goes out of references.
         // make buffer for unreferenced resources and implement lazy uninitialization
-        Resource<ResourceType_T, ResourceIdType_T>* resource;
+        ResourceBase* resource;
+        std::function<void(ResourceBase*)> destroy;
 
         {
             std::lock_guard<std::recursive_mutex> lock(resourceMutex_);
@@ -282,11 +266,14 @@ namespace Cucca {
                 return;
             }
 
-            resource = static_cast<Resource<ResourceType_T, ResourceIdType_T>*>(resources_[resourcePointer.getId()].get());
+            resource = resources_[resourcePointer.getId()].get();
+            destroy = resourceInfos_[resourcePointer.getId()].destroy;
         }
 
         if (threadPool_ && threadPool_->status() == ThreadPool::STATUS_RUNNING)
-            threadPool_->pushTask(Task(Task::FLAG_RESOURCEMANAGER, resource, &resource->destroy));
+            threadPool_->pushTask(Task(Task::FLAG_RESOURCEMANAGER, destroy, resource));
+        else
+            destroy(resource);
     }
 
 } // namespace Cucca

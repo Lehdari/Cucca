@@ -25,7 +25,7 @@
 
     @version    0.1
     @author     Miika Lehtimäki
-    @date       2014-12-01
+    @date       2014-12-06
 **/
 
 
@@ -37,7 +37,6 @@
 
 #include <string>
 #include <vector>
-#include <mutex>
 
 
 namespace Cucca {
@@ -64,30 +63,15 @@ namespace Cucca {
     template<typename ResourceType_T, typename ResourceIdType_T>
     class Resource : public ResourceBase { // TODO_RO5 (?)
     public:
-        Resource(void);
-
         void init(const ResourceInitInfo<ResourceType_T>& initInfo,
                   ResourceManager<ResourceIdType_T>& resourceManager,
                   const std::vector<ResourceIdType_T>& initResources,
                   const std::vector<ResourceIdType_T>& depResources);
         void destroy(void);
-
-        Status status(void);
-
-    protected:
-        Status status_;
-        std::mutex statusMutex_;
-
-        void setStatus(Status status);
     };
 
 
     //  Member Definitions
-    template<typename ResourceType_T, typename ResourceIdType_T>
-    Resource<ResourceType_T, ResourceIdType_T>::Resource(void) :
-        status_(STATUS_UNINITIALIZED)
-    {}
-
     template<typename ResourceType_T, typename ResourceIdType_T>
     void Resource<ResourceType_T, ResourceIdType_T>::init(const ResourceInitInfo<ResourceType_T>& initInfo,
                                                           ResourceManager<ResourceIdType_T>& resourceManager,
@@ -107,18 +91,6 @@ namespace Cucca {
         setStatus(STATUS_DESTROYING);
         static_cast<ResourceType_T*>(this)->destroy();
         setStatus(STATUS_DESTROYED);
-    }
-
-    template<typename ResourceType_T, typename ResourceIdType_T>
-    ResourceBase::Status Resource<ResourceType_T, ResourceIdType_T>::status(void) {
-        std::lock_guard<std::mutex> lock(statusMutex_);
-        return status_;
-    }
-
-    template<typename ResourceType_T, typename ResourceIdType_T>
-    void Resource<ResourceType_T, ResourceIdType_T>::setStatus(Resource::Status status) {
-        std::lock_guard<std::mutex> lock(statusMutex_);
-        status_ = status;
     }
 
 } // namespace Cucca
