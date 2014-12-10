@@ -63,6 +63,18 @@ namespace Cucca {
     template<typename ResourceType_T, typename ResourceIdType_T>
     class Resource : public ResourceBase { // TODO_RO5 (?)
     public:
+        Resource(void);
+
+        Resource(ResourceBase&&);
+
+        Resource(Resource&&) = default;
+        Resource& operator=(Resource&&) = default;
+        virtual ~Resource(void) = default;
+
+        /// ResourceBase is uncopyable (why would you want to copy a resource anyway)
+        Resource(const Resource&) = delete;
+        Resource& operator=(const Resource&) & = delete;
+
         void init(const ResourceInitInfo<ResourceType_T>& initInfo,
                   ResourceManager<ResourceIdType_T>& resourceManager,
                   const std::vector<ResourceIdType_T>& initResources,
@@ -72,6 +84,16 @@ namespace Cucca {
 
 
     //  Member Definitions
+    template<typename ResourceType_T, typename ResourceIdType_T>
+    Resource<ResourceType_T, ResourceIdType_T>::Resource(void) :
+        ResourceBase()
+    {}
+
+    template<typename ResourceType_T, typename ResourceIdType_T>
+    Resource<ResourceType_T, ResourceIdType_T>::Resource(ResourceBase&& other) :
+        ResourceBase(std::move(other))
+    {}
+
     template<typename ResourceType_T, typename ResourceIdType_T>
     void Resource<ResourceType_T, ResourceIdType_T>::init(const ResourceInitInfo<ResourceType_T>& initInfo,
                                                           ResourceManager<ResourceIdType_T>& resourceManager,

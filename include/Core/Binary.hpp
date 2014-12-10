@@ -28,6 +28,11 @@ namespace Cucca {
     class Binary : public Resource<Binary, ResourceId> {
     public:
         Binary(void);
+
+        /*Binary(ResourceBase&& other) :
+            Resource<Binary, ResourceId>(std::move(other))
+        {}*/
+
         ~Binary(void);
 
         //  Resource init and destroy member functions

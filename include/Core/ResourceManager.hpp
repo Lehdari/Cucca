@@ -218,8 +218,7 @@ namespace Cucca {
         {
             std::lock_guard<std::recursive_mutex> lock(resourceMutex_);
 
-            resources_[resourceId] = std::unique_ptr<ResourceBase>(new ResourceType_T());
-            resource = static_cast<Resource<ResourceType_T, ResourceIdType_T>*>(resources_[resourceId].get());
+            //  TODO_EXCEPTION?: check if ResourceBase with given id exists, throw an exception if not
 
             initInfo = resourceInfos_[resourceId].initInfo.get();
             initResources = resourceInfos_[resourceId].initResources;
@@ -233,7 +232,31 @@ namespace Cucca {
         for (auto& initResourceId : initResources)
             loadResource(initResourceId);
 
-        //  TODO: wait until all resources have been loaded (CV notification)
+        //  wait until all dependency and initialization resources have been loaded
+        std::vector<ResourceBase*> depResourcesPtrs, initResourcesPtrs;
+
+        {
+            std::lock_guard<std::recursive_mutex> lock(resourceMutex_);
+
+            for (auto& depResourceId : depResources)
+                depResourcesPtrs.push_back(resources_[depResourceId].get());
+
+            for (auto& initResourceId : initResources)
+                initResourcesPtrs.push_back(resources_[initResourceId].get());
+        }
+
+        for (auto& ptr : depResourcesPtrs)
+            ResourceBase::waitForStatus(ptr, ResourceBase::STATUS_READY);
+
+        for (auto& ptr : initResourcesPtrs)
+            ResourceBase::waitForStatus(ptr, ResourceBase::STATUS_READY);
+
+        {
+            std::lock_guard<std::recursive_mutex> lock(resourceMutex_);
+
+            resources_[resourceId] = std::unique_ptr<ResourceBase>(new ResourceType_T(std::move(*(resources_[resourceId].get()))));
+            resource = static_cast<Resource<ResourceType_T, ResourceIdType_T>*>(resources_[resourceId].get());
+        }
 
         //  now it should be safe to initialize the resource without mutexing
         resource->init(*static_cast<ResourceInitInfo<ResourceType_T>*>(initInfo),
