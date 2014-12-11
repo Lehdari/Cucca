@@ -15,6 +15,10 @@
 using namespace Cucca;
 
 
+TestResource_Vec2f::TestResource_Vec2f(ResourceBase&& base) :
+    Resource<TestResource_Vec2f, ResourceId>(std::move(base))
+{}
+
 TestResource_Vec2f::~TestResource_Vec2f(void) {
     std::cout << "~TestResource_Vec2f" << std::endl;
 }
@@ -35,6 +39,10 @@ void TestResource_Vec2f::destroy(void) {
     std::this_thread::sleep_for(std::chrono::milliseconds(100)); // so effect of threading is more noticeable
 }
 
+
+TestResource_Movement::TestResource_Movement(ResourceBase&& base) :
+    Resource<TestResource_Movement, ResourceId>(std::move(base))
+{}
 
 TestResource_Movement::~TestResource_Movement(void) {
     std::cout << "~TestResource_Movement" << std::endl;
@@ -57,6 +65,10 @@ void TestResource_Movement::destroy(void) {
     std::cout << "TestResource_Movement::destroy" << std::endl;
 }
 
+
+TestResource_Vec2fTree::TestResource_Vec2fTree(ResourceBase&& base) :
+    Resource<TestResource_Vec2fTree, ResourceId>(std::move(base))
+{}
 
 TestResource_Vec2fTree::~TestResource_Vec2fTree(void) {
     std::cout << "~TestResource_Vec2fTree" << std::endl;

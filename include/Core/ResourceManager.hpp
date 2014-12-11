@@ -190,18 +190,26 @@ namespace Cucca {
     template<typename ResourceIdType_T>
     template<typename ResourceType_T>
     ResourcePointer<ResourceType_T, ResourceIdType_T> ResourceManager<ResourceIdType_T>::getResource(const ResourceIdType_T& resourceId) {
-        std::lock_guard<std::recursive_mutex> lock(resourceMutex_);
+        ResourceBase* resourcePtr;
+        {
+            std::lock_guard<std::recursive_mutex> lock(resourceMutex_);
 
-        if (resources_.find(resourceId) == resources_.end())
-            loadResource(resourceId, true);
+            if (resources_.find(resourceId) == resources_.end())
+                loadResource(resourceId, true);
 
-        //  TODO: wait before the resource has been loaded, implement CV notification
+            resourcePtr = resources_[resourceId].get();
+        }
 
-        return ResourcePointer<ResourceType_T, ResourceIdType_T>(static_cast<ResourceType_T*>(resources_[resourceId].get()),
-                                                                 resourceId,
-                                                                 this,
-                                                                 &ResourceManager<ResourceIdType_T>::pointerOutOfReferences<ResourceType_T>,
-                                                                 resourceInfos_[resourceId].referenceCount.get());
+        ResourceBase::waitForStatus(resourcePtr, ResourceBase::STATUS_READY);
+
+        {
+            std::lock_guard<std::recursive_mutex> lock(resourceMutex_);
+            return ResourcePointer<ResourceType_T, ResourceIdType_T>(static_cast<ResourceType_T*>(resources_[resourceId].get()),
+                                                                     resourceId,
+                                                                     this,
+                                                                     &ResourceManager<ResourceIdType_T>::pointerOutOfReferences<ResourceType_T>,
+                                                                     resourceInfos_[resourceId].referenceCount.get());
+        }
     }
 
     template<typename ResourceIdType_T>

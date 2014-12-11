@@ -25,6 +25,7 @@ namespace Cucca {
 
     class TestResource_Vec2f : public Resource<TestResource_Vec2f, ResourceId> {
     public:
+        TestResource_Vec2f(ResourceBase&& base);
         ~TestResource_Vec2f(void);
 
         void init(const ResourceInitInfo<TestResource_Vec2f>& initInfo,
@@ -45,6 +46,7 @@ namespace Cucca {
     //  hierarchical resource example
     class TestResource_Movement : public Resource<TestResource_Movement, ResourceId> {
     public:
+        TestResource_Movement(ResourceBase&& base);
         ~TestResource_Movement(void);
 
         void init(const ResourceInitInfo<TestResource_Movement>& initInfo,
@@ -66,6 +68,7 @@ namespace Cucca {
 
     class TestResource_Vec2fTree : public Resource<TestResource_Vec2fTree, ResourceId> {
     public:
+        TestResource_Vec2fTree(ResourceBase&& base);
         ~TestResource_Vec2fTree(void);
 
         void init(const ResourceInitInfo<TestResource_Vec2fTree>& initInfo,
