@@ -27,7 +27,7 @@ namespace Cucca {
     //  Structs and Classes
     class Binary : public Resource<Binary, ResourceId> {
     public:
-        Binary(ResourceBase&& base);
+        Binary(void);
         ~Binary(void);
 
         //  Resource init and destroy member functions
@@ -56,8 +56,7 @@ namespace Cucca {
 
 
     //  Member Definitions
-    Binary::Binary(ResourceBase&& base) :
-        Resource<Binary, ResourceId>(std::move(base)),
+    Binary::Binary(void) :
         buffer_(nullptr),
         size_(0)
     {}

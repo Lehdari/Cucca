@@ -8,7 +8,7 @@
 
     @version    0.1
     @author     Miika Lehtimäki
-    @date       2014-12-06
+    @date       2014-12-19
 **/
 
 

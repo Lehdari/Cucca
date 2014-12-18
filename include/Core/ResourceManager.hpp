@@ -8,7 +8,7 @@
 
     @version    0.1
     @author     Miika Lehtimäki
-    @date       2014-12-06
+    @date       2014-12-19
 **/
 
 
@@ -22,10 +22,11 @@
 
 #include <unordered_map>
 #include <vector>
+#include <deque>
+#include <algorithm>
 #include <memory>
 #include <functional>
 #include <mutex>
-#include <cstdio> // TEMP
 
 
 namespace Cucca {
@@ -53,13 +54,13 @@ namespace Cucca {
                              std::vector<ResourceIdType_T>&& initResources = std::vector<ResourceIdType_T>(),
                              std::vector<ResourceIdType_T>&& depResources = std::vector<ResourceIdType_T>());
 
-        //  Loads resource asynchronously if pointer to running thread pool has been provided,
-        //  synchronously with calling thread otherwise. Forcing synchronous loading also possible.
-        void loadResource(const ResourceIdType_T& resourceId, bool forceSynchronous = false);
-
         //  For getting the actual resource. Loads it with calling thread if it doesn't exist
         template<typename ResourceType_T>
         ResourcePointer<ResourceType_T, ResourceIdType_T> getResource(const ResourceIdType_T& resourceId);
+
+        //  Loads resource asynchronously if pointer to running thread pool has been provided,
+        //  synchronously with calling thread otherwise. Forcing synchronous loading also possible.
+        void loadResource(const ResourceIdType_T& resourceId, bool forceSynchronous = false);
 
         //  ResourceManager is uncopyable and immovable
         ResourceManager(const ResourceManager<ResourceIdType_T>& resourceManager) = delete;
@@ -91,13 +92,19 @@ namespace Cucca {
         template<typename ResourceType_T>
         void pointerOutOfReferences(ResourcePointer<ResourceType_T, ResourceIdType_T>& resourcePointer);
 
+        //  Recursive helper fucntion which loads dependency resources of a resource in correct order, make sure to lock mutex before calling!
+        unsigned getDependencyLoadOrder(const ResourceId& resourceId, std::vector<std::deque<ResourceId>>& depList);
+
         //  Resource info and resource maps
         std::unordered_map<ResourceIdType_T, ResourceInfo> resourceInfos_;
         std::unordered_map<ResourceIdType_T, std::unique_ptr<ResourceBase>> resources_;
+        std::vector<ResourceId> resourcesBeingInitialized_;
         std::recursive_mutex resourceMutex_;
 
         //  Asynchronous loading stuff
         ThreadPool* threadPool_;
+        std::mutex dependencyMutex_;
+        std::condition_variable dependencyCV_;
     };
 
 
@@ -120,6 +127,8 @@ namespace Cucca {
         //  about to be destructed
         if (threadPool_ && threadPool_->status() == ThreadPool::STATUS_RUNNING)
             threadPool_->removeTasks(Task::FLAG_RESOURCEMANAGER);
+
+        resourcesBeingInitialized_.clear();
 
         for (auto& resourceInfo : resourceInfos_) { // TODO make smarter, asynchronous(multithreaded)
             resourceInfo.second.destroy(resources_[resourceInfo.first].get()); // call destroy member function stored in info
@@ -162,115 +171,139 @@ namespace Cucca {
         addResourceInfo(resourceId, initInfo, initResources, depResources);
     }
 
-    template<typename ResourceIdType_T>
-    void ResourceManager<ResourceIdType_T>::loadResource(const ResourceIdType_T& resourceId, bool forceSynchronous) {
-        std::function<void(const ResourceId&)> init;
 
-        {
-            std::lock_guard<std::recursive_mutex> lock(resourceMutex_);
-
-            if (resources_.find(resourceId) != resources_.end())
-                return;
-
-            if (resourceInfos_.find(resourceId) == resourceInfos_.end())
-                throw "ResourceManager: unable to load resource (no resource info)"; // TODO_EXCEPTION: throw a proper exception
-
-            //  Add just pointer to ResourceBase (it has status info though)
-            resources_.insert(std::make_pair(resourceId, std::unique_ptr<ResourceBase>(new ResourceBase())));
-            init = resourceInfos_[resourceId].init;
-        }
-
-        if (!forceSynchronous && threadPool_ && threadPool_->status() == ThreadPool::STATUS_RUNNING) {
-            threadPool_->pushTask(Task(Task::FLAG_RESOURCEMANAGER, init, resourceId));
-        }
-        else
-            init(resourceId);
-    }
 
     template<typename ResourceIdType_T>
     template<typename ResourceType_T>
     ResourcePointer<ResourceType_T, ResourceIdType_T> ResourceManager<ResourceIdType_T>::getResource(const ResourceIdType_T& resourceId) {
-        ResourceBase* resourcePtr;
+        bool resourceDoesNotExist = false;
+        bool resourceIsNotBeingInitialized = false;
+
         {
             std::lock_guard<std::recursive_mutex> lock(resourceMutex_);
-
-            if (resources_.find(resourceId) == resources_.end())
-                loadResource(resourceId, true);
-
-            resourcePtr = resources_[resourceId].get();
+            resourceDoesNotExist = resources_.find(resourceId) == resources_.end();
+            resourceIsNotBeingInitialized = std::find(resourcesBeingInitialized_.begin(),
+                                                      resourcesBeingInitialized_.end(),
+                                                      resourceId) == resourcesBeingInitialized_.end();
         }
 
-        ResourceBase::waitForStatus(resourcePtr, ResourceBase::STATUS_READY);
+        if (resourceDoesNotExist) {
+            if (resourceIsNotBeingInitialized) {
+                loadResource(resourceId, true);
+            }
+            else {
+                std::unique_lock<std::mutex> lock(dependencyMutex_);
+                dependencyCV_.wait(lock, [this, &resourceId] {
+                    std::lock_guard<std::recursive_mutex> lock(resourceMutex_);
+                    return std::find(resourcesBeingInitialized_.begin(),
+                                     resourcesBeingInitialized_.end(),
+                                     resourceId) == resourcesBeingInitialized_.end();
+                });
+            }
+        }
 
         {
             std::lock_guard<std::recursive_mutex> lock(resourceMutex_);
             return ResourcePointer<ResourceType_T, ResourceIdType_T>(static_cast<ResourceType_T*>(resources_[resourceId].get()),
                                                                      resourceId,
                                                                      this,
-                                                                     &ResourceManager<ResourceIdType_T>::pointerOutOfReferences<ResourceType_T>,
+                                                                     this->pointerOutOfReferences,
                                                                      resourceInfos_[resourceId].referenceCount.get());
         }
     }
 
     template<typename ResourceIdType_T>
+    void ResourceManager<ResourceIdType_T>::loadResource(const ResourceIdType_T& resourceId, bool forceSynchronous) {
+        std::function<void(const ResourceId&)> init;
+
+        {
+            std::lock_guard<std::recursive_mutex> lock(resourceMutex_);
+            if (resources_.find(resourceId) != resources_.end() ||
+                std::find(resourcesBeingInitialized_.begin(),
+                          resourcesBeingInitialized_.end(),
+                          resourceId) != resourcesBeingInitialized_.end())
+                return; // resource already loaded or being initialized
+
+            if (resourceInfos_.find(resourceId) == resourceInfos_.end())
+                throw "ResourceManager: unable to load resource (no resource info)"; // TODO_EXCEPTION: throw a proper exception
+
+            //  initialize initialization and dependency resources
+            std::vector<std::deque<ResourceId>> depList;
+            getDependencyLoadOrder(resourceId, depList);
+
+            for (auto& depListLayer : depList){
+                for (auto& depResourceId : depListLayer) {
+                    resourcesBeingInitialized_.push_back(depResourceId);
+
+                    if (threadPool_ && threadPool_->status() == ThreadPool::STATUS_RUNNING)
+                        threadPool_->pushTask(Task(Task::FLAG_RESOURCEMANAGER, resourceInfos_[depResourceId].init, depResourceId));
+                    else
+                        resourceInfos_[depResourceId].init(depResourceId);
+                }
+            }
+
+            init = resourceInfos_[resourceId].init;
+            resourcesBeingInitialized_.push_back(resourceId);
+        }
+
+        if (!forceSynchronous && threadPool_ && threadPool_->status() == ThreadPool::STATUS_RUNNING)
+            threadPool_->pushTask(Task(Task::FLAG_RESOURCEMANAGER, init, resourceId));
+        else
+            init(resourceId);
+    }
+
+    template<typename ResourceIdType_T>
     template<typename ResourceType_T>
     void ResourceManager<ResourceIdType_T>::initResource(const ResourceId& resourceId) {
-        printf("Initializing %s\n", resourceId.c_str());
-
+        std::vector<ResourceId> depList;
         Resource<ResourceType_T, ResourceIdType_T>* resource;
-
-        ResourceInitInfoBase* initInfo;
-        std::vector<ResourceIdType_T> initResources;
-        std::vector<ResourceIdType_T> depResources;
+        ResourceInitInfo<ResourceType_T>* initInfo;
+        std::vector<ResourceId> initResources, depResources;
 
         {
             std::lock_guard<std::recursive_mutex> lock(resourceMutex_);
 
-            //  TODO_EXCEPTION?: check if ResourceBase with given id exists, throw an exception if not
+            depList.insert(depList.end(), resourceInfos_[resourceId].initResources.begin(), resourceInfos_[resourceId].initResources.end());
+            depList.insert(depList.end(), resourceInfos_[resourceId].depResources.begin(), resourceInfos_[resourceId].depResources.end());
 
-            initInfo = resourceInfos_[resourceId].initInfo.get();
+            resources_.insert(std::make_pair(resourceId, std::unique_ptr<ResourceType_T>(new ResourceType_T())));
+            resource = static_cast<Resource<ResourceType_T, ResourceIdType_T>*>(resources_[resourceId].get());
+
+            initInfo = static_cast<ResourceInitInfo<ResourceType_T>*>(resourceInfos_[resourceId].initInfo.get());
             initResources = resourceInfos_[resourceId].initResources;
             depResources = resourceInfos_[resourceId].depResources;
         }
+        {
+            std::unique_lock<std::mutex> lock(dependencyMutex_);
+            dependencyCV_.wait(lock, [this, &resourceId, &depList] {
+                std::lock_guard<std::recursive_mutex> lock2(resourceMutex_);
 
-        //  load dependency and initialization resources
-        for (auto& depResourceId : depResources)
-            loadResource(depResourceId);
+                //  erase all elements from the depList which are not found from the resourcesBeingInitialized_ vector (remove/erase idiom)
+                depList.erase(std::remove_if(depList.begin(), depList.end(),
+                [this](const ResourceId& depResourceId) {
+                    return std::find(resourcesBeingInitialized_.begin(),
+                                     resourcesBeingInitialized_.end(),
+                                     depResourceId) == resourcesBeingInitialized_.end();
+                }), depList.end());
 
-        for (auto& initResourceId : initResources)
-            loadResource(initResourceId);
+                if (depList.size() == 0)
+                    return true;
 
-        //  wait until all dependency and initialization resources have been loaded
-        std::vector<ResourceBase*> depResourcesPtrs, initResourcesPtrs;
+                return false;
+            });
+        }
+
+        resource->init(*initInfo, *this, initResources, depResources);
 
         {
             std::lock_guard<std::recursive_mutex> lock(resourceMutex_);
-
-            for (auto& depResourceId : depResources)
-                depResourcesPtrs.push_back(resources_[depResourceId].get());
-
-            for (auto& initResourceId : initResources)
-                initResourcesPtrs.push_back(resources_[initResourceId].get());
+            resourcesBeingInitialized_.erase(std::remove(resourcesBeingInitialized_.begin(),
+                                                         resourcesBeingInitialized_.end(),
+                                                         resourceId), resourcesBeingInitialized_.end());
         }
 
-        for (auto& ptr : depResourcesPtrs)
-            ResourceBase::waitForStatus(ptr, ResourceBase::STATUS_READY);
-
-        for (auto& ptr : initResourcesPtrs)
-            ResourceBase::waitForStatus(ptr, ResourceBase::STATUS_READY);
-
-        {
-            std::lock_guard<std::recursive_mutex> lock(resourceMutex_);
-
-            resources_[resourceId] = std::unique_ptr<ResourceBase>(new ResourceType_T(std::move(*(resources_[resourceId].get()))));
-            resource = static_cast<Resource<ResourceType_T, ResourceIdType_T>*>(resources_[resourceId].get());
-        }
-
-        //  now it should be safe to initialize the resource without mutexing
-        resource->init(*static_cast<ResourceInitInfo<ResourceType_T>*>(initInfo),
-                       *this,
-                       initResources,
-                       depResources);
+        std::unique_lock<std::mutex> lock(dependencyMutex_);
+        dependencyCV_.notify_all();
     }
 
     template<typename ResourceIdType_T>
@@ -282,8 +315,6 @@ namespace Cucca {
     template<typename ResourceIdType_T>
     template<typename ResourceType_T>
     void ResourceManager<ResourceIdType_T>::pointerOutOfReferences(ResourcePointer<ResourceType_T, ResourceIdType_T>& resourcePointer) {
-        printf("%s: pointer out of references\n", resourcePointer.getId().c_str()); // TEMP
-
         // TODO_IMPLEMENT
         // for now, we just delete the resource once it goes out of references.
         // make buffer for unreferenced resources and implement lazy uninitialization
@@ -305,6 +336,33 @@ namespace Cucca {
             threadPool_->pushTask(Task(Task::FLAG_RESOURCEMANAGER, destroy, resource));
         else
             destroy(resource);
+    }
+
+
+    template<typename ResourceIdType_T>
+    unsigned ResourceManager<ResourceIdType_T>::getDependencyLoadOrder(const ResourceId& resourceId, std::vector<std::deque<ResourceId>>& depList) {
+        if (resourceId.empty())
+            return 0;
+
+        unsigned depth = 0;
+
+        for (auto& initResourceId : resourceInfos_[resourceId].initResources)
+            depth = std::max(depth, getDependencyLoadOrder(initResourceId, depList) + 1);
+        for (auto& depResourceId : resourceInfos_[resourceId].depResources)
+            depth = std::max(depth, getDependencyLoadOrder(depResourceId, depList) + 1);
+
+        if (resources_.find(resourceId) == resources_.end()) {
+            if (depList.size() < depth+1)
+                depList.resize(depth+1);
+
+            for (auto& depResourceId : depList[depth])
+                if (depResourceId == resourceId)
+                    return depth;
+
+            depList[depth].push_back(resourceId);
+        }
+
+        return depth;
     }
 
 } // namespace Cucca

@@ -15,10 +15,6 @@
 using namespace Cucca;
 
 
-TestResource_Vec2f::TestResource_Vec2f(ResourceBase&& base) :
-    Resource<TestResource_Vec2f, ResourceId>(std::move(base))
-{}
-
 TestResource_Vec2f::~TestResource_Vec2f(void) {
     std::cout << "~TestResource_Vec2f" << std::endl;
 }
@@ -39,10 +35,6 @@ void TestResource_Vec2f::destroy(void) {
     std::this_thread::sleep_for(std::chrono::milliseconds(100)); // so effect of threading is more noticeable
 }
 
-
-TestResource_Movement::TestResource_Movement(ResourceBase&& base) :
-    Resource<TestResource_Movement, ResourceId>(std::move(base))
-{}
 
 TestResource_Movement::~TestResource_Movement(void) {
     std::cout << "~TestResource_Movement" << std::endl;
@@ -65,10 +57,6 @@ void TestResource_Movement::destroy(void) {
     std::cout << "TestResource_Movement::destroy" << std::endl;
 }
 
-
-TestResource_Vec2fTree::TestResource_Vec2fTree(ResourceBase&& base) :
-    Resource<TestResource_Vec2fTree, ResourceId>(std::move(base))
-{}
 
 TestResource_Vec2fTree::~TestResource_Vec2fTree(void) {
     std::cout << "~TestResource_Vec2fTree" << std::endl;
@@ -126,12 +114,12 @@ ResourceId makeRecursiveVec2fTreeInfo(ResourceManager<ResourceId>& resourceManag
 
     if (rnd() % ((layer/2)+1) == 0) {
         leftNodeName = makeRecursiveVec2fTreeInfo(resourceManager, nodeId, vec2fId, layer+1);
-        std::cout << leftNodeName << std::endl;
+        //std::cout << leftNodeName << std::endl;
     }
 
     if (rnd() % ((layer/2)+1) == 0) {
         rightNodeName = makeRecursiveVec2fTreeInfo(resourceManager, nodeId, vec2fId, layer+1);
-        std::cout << rightNodeName << std::endl;
+        //std::cout << rightNodeName << std::endl;
     }
 
     if (rnd() % 3 != 0) {
@@ -142,7 +130,7 @@ ResourceId makeRecursiveVec2fTreeInfo(ResourceManager<ResourceId>& resourceManag
         dataInfo.b = (rnd() % 101) / 100.0f;
 
         resourceManager.addResourceInfo(dataName.str(), dataInfo);
-        std::cout << dataName.str() << std::endl;
+        //std::cout << dataName.str() << std::endl;
     }
 
     resourceManager.addResourceInfo(nodeName.str(),
@@ -183,8 +171,6 @@ int unitTest(void) {
                                                        ResourceInitInfo<TestResource_Movement>(),
                                                        std::vector<ResourceId>(),
                                                        std::vector<ResourceId> {"VEC2F_1", "VEC2F_2", "VEC2F_3"});
-
-
 
         // RO5 tests
         auto vec_ref1 = manager.getResource<TestResource_Vec2f>("VEC2F_1");
@@ -267,10 +253,11 @@ int unitTest(void) {
 
         ResourceId rootNodeId = makeRecursiveVec2fTreeInfo(manager);
 
+        manager.loadResource(rootNodeId);
         auto root = manager.getResource<TestResource_Vec2fTree>(rootNodeId);
         std::cout << "rootnode ready" << std::endl;
 
-        std::this_thread::sleep_for(std::chrono::milliseconds(2500));
+        //std::this_thread::sleep_for(std::chrono::milliseconds(2500));
     }
 
     return 0;
