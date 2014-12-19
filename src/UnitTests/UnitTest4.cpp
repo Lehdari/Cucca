@@ -89,7 +89,7 @@ void TestResource_Vec2fTree::destroy(void) {
 }
 
 
-std::default_random_engine rnd(715517);
+std::default_random_engine rnd(71551);
 
 
 ResourceId makeRecursiveVec2fTreeInfo(ResourceManager<ResourceId>& resourceManager, unsigned* nodeId, unsigned* vec2fId, unsigned layer) {
@@ -248,7 +248,7 @@ int unitTest(void) {
         std::cout << "\n\n[ Test Part " << ++testPart << " ]" << std::endl;
 
         ThreadPool pool;
-        pool.launchThreads(1);
+        pool.launchThreads(4);
         ResourceManager<ResourceId> manager(&pool);
 
         ResourceId rootNodeId = makeRecursiveVec2fTreeInfo(manager);
