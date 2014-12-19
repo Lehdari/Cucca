@@ -75,7 +75,6 @@ namespace Cucca {
             std::unique_ptr<ResourceInitInfoBase> initInfo;
             std::vector<ResourceIdType_T> initResources;
             std::vector<ResourceIdType_T> depResources;
-            //unsigned typeId;
 
             //  dynamic data (updated during the lifetime of Resource)
             std::unique_ptr<int> referenceCount;

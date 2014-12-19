@@ -24,7 +24,14 @@ int unitTest(void) {
     device->subscribeEvents(child.getComponents<EventComponent>().back(), EventBase::getEventTypeId<sf::Event>());
     root->addChild(std::move(child));
 
-    device->renderLoop();
+    EventVisitor_SFML visitor;
+
+    while (device->status() == Device<Canvas_SFML>::STATUS_RUNNING) {
+        device->render();
+        device->handleEvents();
+        device->getRoot()->accept(visitor);
+    }
+
     return 0;
 }
 
