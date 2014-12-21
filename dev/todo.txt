@@ -1,7 +1,37 @@
+! : priority
+~ : low priority
+-> : will result to
+Priority descends downwards in the file
+
 TODO:
 
-Device:
-	make graphics resource initialization pipeline (ResourceManager flag for gl resources)
+(Put template definitions in .inl files[see google style guide!]) and unify the layout
+
+Start implementing graphics components
+	Shaders
+	Meshes
+	Materials
+	Curves, animations
+	etc.
+
+Rethink role of the Device
+Rethink role of the TaskQueue (can be generalized? TBB replacement?)
+
+Add comments and documentation
+
+Renaming of CoreExtensions?
+	CoreInterface perhaps?
+
+Check thread safety
+	ResourcePointers / (ResourceManager)
+	nodes/components/visitors?
+
+ResourceManager:
+	! thread safety
+		handling data structures when destructing(res. infos espec.[shared pointer])
+	~ make smarter destructor (multithreaded, skip destruction of destructed resources[add removeDestructedResources member function perhaps?])
+	~ fix double copying when passing arguments to Resource::init (forward/move diipadaapa)
+	make buffer for unreferenced resources and implement lazy uninitialization
 
 Find more ways to break the resource system
 	multiple resource managers
@@ -9,16 +39,9 @@ Find more ways to break the resource system
 			possible fixes?
 				store a void pointer to creator object to Task (kinda hack?)
 
-ResourceManager
-	! thread safety
-		handling data structures when destructing(res. infos espec.[shared pointer])
-	(lo-prio) make smarter destructor (multithreaded, skip destruction of destructed resources[add removeDestructedResources member function perhaps?])
-	make buffer for unreferenced resources and implement lazy uninitialization
-	
-Check thread safety
-	ResourcePointers / ResourceManager
-	nodes/components/visitors?
+Proper exceptions and exception handling
 
-Add comments and documentation
+Rethink unit test system
 
-Unify the layout of files
+Device:
+	Implement chrono timer so that fps won't drop when there is too much graphics tasks in the queue

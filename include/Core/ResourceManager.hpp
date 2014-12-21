@@ -8,7 +8,7 @@
 
     @version    0.1
     @author     Miika Lehtimäki
-    @date       2014-12-19
+    @date       2014-12-21
 **/
 
 
@@ -18,7 +18,8 @@
 
 #include "Resource.hpp"
 #include "ResourcePointer.hpp"
-#include "ThreadPool.hpp"
+#include "TaskQueue.hpp"
+#include "Device.hpp"
 
 #include <unordered_map>
 #include <vector>
@@ -37,8 +38,7 @@ namespace Cucca {
         template<typename ResourceType_U, typename ResourceIdType_U>
         friend class ResourcePointer;
 
-        ResourceManager(void);
-        ResourceManager(ThreadPool* threadPool);
+        ResourceManager(TaskQueue* graphicsTaskQueue, TaskQueue* threadPoolTaskQueue = nullptr);
         ~ResourceManager(void);
 
         //  Resource infos are required to load resources with their identifier
@@ -46,13 +46,15 @@ namespace Cucca {
         void addResourceInfo(const ResourceIdType_T& resourceId,
                              ResourceInitInfo<ResourceType_T>& initInfo,
                              const std::vector<ResourceIdType_T>& initResources = std::vector<ResourceIdType_T>(),
-                             const std::vector<ResourceIdType_T>& depResources = std::vector<ResourceIdType_T>());
+                             const std::vector<ResourceIdType_T>& depResources = std::vector<ResourceIdType_T>(),
+                             bool isGraphicsResource = false);
 
         template<typename ResourceType_T>
         void addResourceInfo(const ResourceIdType_T& resourceId,
                              ResourceInitInfo<ResourceType_T>&& initInfo,
                              std::vector<ResourceIdType_T>&& initResources = std::vector<ResourceIdType_T>(),
-                             std::vector<ResourceIdType_T>&& depResources = std::vector<ResourceIdType_T>());
+                             std::vector<ResourceIdType_T>&& depResources = std::vector<ResourceIdType_T>(),
+                             bool isGraphicsResource = false);
 
         //  For getting the actual resource. Loads it with calling thread if it doesn't exist
         template<typename ResourceType_T>
@@ -75,6 +77,7 @@ namespace Cucca {
             std::unique_ptr<ResourceInitInfoBase> initInfo;
             std::vector<ResourceIdType_T> initResources;
             std::vector<ResourceIdType_T> depResources;
+            bool isGraphicsResource;
 
             //  dynamic data (updated during the lifetime of Resource)
             std::unique_ptr<int> referenceCount;
@@ -102,34 +105,31 @@ namespace Cucca {
         std::vector<ResourceId> resourcesBeingInitialized_;
         std::recursive_mutex resourceMutex_;
 
-        //  Asynchronous loading stuff
-        ThreadPool* threadPool_;
+        //  Pointers to graphics task queue and thread pool
+        TaskQueue* graphicsTaskQueue_;
+        TaskQueue* threadPoolTaskQueue_;
         std::mutex dependencyMutex_;
         std::condition_variable dependencyCV_;
     };
 
 
     // Member definitions
-    template<typename ResourceIdType_T>
-    ResourceManager<ResourceIdType_T>::ResourceManager(void) :
-        threadPool_(nullptr)
+    template <typename ResourceIdType_T>
+    ResourceManager<ResourceIdType_T>::ResourceManager(TaskQueue* graphicsTaskQueue, TaskQueue* threadPoolTaskQueue) :
+        graphicsTaskQueue_(graphicsTaskQueue),
+        threadPoolTaskQueue_(threadPoolTaskQueue)
     {}
 
-    template<typename ResourceIdType_T>
-    ResourceManager<ResourceIdType_T>::ResourceManager(ThreadPool* threadPool) :
-        threadPool_(threadPool)
-    {}
-
-    template<typename ResourceIdType_T>
+    template <typename ResourceIdType_T>
     ResourceManager<ResourceIdType_T>::~ResourceManager(void) {
-        printf("~ResourceManager\n");
-
         std::lock_guard<std::recursive_mutex> lock(resourceMutex_); // no changes allowed during destructor
 
         //  remove any pending tasks that'd cause changes to ResourceManager or resources which are
         //  about to be destructed
-        if (threadPool_ && threadPool_->status() == ThreadPool::STATUS_RUNNING)
-            threadPool_->removeTasks(Task::FLAG_RESOURCEMANAGER);
+        graphicsTaskQueue_->removeTasks(Task::FLAG_RESOURCEMANAGER);
+
+        if (threadPoolTaskQueue_)
+            threadPoolTaskQueue_->removeTasks(Task::FLAG_RESOURCEMANAGER);
 
         resourcesBeingInitialized_.clear();
 
@@ -144,17 +144,18 @@ namespace Cucca {
         }
     }
 
-    template<typename ResourceIdType_T>
+    template <typename ResourceIdType_T>
     template<typename ResourceType_T>
     void ResourceManager<ResourceIdType_T>::addResourceInfo(const ResourceIdType_T& resourceId,
                                                             ResourceInitInfo<ResourceType_T>& initInfo,
                                                             const std::vector<ResourceIdType_T>& initResources,
-                                                            const std::vector<ResourceIdType_T>& depResources) {
+                                                            const std::vector<ResourceIdType_T>& depResources,
+                                                            bool isGraphicsResource) {
         ResourceInfo resourceInfo;
         resourceInfo.initInfo = std::unique_ptr<ResourceInitInfoBase>(new ResourceInitInfo<ResourceType_T>(initInfo)); // TODO_UNIQUE, TODO_ALLOCATOR
         resourceInfo.initResources = initResources;
         resourceInfo.depResources = depResources;
-        //resourceInfo.typeId = getResourceTypeId<ResourceType_T>();
+        resourceInfo.isGraphicsResource = isGraphicsResource;
         resourceInfo.referenceCount = std::unique_ptr<int>(new int(0));
         resourceInfo.init = std::bind(&ResourceManager<ResourceIdType_T>::initResource<ResourceType_T>, this, std::placeholders::_1);
         resourceInfo.destroy = std::bind(&ResourceManager<ResourceIdType_T>::destroyResource<ResourceType_T>, this, std::placeholders::_1);
@@ -165,18 +166,19 @@ namespace Cucca {
         }
     }
 
-    template<typename ResourceIdType_T>
+    template <typename ResourceIdType_T>
     template<typename ResourceType_T>
     void ResourceManager<ResourceIdType_T>::addResourceInfo(const ResourceIdType_T& resourceId,
                                                             ResourceInitInfo<ResourceType_T>&& initInfo,
                                                             std::vector<ResourceIdType_T>&& initResources,
-                                                            std::vector<ResourceIdType_T>&& depResources) {
-        addResourceInfo(resourceId, initInfo, initResources, depResources);
+                                                            std::vector<ResourceIdType_T>&& depResources,
+                                                            bool isGraphicsResource) {
+        addResourceInfo(resourceId, initInfo, initResources, depResources, isGraphicsResource);
     }
 
 
 
-    template<typename ResourceIdType_T>
+    template <typename ResourceIdType_T>
     template<typename ResourceType_T>
     ResourcePointer<ResourceType_T, ResourceIdType_T> ResourceManager<ResourceIdType_T>::getResource(const ResourceIdType_T& resourceId) {
         loadResource(resourceId, true);
@@ -189,7 +191,7 @@ namespace Cucca {
                                                                  resourceInfos_[resourceId].referenceCount.get());
     }
 
-    template<typename ResourceIdType_T>
+    template <typename ResourceIdType_T>
     void ResourceManager<ResourceIdType_T>::loadResource(const ResourceIdType_T& resourceId, bool waitForFinish) {
         {
             std::lock_guard<std::recursive_mutex> lock(resourceMutex_);
@@ -212,8 +214,8 @@ namespace Cucca {
                     for (auto& depResourceId : depListLayer) {
                         resourcesBeingInitialized_.push_back(depResourceId);
 
-                        if (threadPool_ && threadPool_->status() == ThreadPool::STATUS_RUNNING)
-                            threadPool_->pushTask(Task(Task::FLAG_RESOURCEMANAGER, resourceInfos_[depResourceId].init, depResourceId));
+                        if (threadPoolTaskQueue_)
+                            threadPoolTaskQueue_->pushTask(Task(Task::FLAG_RESOURCEMANAGER, resourceInfos_[depResourceId].init, depResourceId));
                         else
                             resourceInfos_[depResourceId].init(depResourceId);
                     }
@@ -232,13 +234,14 @@ namespace Cucca {
         }
     }
 
-    template<typename ResourceIdType_T>
+    template <typename ResourceIdType_T>
     template<typename ResourceType_T>
     void ResourceManager<ResourceIdType_T>::initResource(const ResourceId& resourceId) {
         std::vector<ResourceId> depList;
         Resource<ResourceType_T, ResourceIdType_T>* resource;
         ResourceInitInfo<ResourceType_T>* initInfo;
         std::vector<ResourceId> initResources, depResources;
+        bool isGraphicsResource;
 
         {
             std::lock_guard<std::recursive_mutex> lock(resourceMutex_);
@@ -251,6 +254,7 @@ namespace Cucca {
             initInfo = static_cast<ResourceInitInfo<ResourceType_T>*>(resourceInfos_[resourceId].initInfo.get());
             initResources = resourceInfos_[resourceId].initResources;
             depResources = resourceInfos_[resourceId].depResources;
+            isGraphicsResource = resourceInfos_[resourceId].isGraphicsResource;
         }
         {
             std::unique_lock<std::mutex> lock(dependencyMutex_);
@@ -272,7 +276,11 @@ namespace Cucca {
             });
         }
 
-        resource->init(*initInfo, *this, initResources, depResources);
+        if (isGraphicsResource) {
+            graphicsTaskQueue_->pushTask(Task(resource, Resource<ResourceType_T, ResourceIdType_T>::init, *initInfo, initResources, depResources, this));
+        }
+        else
+            resource->init(*initInfo, initResources, depResources, this);
 
         {
             std::lock_guard<std::recursive_mutex> lock(resourceMutex_);
@@ -285,13 +293,13 @@ namespace Cucca {
         dependencyCV_.notify_all();
     }
 
-    template<typename ResourceIdType_T>
+    template <typename ResourceIdType_T>
     template<typename ResourceType_T>
     void ResourceManager<ResourceIdType_T>::destroyResource(ResourceBase* resource) {
         static_cast<Resource<ResourceType_T, ResourceIdType_T>*>(resource)->destroy();
     }
 
-    template<typename ResourceIdType_T>
+    template <typename ResourceIdType_T>
     template<typename ResourceType_T>
     void ResourceManager<ResourceIdType_T>::pointerOutOfReferences(ResourcePointer<ResourceType_T, ResourceIdType_T>& resourcePointer) {
         // TODO_IMPLEMENT
@@ -311,14 +319,14 @@ namespace Cucca {
             destroy = resourceInfos_[resourcePointer.getId()].destroy;
         }
 
-        if (threadPool_ && threadPool_->status() == ThreadPool::STATUS_RUNNING)
-            threadPool_->pushTask(Task(Task::FLAG_RESOURCEMANAGER, destroy, resource));
+        if (threadPoolTaskQueue_)
+            threadPoolTaskQueue_->pushTask(Task(Task::FLAG_RESOURCEMANAGER, destroy, resource));
         else
             destroy(resource);
     }
 
 
-    template<typename ResourceIdType_T>
+    template <typename ResourceIdType_T>
     unsigned ResourceManager<ResourceIdType_T>::getLoadOrder(const ResourceId& resourceId, std::vector<std::deque<ResourceId>>& depList) {
         if (resourceId.empty())
             return 0;

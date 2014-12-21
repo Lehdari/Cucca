@@ -6,7 +6,7 @@
 
     @version    0.1
     @author     Miika Lehtimäki
-    @date       2014-12-19
+    @date       2014-12-20
 **/
 
 
@@ -18,12 +18,16 @@
 #include "Canvas.hpp"
 #include "Event.hpp"
 #include "EventComponent.hpp"
+#include "TaskQueue.hpp"
 
 #include <deque>
 #include <unordered_map>
 #include <vector>
 #include <memory>
 #include <mutex>
+
+
+#define DEVICE(CANVAS_TYPE) Device<CANVAS_TYPE>::getInstance()
 
 
 namespace Cucca {
@@ -36,9 +40,20 @@ namespace Cucca {
             STATUS_TERMINATED
         };
 
+        //  Device is immovable and incopyable
+        Device<CanvasType_T>(const Device<CanvasType_T>&) = delete;
+        Device<CanvasType_T>(Device<CanvasType_T>&&) = delete;
+
+        Device<CanvasType_T>& operator=(const Device<CanvasType_T>&) = delete;
+        Device<CanvasType_T>& operator=(Device<CanvasType_T>&&) = delete;
+
+        //  Get singleton instance
         static Device<CanvasType_T>* getInstance(void);
 
+        //  Renders and performs graphics tasks
         void render(void);
+
+        //  Polls the canvas events and empties pushed events
         void handleEvents(void);
 
         //  Get status
@@ -52,16 +67,19 @@ namespace Cucca {
 
         //  Push an event into event queue
         void pushEvent(EventBase& event);
+        void pushEvent(EventBase&& event);
 
         //  Subscribe events of specific type (use EventBase::getEventTypeId for correct id)
         void subscribeEvents(EventComponent* eventComponent, int eventTypeId);
+
+        //
+        TaskQueue* getGraphicsTaskQueue(void);
 
     private:
         //  Singleton pattern
         static std::unique_ptr<Device<CanvasType_T>> instance__;
         Device(void);
-        Device<CanvasType_T>(const Device<CanvasType_T>&) {};
-        Device<CanvasType_T>& operator=(const Device<CanvasType_T>&) {};
+
         static std::mutex instanceMutex__;
 
         Status status_;
@@ -76,6 +94,9 @@ namespace Cucca {
         //  Event type id mapping for subscribers
         std::unordered_map<int, std::vector<EventComponent*>> eventSubscribers_;
         std::mutex eventMutex_;
+
+        //  Graphics task queue
+        TaskQueue graphicsTasks_;
     };
 
 
@@ -103,9 +124,22 @@ namespace Cucca {
 
     template<typename CanvasType_T>
     void Device<CanvasType_T>::render(void) {
-        std::lock_guard<std::mutex> lock(canvasMutex_);
-        if (canvas_.isOpen())
-            canvas_.display();
+        {
+            std::lock_guard<std::mutex> lock(canvasMutex_);
+            if (canvas_.isOpen())
+                canvas_.display();
+        }
+
+        Task task;
+        while (true) {
+            if (graphicsTasks_.empty())
+                return;
+
+            if (graphicsTasks_.pullTask(task))
+                task();
+
+            //  TODO_IMPLEMENT: chrono timer so that fps won't drop when there is too much tasks in the queue
+        }
     }
 
     template<typename CanvasType_T>
@@ -175,6 +209,11 @@ namespace Cucca {
     void Device<CanvasType_T>::subscribeEvents(EventComponent* eventComponent, int eventTypeId) {
         std::lock_guard<std::mutex> lock(eventMutex_);
         eventSubscribers_[eventTypeId].push_back(eventComponent);
+    }
+
+    template<typename CanvasType_T>
+    TaskQueue* Device<CanvasType_T>::getGraphicsTaskQueue(void) {
+        return &graphicsTasks_;
     }
 
 } // namespace Cucca

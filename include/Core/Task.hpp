@@ -8,7 +8,7 @@
 
     @version    0.1
     @author     Miika Lehtimäki
-    @date       2014-12-19
+    @date       2014-12-21
 **/
 
 
@@ -30,9 +30,13 @@ namespace Cucca {
             FLAG_RESOURCEMANAGER
         };
 
-        friend class ThreadPool;
+        friend class TaskQueue;
 
-        Task(const Task& other);
+        Task(void);
+        //Task(const Task& other);
+        //Task(Task&& other);
+        //Task& operator=(const Task& other);
+        //Task& operator=(Task&& other);
 
         /// Constructors for plain function
         template <typename... Arguments_T>
@@ -69,6 +73,8 @@ namespace Cucca {
 
         void operator()(void) const;
 
+        operator bool() const;
+
     private:
         std::function<void(void)> f_;
 
@@ -77,11 +83,6 @@ namespace Cucca {
 
 
     /// Member definitions
-    Task::Task(const Task& other) :
-        f_(other.f_),
-        flag_(other.flag_)
-    {}
-
     template <typename... Arguments_T>
     Task::Task(void(*f)(Arguments_T...), Arguments_T... args) :
         f_(std::bind(f, args...)),
@@ -153,10 +154,6 @@ namespace Cucca {
         f_(std::bind(f, args...)),
         flag_(flag)
     {}
-
-    void Task::operator()(void) const {
-        f_();
-    }
 
 } // namespace Cucca
 

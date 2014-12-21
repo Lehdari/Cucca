@@ -29,9 +29,9 @@ namespace Cucca {
         ~TestResource_Vec2f(void);
 
         void init(const ResourceInitInfo<TestResource_Vec2f>& initInfo,
-                  ResourceManager<ResourceId>& resourceManager,
                   const std::vector<ResourceId>& initResources,
-                  const std::vector<ResourceId>& depResources);
+                  const std::vector<ResourceId>& depResources,
+                  ResourceManager<ResourceId>* resourceManager);
         void destroy(void);
 
         float a_;
@@ -50,9 +50,9 @@ namespace Cucca {
         ~TestResource_Movement(void);
 
         void init(const ResourceInitInfo<TestResource_Movement>& initInfo,
-                  ResourceManager<ResourceId>& resourceManager,
                   const std::vector<ResourceId>& initResources,
-                  const std::vector<ResourceId>& depResources);
+                  const std::vector<ResourceId>& depResources,
+                  ResourceManager<ResourceId>* resourceManager);
         void destroy(void);
 
     private:
@@ -72,9 +72,9 @@ namespace Cucca {
         ~TestResource_Vec2fTree(void);
 
         void init(const ResourceInitInfo<TestResource_Vec2fTree>& initInfo,
-                  ResourceManager<ResourceId>& resourceManager,
                   const std::vector<ResourceId>& initResources,
-                  const std::vector<ResourceId>& depResources);
+                  const std::vector<ResourceId>& depResources,
+                  ResourceManager<ResourceId>* resourceManager);
         void destroy(void);
 
     private:

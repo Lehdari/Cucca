@@ -25,7 +25,7 @@
 
     @version    0.1
     @author     Miika Lehtimäki
-    @date       2014-12-06
+    @date       2014-12-21
 **/
 
 
@@ -46,7 +46,7 @@ namespace Cucca {
 
 
     // Forward Declarations
-    template <typename ResourceIdType_T>
+    template<typename ResourceIdType_T>
     class ResourceManager;
 
 
@@ -75,10 +75,10 @@ namespace Cucca {
         Resource(const Resource&) = delete;
         Resource& operator=(const Resource&) & = delete;
 
-        void init(const ResourceInitInfo<ResourceType_T>& initInfo,
-                  ResourceManager<ResourceIdType_T>& resourceManager,
-                  const std::vector<ResourceIdType_T>& initResources,
-                  const std::vector<ResourceIdType_T>& depResources);
+        void init(ResourceInitInfo<ResourceType_T> initInfo,
+                  std::vector<ResourceIdType_T> initResources,
+                  std::vector<ResourceIdType_T> depResources,
+                  ResourceManager<ResourceIdType_T>* resourceManager);
         void destroy(void);
     };
 
@@ -95,14 +95,14 @@ namespace Cucca {
     {}
 
     template<typename ResourceType_T, typename ResourceIdType_T>
-    void Resource<ResourceType_T, ResourceIdType_T>::init(const ResourceInitInfo<ResourceType_T>& initInfo,
-                                                          ResourceManager<ResourceIdType_T>& resourceManager,
-                                                          const std::vector<ResourceIdType_T>& initResources,
-                                                          const std::vector<ResourceIdType_T>& depResources) {
+    void Resource<ResourceType_T, ResourceIdType_T>::init(ResourceInitInfo<ResourceType_T> initInfo,
+                                                          std::vector<ResourceIdType_T> initResources,
+                                                          std::vector<ResourceIdType_T> depResources,
+                                                          ResourceManager<ResourceIdType_T>* resourceManager) {
         if (status() != STATUS_UNINITIALIZED)
             return;
         setStatus(STATUS_INITIALIZING);
-        static_cast<ResourceType_T*>(this)->init(initInfo, resourceManager, initResources, depResources);
+        static_cast<ResourceType_T*>(this)->init(initInfo, initResources, depResources, resourceManager);
         setStatus(STATUS_READY);
     }
 

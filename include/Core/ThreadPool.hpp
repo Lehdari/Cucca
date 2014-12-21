@@ -6,7 +6,7 @@
 
     @version    0.1
     @author     Miika Lehtimäki
-    @date       2014-12-19
+    @date       2014-12-21
 **/
 
 
@@ -14,7 +14,7 @@
 #define CUCCA_CORE_THREADPOOL_HPP
 
 
-#include "Task.hpp"
+#include "TaskQueue.hpp"
 
 #include <thread>
 #include <mutex>
@@ -23,7 +23,6 @@
 #include <unordered_map>
 #include <deque>
 #include <vector>
-#include <cstdio> // TEMP
 
 
 namespace Cucca {
@@ -38,32 +37,34 @@ namespace Cucca {
         };
 
         ThreadPool(void);
+
+        //  ThreadPool is immovable and incopyable
         ThreadPool(const ThreadPool&) = delete;
         ThreadPool(ThreadPool&&) = delete;
 
-        ~ThreadPool(void);
-
         ThreadPool operator=(const ThreadPool&) = delete;
         ThreadPool operator=(ThreadPool&&) = delete;
+
+        ~ThreadPool(void);
 
         void launchThreads(unsigned n);
         void joinThreads(unsigned n);
 
         void terminate(void);
 
-        void pushTask(const Task& task);
-        void pushTask(Task&& task);
+        TaskQueue* getTaskQueue(void);
 
-        void removeTasks(Task::Flag flag);
-
-        Status status(void) const;
+        Status status(void);
         unsigned threadsPerformingTask(void) const;
 
     private:
         // loop for worker threads
         void loop(void);
 
+        void setStatus(Status status);
+
         Status status_;
+        std::mutex statusMutex_;
 
         std::unordered_map<std::thread::id, std::thread> threads_;
         std::atomic_uint threadsToJoin_; // for signaling threads to join
@@ -71,133 +72,11 @@ namespace Cucca {
         std::mutex threadsJoiningMutex_; // for use with condition variable
         std::condition_variable threadsJoiningCV_; // for threads to signal they're joining
 
-        std::deque<Task> tasks_;
+        TaskQueue tasks_;
         std::atomic_uint threadsPerformingTask_;
         std::mutex taskMutex_;
         std::condition_variable taskCV_;
     };
-
-
-    // Member definitions
-    ThreadPool::ThreadPool(void) :
-        status_(STATUS_INITIALIZED),
-        threadsToJoin_(0),
-        threadsPerformingTask_(0)
-    {}
-
-    ThreadPool::~ThreadPool(void) {
-        if (status_ == STATUS_RUNNING)
-            terminate();
-    }
-
-    void ThreadPool::launchThreads(unsigned n) {
-        if (n == 0)
-            return;
-
-        if (status_ == STATUS_INITIALIZED)
-            status_ = STATUS_RUNNING;
-
-        for (auto i=0u; i<n; ++i) {
-            std::thread t(&ThreadPool::loop, this);
-            threads_.insert(std::make_pair(t.get_id(), std::move(t)));
-        }
-    }
-
-    void ThreadPool::joinThreads(unsigned n) {
-        threadsToJoin_ = n;
-        taskCV_.notify_all();
-
-        std::unique_lock<std::mutex> lock(threadsJoiningMutex_);
-        threadsJoiningCV_.wait(lock, [this] { return threadsToJoin_ == 0; });
-
-        for (auto& threadID : threadsJoining_) {
-            threads_[threadID].join();
-            threads_.erase(threadID);
-        }
-
-        threadsJoining_.clear();
-    }
-
-    void ThreadPool::terminate(void) {
-        taskMutex_.lock();
-        status_ = STATUS_TERMINATING;
-        taskMutex_.unlock();
-        taskCV_.notify_all();
-
-        for (auto& thread : threads_)
-            if (thread.second.joinable())
-                thread.second.join();
-
-        threads_.clear();
-    }
-
-    void ThreadPool::pushTask(const Task& task) {
-        {
-            std::lock_guard<std::mutex> lock(taskMutex_);
-            tasks_.push_back(task);
-        }
-        taskCV_.notify_one();
-    }
-
-    void ThreadPool::pushTask(Task&& task) {
-        {
-            std::lock_guard<std::mutex> lock(taskMutex_);
-            tasks_.push_back(task);
-        }
-        taskCV_.notify_one();
-    }
-
-    void ThreadPool::removeTasks(Task::Flag flag) {
-            std::lock_guard<std::mutex> lock(taskMutex_);
-
-            for (auto it = tasks_.begin(); it != tasks_.end(); it++) {
-                if (it->flag_ == flag) {
-                    it = tasks_.erase(it);
-                    if (it == tasks_.end()) // WTF does not work without this?
-                        break;
-                }
-            }
-    }
-
-    ThreadPool::Status ThreadPool::status(void) const {
-        return status_;
-    }
-
-    unsigned ThreadPool::threadsPerformingTask(void) const {
-        return threadsPerformingTask_;
-    }
-
-    void ThreadPool::loop(void) {
-        while (status_ == STATUS_RUNNING) {
-            std::unique_lock<std::mutex> lock(taskMutex_);
-            // wait for notification
-            taskCV_.wait(lock, [this] { return tasks_.size() > 0 ||
-                                               status_ == STATUS_TERMINATING ||
-                                               threadsToJoin_ > 0; });
-
-            if (status_ == STATUS_TERMINATING)
-                break;
-
-            if (threadsToJoin_ > 0) {
-                {
-                    std::lock_guard<std::mutex> lock2(threadsJoiningMutex_);
-                    threadsJoining_.push_back(std::this_thread::get_id());
-                }
-                --threadsToJoin_;
-                threadsJoiningCV_.notify_all();
-                return;
-            }
-
-            Task task(std::move(tasks_.front()));
-            tasks_.pop_front();
-
-            lock.unlock(); // end of synchronization
-
-            ++threadsPerformingTask_;
-            task();
-            --threadsPerformingTask_;
-        }
-    }
 
 } // namespace Cucca
 

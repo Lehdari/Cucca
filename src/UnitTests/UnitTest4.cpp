@@ -4,6 +4,7 @@
 #if CURRENT_TEST == 4
 
 
+#include "../../include/Core/ThreadPool.hpp"
 #include "../../include/Core/ResourceManager.hpp"
 #include "../../include/Core/Binary.hpp"
 
@@ -20,9 +21,9 @@ TestResource_Vec2f::~TestResource_Vec2f(void) {
 }
 
 void TestResource_Vec2f::init(const ResourceInitInfo<TestResource_Vec2f>& initInfo,
-                              ResourceManager<ResourceId>& resourceManager,
                               const std::vector<ResourceId>& initResources,
-                              const std::vector<ResourceId>& depResources) {
+                              const std::vector<ResourceId>& depResources,
+                              ResourceManager<ResourceId>* resourceManager) {
     std::cout << "TestResource_Vec2f::init" << std::endl;
     a_ = initInfo.a;
     b_ = initInfo.b;
@@ -41,16 +42,16 @@ TestResource_Movement::~TestResource_Movement(void) {
 }
 
 void TestResource_Movement::init(const ResourceInitInfo<TestResource_Movement>& initInfo,
-                                 ResourceManager<ResourceId>& resourceManager,
                                  const std::vector<ResourceId>& initResources,
-                                 const std::vector<ResourceId>& depResources) {
+                                 const std::vector<ResourceId>& depResources,
+                                 ResourceManager<ResourceId>* resourceManager) {
     std::cout << "TestResource_Movement::init" << std::endl;
     if (depResources.size() < 3)
         throw "TestResource_Movement: unable to initialize resource (insufficient dependency resources provided)"; // TODO_EXCEPTION: throw a proper exception
 
-    position_ = resourceManager.getResource<TestResource_Vec2f>(depResources[0]);
-    velocity_ = resourceManager.getResource<TestResource_Vec2f>(depResources[1]);
-    acceleration_ = resourceManager.getResource<TestResource_Vec2f>(depResources[2]);
+    position_ = resourceManager->getResource<TestResource_Vec2f>(depResources[0]);
+    velocity_ = resourceManager->getResource<TestResource_Vec2f>(depResources[1]);
+    acceleration_ = resourceManager->getResource<TestResource_Vec2f>(depResources[2]);
 }
 
 void TestResource_Movement::destroy(void) {
@@ -63,9 +64,9 @@ TestResource_Vec2fTree::~TestResource_Vec2fTree(void) {
 }
 
 void TestResource_Vec2fTree::init(const ResourceInitInfo<TestResource_Vec2fTree>& initInfo,
-                                 ResourceManager<ResourceId>& resourceManager,
                                  const std::vector<ResourceId>& initResources,
-                                 const std::vector<ResourceId>& depResources) {
+                                 const std::vector<ResourceId>& depResources,
+                                 ResourceManager<ResourceId>* resourceManager) {
     std::cout << "TestResource_Vec2fTree::init" << std::endl;
     if (depResources.size() == 0)
         return;
@@ -74,11 +75,11 @@ void TestResource_Vec2fTree::init(const ResourceInitInfo<TestResource_Vec2fTree>
         throw "TestResource_Vec2fTree: unable to initialize resource (insufficient dependency resources provided)"; // TODO_EXCEPTION: throw a proper exception
 
     if (depResources[0] != "")
-        leftNode_ = resourceManager.getResource<TestResource_Vec2fTree>(depResources[0]);
+        leftNode_ = resourceManager->getResource<TestResource_Vec2fTree>(depResources[0]);
     if (depResources[1] != "")
-        rightNode_ = resourceManager.getResource<TestResource_Vec2fTree>(depResources[1]);
+        rightNode_ = resourceManager->getResource<TestResource_Vec2fTree>(depResources[1]);
     if (depResources[2] != "")
-        data_ = resourceManager.getResource<TestResource_Vec2f>(depResources[2]);
+        data_ = resourceManager->getResource<TestResource_Vec2f>(depResources[2]);
 
     std::this_thread::sleep_for(std::chrono::milliseconds(100)); // so effect of threading is more noticeable
 }
@@ -149,10 +150,11 @@ ResourceId makeRecursiveVec2fTreeInfo(ResourceManager<ResourceId>& resourceManag
 
 int unitTest(void) {
     auto testPart = 0u;
+    TaskQueue graphicsTaskQueue;
 
     {   //  resource management basics
         std::cout << "[ Test Part " << ++testPart << " ]" << std::endl;
-        ResourceManager<ResourceId> manager;
+        ResourceManager<ResourceId> manager(&graphicsTaskQueue);
 
         ResourceInitInfo<TestResource_Vec2f> vecInfo1;
         vecInfo1.a = 0.25f;
@@ -199,7 +201,7 @@ int unitTest(void) {
 
     {   //  loading a binary resource
         std::cout << "\n\n[ Test Part " << ++testPart << " ]" << std::endl;
-        ResourceManager<ResourceId> manager;
+        ResourceManager<ResourceId> manager(&graphicsTaskQueue);
 
         ResourceInitInfo<Binary> testTXTInfo;
         testTXTInfo.source = ResourceInitInfo<Binary>::FILE;
@@ -221,7 +223,7 @@ int unitTest(void) {
 
         ThreadPool pool;
         pool.launchThreads(1);
-        ResourceManager<ResourceId> manager(&pool);
+        ResourceManager<ResourceId> manager(&graphicsTaskQueue, pool.getTaskQueue());
 
         ResourceInitInfo<Binary> testTXTInfo;
         testTXTInfo.source = ResourceInitInfo<Binary>::FILE;
@@ -249,7 +251,7 @@ int unitTest(void) {
 
         ThreadPool pool;
         pool.launchThreads(4);
-        ResourceManager<ResourceId> manager(&pool);
+        ResourceManager<ResourceId> manager(&graphicsTaskQueue, pool.getTaskQueue());
 
         ResourceId rootNodeId = makeRecursiveVec2fTreeInfo(manager);
 
