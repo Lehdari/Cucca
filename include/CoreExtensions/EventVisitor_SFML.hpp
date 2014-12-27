@@ -8,7 +8,7 @@
 
     @version    0.1
     @author     Miika Lehtimäki
-    @date       2014-10-16
+    @date       2014-12-27
 **/
 
 
@@ -23,11 +23,13 @@
 
 
 namespace Cucca {
-    VISITOR(EventVisitor_SFML, EventComponent) {
+
+    CUCCA_VISITOR(EventVisitor_SFML, EventComponent) {
     public:
-        void nodeEnter(Cucca::Node* node, Cucca::EventComponent* component);
-        void nodeExit(Cucca::Node* node, Cucca::EventComponent* component) {}
+        void nodeEnter(Node* node, EventComponent* component);
+        void nodeExit(Node* node, EventComponent* component) {}
     };
+
 }
 
 

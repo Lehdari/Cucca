@@ -17,12 +17,16 @@
 #define CUCCA_CORE_VISITOR_HPP
 
 
-#define VISITOR(VISITOR_TYPE, COMPONENT_TYPE) class VISITOR_TYPE : public Cucca::Visitor<VISITOR_TYPE, COMPONENT_TYPE>
+#define CUCCA_VISITOR(VISITOR_TYPE, COMPONENT_TYPE) class VISITOR_TYPE : public Cucca::Visitor<VISITOR_TYPE, COMPONENT_TYPE>
 
 
 namespace Cucca {
+
+    // Forward Declarations
     class Node;
 
+
+    // Structs and Classes
     template<typename VisitorType_T, typename ComponentType_T>
     class Visitor {
     public:
@@ -38,7 +42,8 @@ namespace Cucca {
             static_cast<VisitorType_T*>(this)->nodeExit(node, component);
         }
     };
-}
+
+} // namespace Cucca
 
 
 #endif // CUCCA_CORE_VISITOR_HPP

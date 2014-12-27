@@ -1,5 +1,5 @@
 /**
-    Cucca Game Engine - Graphics - ShaderObject.hpp
+    Cucca Game Engine - Graphics - Mesh.hpp
 
     This file is subject to the terms and conditions defined in
     file 'LICENSE.txt', which is part of this source code package.
@@ -10,8 +10,8 @@
 **/
 
 
-#ifndef CUCCA_GRAPHICS_SHADEROBJECT_HPP
-#define CUCCA_GRAPHICS_SHADEROBJECT_HPP
+#ifndef CUCCA_GRAPHICS_MESH_HPP
+#define CUCCA_GRAPHICS_MESH_HPP
 
 
 #include "../../include/Core/Resource.hpp"
@@ -21,10 +21,10 @@
 
 namespace Cucca {
 
-    CUCCA_RESOURCE(ShaderObject) {
+    CUCCA_RESOURCE(Mesh) {
     public:
         //  Resource init and destroy member functions
-        void init(const ResourceInitInfo<ShaderObject>& initInfo,
+        void init(const ResourceInitInfo<Mesh>& initInfo,
                   const std::vector<ResourceId>& initResources,
                   const std::vector<ResourceId>& depResources,
                   ResourceManager<ResourceId>* resourceManager);
@@ -36,16 +36,9 @@ namespace Cucca {
         GLuint objectId_;
     };
 
-    CUCCA_RESOURCE_INIT_INFO(ShaderObject) {
-        enum Source {
-            SOURCE_CODE,       //  Loaded from plain GLSL code
-            SOURCE_BINARY      //  Loaded from precompiled binary
-        } source;
-
-        GLenum type; //  Shader type
-    };
+    CUCCA_RESOURCE_INIT_INFO(Mesh) { };
 
 } // namespace Cucca
 
 
-#endif // CUCCA_GRAPHICS_SHADEROBJECT_HPP
+#endif // CUCCA_GRAPHICS_MESH_HPP

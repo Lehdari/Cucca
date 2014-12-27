@@ -7,12 +7,15 @@ TODO:
 
 (Put template definitions in .inl files[see google style guide!]) and unify the layout
 
-Start implementing graphics components
-	Shaders
-	Meshes
-	Materials
+Start implementing graphics stuff
+	Camera
+	Mesh
+	Material
 	Curves, animations
 	etc.
+
+Special file for typedefs (ResourceId)?
+	make proper implementation for ResourceId?
 
 Rethink role of the Device
 Rethink role of the TaskQueue (can be generalized? TBB replacement?)

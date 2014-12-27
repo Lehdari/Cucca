@@ -5,10 +5,11 @@
     file 'LICENSE.txt', which is part of this source code package.
 
     Binary is a resource consisting a buffer of binary data.
+    Buffer is null/terminated, thus it can be used as a C string.
 
     @version    0.1
     @author     Miika Lehtimäki
-    @date       2014-12-21
+    @date       2014-12-27
 **/
 
 
@@ -22,7 +23,7 @@
 namespace Cucca {
 
     //  Structs and Classes
-    class Binary : public Resource<Binary, ResourceId> {
+    CUCCA_RESOURCE(Binary) {
     public:
         Binary(void);
         ~Binary(void);
@@ -43,7 +44,7 @@ namespace Cucca {
     };
 
 
-    template<> struct ResourceInitInfo<Binary> : public ResourceInitInfoBase {
+    CUCCA_RESOURCE_INIT_INFO(Binary) {
         enum Source {
             SOURCE_FILE
         } source;

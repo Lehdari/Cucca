@@ -49,8 +49,9 @@ void Binary::init(const ResourceInitInfo<Binary>& initInfo,
                 throw "Binary: error seeking beginning of file"; // TODO_EXCEPTION: throw a proper exception
             }
 
-            buffer_ = new char[size_]; // TODO_ALLOCATOR
+            buffer_ = new char[size_ + 1]; // TODO_ALLOCATOR
             fread(buffer_, sizeof(char), size_, file);
+            buffer_[size_] = '\0';
 
             fclose(file);
         }

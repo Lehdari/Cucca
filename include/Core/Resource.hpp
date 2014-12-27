@@ -25,7 +25,7 @@
 
     @version    0.1
     @author     Miika Lehtimäki
-    @date       2014-12-21
+    @date       2014-12-27
 **/
 
 
@@ -37,6 +37,10 @@
 
 #include <string>
 #include <vector>
+
+
+#define CUCCA_RESOURCE(RESOURCE_TYPE) class RESOURCE_TYPE : public Cucca::Resource<RESOURCE_TYPE, ResourceId>
+#define CUCCA_RESOURCE_INIT_INFO(RESOURCE_TYPE) template<> struct ResourceInitInfo<RESOURCE_TYPE> : public ResourceInitInfoBase
 
 
 namespace Cucca {

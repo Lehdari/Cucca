@@ -8,7 +8,7 @@
 
     @version    0.1
     @author     Miika Lehtimäki
-    @date       2014-10-17
+    @date       2014-12-27
 **/
 
 
@@ -25,7 +25,7 @@
 using namespace Cucca;
 
 
-void Cucca::EventVisitor_SFML::nodeEnter(Node* node, EventComponent* component) {
+void EventVisitor_SFML::nodeEnter(Node* node, EventComponent* component) {
     std::shared_ptr<EventBase> eventBase(component->pullEvent());
     if (!eventBase)
         return;

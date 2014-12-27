@@ -24,6 +24,7 @@
 
 
 namespace Cucca {
+
     class EventComponent : public Component {
     public:
         void pushEvent(std::shared_ptr<EventBase> event);
@@ -32,7 +33,8 @@ namespace Cucca {
     private:
         std::queue<std::shared_ptr<EventBase>> eventQueue_;
     };
-}
+
+} // namespace Cucca
 
 
 #endif // CUCCA_CORE_EVENTCOMPONENT_HPP
