@@ -14,11 +14,7 @@
 #define CUCCA_GRAPHICS_TRANSFORMATIONCOMPONENT_HPP
 
 
-#include "Component.hpp"
-#include "EventBase.hpp"
-
-#include <queue>
-#include <memory>
+#include "../Core/Component.hpp"
 
 
 namespace Cucca {

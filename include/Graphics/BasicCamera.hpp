@@ -15,6 +15,7 @@
 
 
 #include "../../include/Core/Visitor.hpp"
+#include "../../include/Graphics/MeshComponent.hpp"
 
 
 namespace Cucca {
