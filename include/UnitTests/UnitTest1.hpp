@@ -15,30 +15,46 @@
 #include <iostream>
 
 
-struct TestComponent1 : public Component {
+struct TestComponent1 : public Cucca::Component {
     int a_;
 };
 
-struct TestComponent2 : public Component {
+struct TestComponent2 : public Cucca::Component {
     int b_;
 };
 
-VISITOR(TestVisitor1, TestComponent1) {
-public:
-    void nodeEnter(Node* node, TestComponent1* component);
-    void nodeExit(Node* node, TestComponent1* component);
+struct TestComponent3 : public Cucca::Component {
+    double c_;
 };
 
-VISITOR(TestVisitor2, TestComponent2) {
+CUCCA_VISITOR(TestVisitor1, TestComponent1) {
 public:
-    void nodeEnter(Node* node, TestComponent2* component);
-    void nodeExit(Node* node, TestComponent2* component);
+    void nodeEnter(Cucca::Node* node, TestComponent1* component);
+    void nodeExit(Cucca::Node* node, TestComponent1* component);
 };
 
-VISITOR(TestVisitor3, TestComponent2) {
+CUCCA_VISITOR(TestVisitor2, TestComponent2) {
 public:
-    void nodeEnter(Node* node, TestComponent2* component);
-    void nodeExit(Node* node, TestComponent2* component);
+    void nodeEnter(Cucca::Node* node, TestComponent2* component);
+    void nodeExit(Cucca::Node* node, TestComponent2* component);
+};
+
+CUCCA_VISITOR(TestVisitor3, TestComponent2) {
+public:
+    void nodeEnter(Cucca::Node* node, TestComponent2* component);
+    void nodeExit(Cucca::Node* node, TestComponent2* component);
+};
+
+CUCCA_VISITOR(TestVisitor4, TestComponent1, TestComponent3, TestComponent2) {
+public:
+    void nodeEnter(Cucca::Node* node, TestComponent1* component);
+    void nodeExit(Cucca::Node* node, TestComponent1* component);
+
+    void nodeEnter(Cucca::Node* node, TestComponent2* component);
+    void nodeExit(Cucca::Node* node, TestComponent2* component);
+
+    void nodeEnter(Cucca::Node* node, TestComponent3* component);
+    void nodeExit(Cucca::Node* node, TestComponent3* component);
 };
 
 
