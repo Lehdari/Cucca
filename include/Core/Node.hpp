@@ -106,7 +106,6 @@ namespace Cucca {
     template<typename VisitorType_T, typename FirstComponentType_T, typename ...RestComponentTypes_T>
     void Node::nodeEnterRecursive(VisitorInterface<VisitorType_T, FirstComponentType_T, RestComponentTypes_T...>& visitor) {
         auto& componentVector = components_[getComponentTypeId<FirstComponentType_T>()];
-
         for (auto it = componentVector.begin(); it != componentVector.end(); ++it)
             visitor.nodeEnter(this, static_cast<FirstComponentType_T*>(it->get()));
 
@@ -115,10 +114,9 @@ namespace Cucca {
 
     template<typename VisitorType_T, typename FirstComponentType_T, typename ...RestComponentTypes_T>
     void Node::nodeExitRecursive(VisitorInterface<VisitorType_T, FirstComponentType_T, RestComponentTypes_T...>& visitor) {
-        auto& componentVector = components_[getComponentTypeId<FirstComponentType_T>()];
-
         nodeExitRecursive(*static_cast<VisitorInterface<VisitorType_T, RestComponentTypes_T...>*>(&visitor));
 
+        auto& componentVector = components_[getComponentTypeId<FirstComponentType_T>()];
         for (auto it = componentVector.cbegin(); it != componentVector.cend(); ++it)
             visitor.nodeExit(this, static_cast<FirstComponentType_T*>(it->get()));
     }

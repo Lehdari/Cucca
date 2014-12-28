@@ -1,15 +1,22 @@
 /**
     Cucca Game Engine - Core - Visitor.hpp
 
+
     This file is subject to the terms and conditions defined in
     file 'LICENSE.txt', which is part of this source code package.
 
+
     Visitor class defines a CRTP interface for manipulating components
-    of nodes.
+    of nodes. CRTP calls will be made through VisitorInterface class.
+
+    Create custom visitor by deriving from Visitor class or by using the
+    macro provided and implementing nodeEnter and nodeExit member
+    functions for all the component types you wish to gain access to.
+
 
     @version    0.1
     @author     Miika Lehtimäki
-    @date       2014-10-07
+    @date       2014-12-28
 **/
 
 
@@ -34,14 +41,10 @@ namespace Cucca {
     class VisitorInterface<VisitorType_T, FirstComponentType_T, RestComponentTypes_T...> :
         public VisitorInterface<VisitorType_T, RestComponentTypes_T...> {
     public:
-        /*  CRTP Implementation of this member function will be called when a visitor
-            enters a node. */
         void nodeEnter(Node* node, FirstComponentType_T* component) {
             static_cast<VisitorType_T*>(this)->nodeEnter(node, component);
         }
 
-        /*  CRTP Implementation of this member function will be called when a visitor
-            exits a node. */
         void nodeExit(Node* node, FirstComponentType_T* component) {
             static_cast<VisitorType_T*>(this)->nodeExit(node, component);
         }
