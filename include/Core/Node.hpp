@@ -87,7 +87,7 @@ namespace Cucca {
     template<typename ComponentType_T>
     std::vector<ComponentType_T*> Node::getComponents(void) {
         unsigned typeId = getComponentTypeId<ComponentType_T>();
-        std::vector<ComponentType_T*> components(components_[typeId]);
+        std::vector<ComponentType_T*> components(components_[typeId].size());
         for (auto& component : components_[typeId])
             components.push_back(static_cast<ComponentType_T*>(component.get()));
         return components;

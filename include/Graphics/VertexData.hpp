@@ -30,15 +30,12 @@ namespace Cucca {
                   ResourceManager<ResourceId>* resourceManager);
         void destroy(void);
 
-        GLuint getId(void) const;
-
     private:
-        GLuint objectId_;
     };
 
     CUCCA_RESOURCE_INIT_INFO(VertexData) {
         enum Source {
-            SOURCE_BINARY_OBJ      //  Loaded from precompiled binary
+            SOURCE_BINARY_OBJ      //  Loaded from .obj file
         } source;
     };
 

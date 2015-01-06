@@ -41,13 +41,8 @@ namespace Cucca {
     class VisitorInterface<VisitorType_T, FirstComponentType_T, RestComponentTypes_T...> :
         public VisitorInterface<VisitorType_T, RestComponentTypes_T...> {
     public:
-        void nodeEnter(Node* node, FirstComponentType_T* component) {
-            static_cast<VisitorType_T*>(this)->nodeEnter(node, component);
-        }
-
-        void nodeExit(Node* node, FirstComponentType_T* component) {
-            static_cast<VisitorType_T*>(this)->nodeExit(node, component);
-        }
+        void nodeEnter(Node* node, FirstComponentType_T* component);
+        void nodeExit(Node* node, FirstComponentType_T* component);
     };
 
     template<typename VisitorType_T>
@@ -55,6 +50,20 @@ namespace Cucca {
 
     template<typename VisitorType_T, typename ...ComponentTypes_T>
     class Visitor : public VisitorInterface<VisitorType_T, ComponentTypes_T...> { };
+
+
+    //  Member definitions
+    template<typename VisitorType_T, typename FirstComponentType_T, typename ...RestComponentTypes_T>
+    void VisitorInterface<VisitorType_T, FirstComponentType_T, RestComponentTypes_T...>
+         ::nodeEnter(Node* node, FirstComponentType_T* component) {
+        static_cast<VisitorType_T*>(this)->nodeEnter(node, component);
+    }
+
+    template<typename VisitorType_T, typename FirstComponentType_T, typename ...RestComponentTypes_T>
+    void VisitorInterface<VisitorType_T, FirstComponentType_T, RestComponentTypes_T...>
+         ::nodeExit(Node* node, FirstComponentType_T* component) {
+        static_cast<VisitorType_T*>(this)->nodeExit(node, component);
+    }
 
 } // namespace Cucca
 

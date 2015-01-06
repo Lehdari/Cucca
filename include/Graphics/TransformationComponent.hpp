@@ -16,11 +16,17 @@
 
 #include "../Core/Component.hpp"
 
+#include <Eigen/Dense>
+
 
 namespace Cucca {
 
     class TransformationComponent : public Component {
+    public:
 
+
+    private:
+        Eigen::Matrix4f transformation_;
     };
 
 } // namespace Cucca

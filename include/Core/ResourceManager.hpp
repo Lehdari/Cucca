@@ -305,7 +305,8 @@ namespace Cucca {
         // TODO_IMPLEMENT
         // for now, we just delete the resource once it goes out of references.
         // make buffer for unreferenced resources and implement lazy uninitialization
-        ResourceBase* resource;
+
+        /*ResourceBase* resource;
         std::function<void(ResourceBase*)> destroy;
 
         {
@@ -322,7 +323,7 @@ namespace Cucca {
         if (threadPoolTaskQueue_)
             threadPoolTaskQueue_->pushTask(Task(Task::FLAG_RESOURCEMANAGER, destroy, resource));
         else
-            destroy(resource);
+            destroy(resource);*/
     }
 
 

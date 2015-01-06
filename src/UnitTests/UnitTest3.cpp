@@ -12,6 +12,7 @@
 #include "../../include/Core/Binary.hpp"
 #include "../../include/Graphics/ShaderObject.hpp"
 #include "../../include/Graphics/ShaderProgram.hpp"
+#include "../../include/Graphics/VertexData.hpp"
 
 
 using namespace Cucca;
@@ -74,7 +75,22 @@ int unitTest(void) {
                                            std::vector<ResourceId>(),
                                            true);
 
+    ResourceInitInfo<Binary> vertexDataBinaryInitInfo1;
+    vertexDataBinaryInitInfo1.source = ResourceInitInfo<Binary>::SOURCE_FILE;
+    vertexDataBinaryInitInfo1.fileName = "res/models/bunny.obj";
+    manager.addResourceInfo<Binary>("BINARY_VERTEX_DATA_1", vertexDataBinaryInitInfo1);
+
+    ResourceInitInfo<VertexData> vertexDataInitInfo1;
+    vertexDataInitInfo1.source = ResourceInitInfo<VertexData>::SOURCE_BINARY_OBJ;
+    manager.addResourceInfo<VertexData>("VERTEX_DATA_1",
+                                        vertexDataInitInfo1,
+                                        std::vector<ResourceId>{ "BINARY_VERTEX_DATA_1" },
+                                        std::vector<ResourceId>());
+
+
     auto shader1 = manager.getResource<ShaderProgram>("SHADER_PROGRAM_1");
+    auto vertexData1 = manager.getResource<VertexData>("VERTEX_DATA_1");
+
 
     //  Run it
     EventVisitor_SFML sfmlEventVisitor;
