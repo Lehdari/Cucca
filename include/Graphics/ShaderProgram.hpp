@@ -6,7 +6,7 @@
 
     @version    0.1
     @author     Miika Lehtimäki
-    @date       2014-12-27
+    @date       2015-01-08
 **/
 
 
@@ -23,6 +23,8 @@ namespace Cucca {
 
     CUCCA_RESOURCE(ShaderProgram) {
     public:
+        ShaderProgram(void);
+
         //  Resource init and destroy member functions
         void init(const ResourceInitInfo<ShaderProgram>& initInfo,
                   const std::vector<ResourceId>& initResources,

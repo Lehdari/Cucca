@@ -6,20 +6,27 @@
 
     @version    0.1
     @author     Miika Lehtimäki
-    @date       2014-12-27
+    @date       2015-01-08
 **/
 
 
 #include "../../include/Graphics/VertexData.hpp"
 #include "../../include/Core/ResourceManager.hpp"
 #include "../../include/Core/Binary.hpp"
-#include "../../include/Core/StorageVector.hpp"
 
+#include <array>
 #include <cstring>
+#include <map>
 
 
 using namespace Cucca;
 
+
+VertexData::VertexData(void) :
+    usingTexCoords_(false),
+    usingNormals_(false),
+    usingIndexing_(false)
+{}
 
 void VertexData::init(const ResourceInitInfo<VertexData>& initInfo,
                       const std::vector<ResourceId>& initResources,
@@ -31,92 +38,142 @@ void VertexData::init(const ResourceInitInfo<VertexData>& initInfo,
             if (initResources.size() == 0)
                 return;
 
+            positions_.clear();
+            texCoords_.clear();
+            normals_.clear();
+            indices_.clear();
+
             char* buffer = resourceManager->getResource<Binary>(initResources[0])->getBufferPtr();
-            for (auto i=0u; i<30; ++i)
-                printf("%c", buffer[i]);
-            printf("\n");
 
-            char spec[32];
-
-            printf("buffer size: %u\n", strlen(buffer));
-
-            std::vector<StorageVector<float, 4>> positions;
-            std::vector<StorageVector<float, 4>> texCoords;
-            std::vector<StorageVector<float, 3>> normals;
-            std::vector<StorageVector<float, 3, 3>> indices;
+            char lineHeader[32];
+            std::vector<std::array<float, 4>> positions;
+            std::vector<std::array<float, 3>> texCoords;
+            std::vector<std::array<float, 3>> normals;
+            std::vector<std::array<unsigned, 9>> indices;
 
             while(*buffer) {
-                if (sscanf(buffer, "%s", spec) == 0)
+                if (sscanf(buffer, "%s", lineHeader) == 0)
                     return;
 
-                printf("spec length: %u\n", strlen(spec));
-                printf("spec[0]: %c\n", spec[0]);
-                printf("spec[1]: %c\n", spec[1]);
+                buffer += strlen(lineHeader)+1;
 
-                buffer += strlen(spec)+1;
-
-                switch (spec[0]) {
-                case 'v':
-                    switch(spec[1]) {
-                    case 't':
-                        {
-                            Eigen::Vector3f texCoord;
-                            texCoord << 0.0f, 0.0f, 0.0f;
-                            if (sscanf(buffer, "%f %f %f", &texCoord(0), &texCoord(1), &texCoord(2)) < 2)
-                                throw "VertexData: invalid file!"; // TODO_EXCEPTION
-                            texCoords.push_back(texCoord);
-                        }
-                    break;
-                    case 'n':
-                        {
-                            Eigen::Vector3f normal;
-                            normal << 0.0f, 0.0f, 0.0f;
-                            if (sscanf(buffer, "%f %f %f", &normal(0), &normal(1), &normal(2)) < 3)
-                                throw "VertexData: invalid file!"; // TODO_EXCEPTION
-                            normals.push_back(normal);
-                        }
-                    break;
-                    case 'p':
-                        throw "VertexData: parameter space vertex loading from .obj file not supported!"; // TODO_EXCEPTION
-                    break;
-                    default:
-                        {
-                            Eigen::Vector4f position;
-                            position << 0.0f, 0.0f, 0.0f, 1.0f;
-                            if (sscanf(buffer, "%f %f %f %f", &position(0), &position(1), &position(2), &position(3)) < 3)
-                                throw "VertexData: invalid file!"; // TODO_EXCEPTION
-                            positions.push_back(position);
-                            printf("Another bytes the dust\n");
-                        }
-                    break;
-                    }
-                break;
-                case 'f':
-                    {
-                        Eigen::Matrix3i index;
-                        index << 0, 0, 0,  0, 0, 0,  0, 0, 0;
-                        if (sscanf(buffer, "%u/%u/%u %u/%u/%u %u/%u/%u", &index(0,0), &index(1,0), &index(2,0), &index(0,1), &index(1,1), &index(2,1), &index(0,2), &index(1,2), &index(2,2)) < 9 ||
-                            sscanf(buffer, "%u//%u %u//%u %u//%u", &index(0,0), &index(2,0), &index(0,1), &index(2,1), &index(0,2), &index(2,2)) < 6 ||
-                            sscanf(buffer, "%u/%u %u/%u %u/%u", &index(0,0), &index(1,0), &index(0,1), &index(1,1), &index(0,2), &index(1,2)) < 6 ||
-                            sscanf(buffer, "%u %u %u", &index(0,0), &index(0,1), &index(0,2)) < 3)
-                            throw "VertexData: invalid file!"; // TODO_EXCEPTION
-                        indices.push_back(index);
-                    }
-                break;
-                default:
-                break;
+                if (strcmp(lineHeader, "v") == 0) {
+                    std::array<float, 4> position = {0.0f, 0.0f, 0.0f, 1.0f};
+                    if (sscanf(buffer, "%f %f %f %f", &position[0], &position[1], &position[2], &position[3]) < 3)
+                        throw "VertexData: invalid file!"; // TODO_EXCEPTION
+                    positions.push_back(std::move(position));
+                }
+                else if (strcmp(lineHeader, "vt") == 0) {
+                    std::array<float, 3> texCoord = {0.0f, 0.0f, 0.0f};
+                    if (sscanf(buffer, "%f %f %f", &texCoord[0], &texCoord[1], &texCoord[2]) < 2)
+                        throw "VertexData: invalid file!"; // TODO_EXCEPTION
+                    texCoords.push_back(std::move(texCoord));
+                }
+                else if (strcmp(lineHeader, "vn") == 0) {
+                    std::array<float, 3> normal = {0.0f, 0.0f, 0.0f};
+                    if (sscanf(buffer, "%f %f %f", &normal[0], &normal[1], &normal[2]) < 3)
+                        throw "VertexData: invalid file!"; // TODO_EXCEPTION
+                    normals.push_back(std::move(normal));
+                }
+                else if (strcmp(lineHeader, "f") == 0) {
+                    std::array<unsigned, 9> index = {0, 0, 0,  0, 0, 0,  0, 0, 0};
+                    if (sscanf(buffer, "%u/%u/%u %u/%u/%u %u/%u/%u", &index[0], &index[3], &index[6], &index[1], &index[4], &index[7], &index[2], &index[5], &index[8]) == 9 ||
+                        sscanf(buffer, "%u//%u %u//%u %u//%u", &index[0], &index[6], &index[1], &index[7], &index[2], &index[8]) == 6 ||
+                        sscanf(buffer, "%u/%u %u/%u %u/%u", &index[0], &index[3], &index[1], &index[4], &index[2], &index[5]) == 6 ||
+                        sscanf(buffer, "%u %u %u", &index[0], &index[1], &index[2]) == 3)
+                        indices.push_back(std::move(index));
+                    else
+                        throw "VertexData: invalid file!"; // TODO_EXCEPTION
                 }
 
                 while (*buffer++ != 10)
-                    printf("%c", *buffer);
+                    if (*buffer == 0)
+                        break;
             }
 
-            printf("Read %u positions, %u texture coordinates, %u normals and %u indices\n", positions.size(), texCoords.size(), normals.size(), indices.size()); // TEMP
+            std::map<std::array<unsigned, 3>, unsigned> createdVertices;
+
+            usingTexCoords_ = texCoords.size() > 0;
+            usingNormals_ = normals.size() > 0;
+            usingIndexing_ = true;
+
+            for (auto& indexArray : indices) {
+                if (usingTexCoords_ && (indexArray[3] == 0 || indexArray[4] == 0 || indexArray[5] == 0))
+                    throw "VertexData: invalid index data (texture coordinates)";
+
+                if (usingNormals_ && (indexArray[6] == 0 || indexArray[7] == 0 || indexArray[8] == 0))
+                    throw "VertexData: invalid index data (normals)";
+
+                std::array<unsigned, 3> v1 = { indexArray[0], indexArray[3], indexArray[6] };
+                std::array<unsigned, 3> v2 = { indexArray[1], indexArray[4], indexArray[7] };
+                std::array<unsigned, 3> v3 = { indexArray[2], indexArray[5], indexArray[8] };
+
+                if (createdVertices[v1] == 0) {
+                    positions_.push_back(positions.at(indexArray[0]-1));
+                    if (usingTexCoords_)
+                        texCoords_.push_back(texCoords.at(indexArray[3]-1));
+                    if (usingNormals_)
+                        normals_.push_back(normals.at(indexArray[6]-1));
+
+                    createdVertices[v1] = positions_.size()-1;
+                }
+                indices_.push_back(createdVertices[v1]);
+
+                if (createdVertices[v2] == 0) {
+                    positions_.push_back(positions.at(indexArray[1]-1));
+                    if (usingTexCoords_)
+                        texCoords_.push_back(texCoords.at(indexArray[4]-1));
+                    if (usingNormals_)
+                        normals_.push_back(normals.at(indexArray[7]-1));
+
+                    createdVertices[v2] = positions_.size()-1;
+                }
+                indices_.push_back(createdVertices[v2]);
+
+                if (createdVertices[v3] == 0) {
+                    positions_.push_back(positions.at(indexArray[2]-1));
+                    if (usingTexCoords_)
+                        texCoords_.push_back(texCoords.at(indexArray[5]-1));
+                    if (usingNormals_)
+                        normals_.push_back(normals.at(indexArray[8]-1));
+
+                    createdVertices[v3] = positions_.size()-1;
+                }
+                indices_.push_back(createdVertices[v3]);
+            }
+
+            printf("positions: %u, texCoords: %u, normals: %u, indices: %u\n", positions_.size(), texCoords_.size(), normals_.size(), indices_.size());
         }
     break;
     }
 }
 
-void VertexData::destroy(void) {
+void VertexData::destroy(void) {}
 
+bool VertexData::usesTextureCoordinates(void) const {
+    return usingTexCoords_;
+}
+
+bool VertexData::usesNormals(void) const {
+    return usingNormals_;
+}
+
+bool VertexData::usesIndexing(void) const {
+    return usingIndexing_;
+}
+
+const std::vector<std::array<float, 4>>& VertexData::getPositions(void) const {
+    return positions_;
+}
+
+const std::vector<std::array<float, 3>>& VertexData::getTextureCoordinates(void) const {
+    return texCoords_;
+}
+
+const std::vector<std::array<float, 3>>& VertexData::getNormals(void) const {
+    return normals_;
+}
+
+const std::vector<unsigned>& VertexData::getIndices(void) const {
+    return indices_;
 }

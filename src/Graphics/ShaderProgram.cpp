@@ -6,7 +6,7 @@
 
     @version    0.1
     @author     Miika Lehtimäki
-    @date       2014-12-27
+    @date       2015-01-08
 **/
 
 
@@ -18,14 +18,16 @@
 using namespace Cucca;
 
 
+ShaderProgram::ShaderProgram(void) :
+    objectId_(0)
+{}
+
 void ShaderProgram::init(const ResourceInitInfo<ShaderProgram>& initInfo,
                          const std::vector<ResourceId>& initResources,
                          const std::vector<ResourceId>& depResources,
                          ResourceManager<ResourceId>* resourceManager) {
-    if (initResources.size() == 0) {
-        objectId_ = 0;
+    if (initResources.size() == 0)
         return;
-    }
 
     objectId_ = glCreateProgram();
 

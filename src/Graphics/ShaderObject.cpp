@@ -18,6 +18,10 @@
 using namespace Cucca;
 
 
+ShaderObject::ShaderObject(void) :
+    objectId_(0)
+{}
+
 void ShaderObject::init(const ResourceInitInfo<ShaderObject>& initInfo,
                         const std::vector<ResourceId>& initResources,
                         const std::vector<ResourceId>& depResources,
@@ -25,10 +29,8 @@ void ShaderObject::init(const ResourceInitInfo<ShaderObject>& initInfo,
     switch (initInfo.source) {
     case ResourceInitInfo<ShaderObject>::SOURCE_CODE:
         {
-            if (initResources.size() == 0) {
+            if (initResources.size() == 0)
                 objectId_ = 0;
-                return;
-            }
 
             auto src = resourceManager->getResource<Binary>(initResources[0]);
             const char* srcPtr = src->getBufferPtr();

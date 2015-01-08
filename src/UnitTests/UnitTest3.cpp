@@ -13,6 +13,7 @@
 #include "../../include/Graphics/ShaderObject.hpp"
 #include "../../include/Graphics/ShaderProgram.hpp"
 #include "../../include/Graphics/VertexData.hpp"
+#include "../../include/Graphics/Mesh.hpp"
 
 
 using namespace Cucca;
@@ -87,9 +88,17 @@ int unitTest(void) {
                                         std::vector<ResourceId>{ "BINARY_VERTEX_DATA_1" },
                                         std::vector<ResourceId>());
 
+    ResourceInitInfo<Mesh> meshInitInfo1;
+    manager.addResourceInfo<Mesh>("MESH_1",
+                                  meshInitInfo1,
+                                  std::vector<ResourceId>{ "VERTEX_DATA_1" },
+                                  std::vector<ResourceId>(),
+                                  true);
+
 
     auto shader1 = manager.getResource<ShaderProgram>("SHADER_PROGRAM_1");
     auto vertexData1 = manager.getResource<VertexData>("VERTEX_DATA_1");
+    auto mesh1 = manager.getResource<Mesh>("MESH_1");
 
 
     //  Run it

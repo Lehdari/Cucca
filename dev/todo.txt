@@ -15,7 +15,8 @@ Start implementing graphics stuff
 	etc.
 
 Special file for typedefs (ResourceId)?
-	make proper implementation for ResourceId?
+	make proper implementation for ResourceId (bool overloading for validity check)?
+	typedefs for std::array in VertexData and Mesh classes (Cucca::Vector3f for example)
 
 Rethink role of the Device
 Rethink role of the TaskQueue (can be generalized? TBB replacement?)
