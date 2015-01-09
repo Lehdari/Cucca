@@ -6,7 +6,7 @@
 
     @version    0.1
     @author     Miika Lehtimäki
-    @date       2014-12-27
+    @date       2015-01-09
 **/
 
 
@@ -16,14 +16,21 @@
 
 #include "../../include/Core/Visitor.hpp"
 #include "../../include/Graphics/MeshComponent.hpp"
+#include "../../include/Core/LinearAlgebra.hpp"
 
 
 namespace Cucca {
 
     CUCCA_VISITOR(BasicCamera, MeshComponent) {
     public:
+        BasicCamera(void);
+
         void nodeEnter(Node* node, MeshComponent* component);
         void nodeExit(Node* node, MeshComponent* component);
+
+    private:
+        GlMatrix4f orientation_;
+        GlMatrix4f perspective_;
     };
 
 } // namespace Cucca

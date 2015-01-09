@@ -6,7 +6,7 @@
 
     @version    0.1
     @author     Miika Lehtimäki
-    @date       2014-12-27
+    @date       2015-01-09
 **/
 
 
@@ -15,11 +15,15 @@
 
 
 #include "../Core/Component.hpp"
+#include "Mesh.hpp"
 
 
 namespace Cucca {
 
     class MeshComponent : public Component {
+    public:
+
+    private:
 
     };
 

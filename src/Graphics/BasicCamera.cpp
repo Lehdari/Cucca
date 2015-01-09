@@ -6,7 +6,7 @@
 
     @version    0.1
     @author     Miika Lehtimäki
-    @date       2014-12-27
+    @date       2015-01-09
 **/
 
 
@@ -15,6 +15,18 @@
 
 using namespace Cucca;
 
+
+BasicCamera::BasicCamera(void) {
+    orientation_ << 1, 0, 0, 0,
+                    0, 1, 0, 0,
+                    0, 0, 1, 0,
+                    0, 0, 0, 1;
+
+    perspective_ << 1, 0, 0, 0,
+                    0, 1, 0, 0,
+                    0, 0, 1, 0,
+                    0, 0, 0, 1;
+}
 
 void BasicCamera::nodeEnter(Node* node, MeshComponent* component) {
 

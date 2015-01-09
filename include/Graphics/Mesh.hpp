@@ -32,7 +32,7 @@ namespace Cucca {
                   ResourceManager<ResourceId>* resourceManager);
         void destroy(void);
 
-        void draw(void);
+        void draw(void); // TODO_IMPLEMENT: take transformation matrix as argument
 
     private:
         bool usingTexCoords_;

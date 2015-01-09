@@ -97,9 +97,7 @@ int unitTest(void) {
 
 
     auto shader1 = manager.getResource<ShaderProgram>("SHADER_PROGRAM_1");
-    auto vertexData1 = manager.getResource<VertexData>("VERTEX_DATA_1");
     auto mesh1 = manager.getResource<Mesh>("MESH_1");
-
 
     //  Run it
     EventVisitor_SFML sfmlEventVisitor;
@@ -107,6 +105,7 @@ int unitTest(void) {
     while (device->status() == Device<Canvas_SFML>::STATUS_RUNNING) {
         device->handleEvents();
         device->getRoot()->accept(sfmlEventVisitor);
+        glUseProgram(shader1->getId());
         mesh1->draw(); // TEMP
         device->render();
     }
