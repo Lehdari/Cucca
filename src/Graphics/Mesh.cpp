@@ -6,7 +6,7 @@
 
     @version    0.1
     @author     Miika Lehtimäki
-    @date       2015-01-08
+    @date       2015-01-09
 **/
 
 
@@ -22,6 +22,8 @@ Mesh::Mesh(void) :
     usingTexCoords_(false),
     usingNormals_(false),
     usingIndexing_(false),
+    nIndices_(0),
+    vertexArrayObjectId_(0),
     positionBufferId_(0),
     texCoordBufferId_(0),
     normalBufferId_(0),
@@ -46,35 +48,62 @@ void Mesh::init(const ResourceInitInfo<Mesh>& initInfo,
     auto normals = vertexData->getNormals();
     auto indices = vertexData->getIndices();
 
+    //  create and bind the VAO
+    glGenVertexArrays(1, &vertexArrayObjectId_);
+    glBindVertexArray(vertexArrayObjectId_);
+
+    //  upload the vertex data to GPU and set up the vertex attribute arrays
     glGenBuffers(1, &positionBufferId_);
     glBindBuffer(GL_ARRAY_BUFFER, positionBufferId_);
     glBufferData(GL_ARRAY_BUFFER, positions.size() * sizeof(std::array<float, 4>), &positions[0], GL_STATIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
 
     if (usingTexCoords_) {
         glGenBuffers(1, &texCoordBufferId_);
         glBindBuffer(GL_ARRAY_BUFFER, texCoordBufferId_);
         glBufferData(GL_ARRAY_BUFFER, texCoords.size() * sizeof(std::array<float, 3>), &texCoords[0], GL_STATIC_DRAW);
+        glEnableVertexAttribArray(1);
+        glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
     }
 
     if (usingNormals_) {
         glGenBuffers(1, &normalBufferId_);
         glBindBuffer(GL_ARRAY_BUFFER, normalBufferId_);
         glBufferData(GL_ARRAY_BUFFER, normals.size() * sizeof(std::array<float, 3>), &normals[0], GL_STATIC_DRAW);
+        glEnableVertexAttribArray(2);
+        glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
     }
 
     if (usingIndexing_) {
+        nIndices_ = indices.size();
         glGenBuffers(1, &elementBufferId_);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementBufferId_);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned), &indices[0], GL_STATIC_DRAW);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, nIndices_ * sizeof(unsigned), &indices[0], GL_STATIC_DRAW);
     }
+
+    //  unbind the VAO so it won't be changed outside this function
+    glBindVertexArray(0);
 }
 
 void Mesh::destroy(void) {
+    if (vertexArrayObjectId_ != 0)
+        glDeleteVertexArrays(1, &vertexArrayObjectId_);
+
     glDeleteBuffers(1, &positionBufferId_);
     if (usingTexCoords_)
-        glGenBuffers(1, &texCoordBufferId_);
+        glDeleteBuffers(1, &texCoordBufferId_);
     if (usingNormals_)
-        glGenBuffers(1, &normalBufferId_);
+        glDeleteBuffers(1, &normalBufferId_);
     if (usingIndexing_)
-        glGenBuffers(1, &elementBufferId_);
+        glDeleteBuffers(1, &elementBufferId_);
+}
+
+void Mesh::draw(void) { // TODO_IMPLEMENT: take transformation matrix as input
+    glBindVertexArray(vertexArrayObjectId_);
+
+    // TODO_IMPLEMENT: draw arrays if not using indexing
+    glDrawElements(GL_TRIANGLES, nIndices_, GL_UNSIGNED_INT, (GLvoid*)0);
+
+    glBindVertexArray(0);
 }

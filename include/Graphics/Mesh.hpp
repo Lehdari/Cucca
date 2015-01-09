@@ -6,7 +6,7 @@
 
     @version    0.1
     @author     Miika Lehtimäki
-    @date       2015-01-08
+    @date       2015-01-09
 **/
 
 
@@ -32,10 +32,15 @@ namespace Cucca {
                   ResourceManager<ResourceId>* resourceManager);
         void destroy(void);
 
+        void draw(void);
+
     private:
         bool usingTexCoords_;
         bool usingNormals_;
         bool usingIndexing_;
+        unsigned nIndices_;
+
+        GLuint vertexArrayObjectId_;
 
         GLuint positionBufferId_;
         GLuint texCoordBufferId_;

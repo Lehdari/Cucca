@@ -105,9 +105,10 @@ int unitTest(void) {
     EventVisitor_SFML sfmlEventVisitor;
 
     while (device->status() == Device<Canvas_SFML>::STATUS_RUNNING) {
-        device->render();
         device->handleEvents();
         device->getRoot()->accept(sfmlEventVisitor);
+        mesh1->draw(); // TEMP
+        device->render();
     }
 
     return 0;

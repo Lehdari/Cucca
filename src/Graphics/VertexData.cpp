@@ -142,7 +142,7 @@ void VertexData::init(const ResourceInitInfo<VertexData>& initInfo,
                 indices_.push_back(createdVertices[v3]);
             }
 
-            printf("positions: %u, texCoords: %u, normals: %u, indices: %u\n", positions_.size(), texCoords_.size(), normals_.size(), indices_.size());
+            //printf("positions: %u, texCoords: %u, normals: %u, indices: %u\n", positions_.size(), texCoords_.size(), normals_.size(), indices_.size()); // TEMP
         }
     break;
     }
