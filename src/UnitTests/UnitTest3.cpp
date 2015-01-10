@@ -18,12 +18,18 @@
 #include "../../include/Graphics/MeshComponent.hpp"
 #include "../../include/Graphics/BasicCamera.hpp"
 
+#include <random>
+
+
+#define rndf ((float)rnd() / rnd.max())
+
 
 using namespace Cucca;
 
 
 int unitTest(void) {
     //  First things first
+    std::default_random_engine rnd;
     auto device = DEVICE(Canvas_SFML);
     /*GLenum err = */glewInit();
 
@@ -98,11 +104,13 @@ int unitTest(void) {
     device->subscribeEvents(eventNode.getComponents<EventComponent>().back(), EventBase::getEventTypeId<sf::Event>());
     root->addChild(std::move(eventNode));
 
-    Node graphicsNode;
-    graphicsNode.addComponent(TransformationComponent());
-    graphicsNode.getComponents<TransformationComponent>().back()->translate(Vector3Glf{ 0.1f, 0.0f, 0.0f }, false);
-    graphicsNode.addComponent(MeshComponent(mesh1));
-    root->addChild(std::move(graphicsNode));
+    for (auto i=0u; i<100; ++i) {
+        Node graphicsNode;
+        graphicsNode.addComponent(TransformationComponent());
+        graphicsNode.getComponents<TransformationComponent>().back()->translate(Vector3Glf{ 2.5f - 5.0f*rndf, 0.5f - 1.0f*rndf, 2.5f - 5.0f*rndf }, true);
+        graphicsNode.addComponent(MeshComponent(mesh1));
+        root->addChild(std::move(graphicsNode));
+    }
 
     //  Visitors
     BasicCamera camera;
@@ -123,8 +131,8 @@ int unitTest(void) {
         device->getRoot()->accept(camera);
         device->render();
 
-        t += 0.01f;
-        camera.lookAt(Vector3Glf{ 0.35f*cosf(t), 0.15f + 0.25f*sinf(t*0.2f), 0.35f*sinf(t) },
+        t += 0.001f;
+        camera.lookAt(Vector3Glf{ 0.35f*cosf(t*4.0f), 0.15f + 0.25f*sinf(t*0.6f), 0.35f*sinf(t*4.0f) },
                       Vector3Glf{ 0.0f, 0.0f, 0.0f },
                       Vector3Glf{ 0.0f, 1.0f, 0.0f });
     }

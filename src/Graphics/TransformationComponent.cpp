@@ -24,9 +24,9 @@ TransformationComponent::TransformationComponent(const Matrix4Glf& transformatio
     transformation_(transformation)
 {}
 
-void TransformationComponent::translate(const Vector3Glf& to, bool relative) {
-    if (relative)
-        transformation_.col(3) += (Vector4Glf() << to, 0.0f ).finished();
-    else
+void TransformationComponent::translate(const Vector3Glf& to, bool absolute) {
+    if (absolute)
         transformation_.col(3) = (Vector4Glf() << to, 1.0f ).finished();
+    else
+        transformation_.col(3) += (Vector4Glf() << to, 0.0f ).finished();
 }
