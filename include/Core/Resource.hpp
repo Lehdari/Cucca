@@ -34,6 +34,7 @@
 
 
 #include "ResourceBase.hpp"
+#include "ResourcePointer.hpp"
 
 #include <string>
 #include <vector>

@@ -6,7 +6,7 @@
 
     @version    0.1
     @author     Miika Lehtimäki
-    @date       2014-12-20
+    @date       2015-01-10
 **/
 
 
@@ -25,6 +25,7 @@
 #include <vector>
 #include <memory>
 #include <mutex>
+#include <GL/glew.h>
 
 
 #define DEVICE(CANVAS_TYPE) Device<CANVAS_TYPE>::getInstance()
@@ -112,7 +113,9 @@ namespace Cucca {
     Device<CanvasType_T>::Device(void) :
         status_(STATUS_RUNNING),
         root_(std::unique_ptr<Node>(new Node()))
-    {}
+    {
+        glEnable(GL_DEPTH_TEST);
+    }
 
     template<typename CanvasType_T>
     Device<CanvasType_T>* Device<CanvasType_T>::getInstance(void) {
@@ -126,8 +129,10 @@ namespace Cucca {
     void Device<CanvasType_T>::render(void) {
         {
             std::lock_guard<std::mutex> lock(canvasMutex_);
-            if (canvas_.isOpen())
+            if (canvas_.isOpen()) {
                 canvas_.display();
+                glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            }
         }
 
         Task task;

@@ -6,7 +6,7 @@
 
     @version    0.1
     @author     Miika Lehtimäki
-    @date       2015-01-09
+    @date       2015-01-10
 **/
 
 
@@ -28,9 +28,13 @@ namespace Cucca {
         void nodeEnter(Node* node, MeshComponent* component);
         void nodeExit(Node* node, MeshComponent* component);
 
+        void lookAt(const Vector3Glf& from, const Vector3Glf& to, const Vector3Glf& up);
+        void lookAt(Vector3Glf&& from, Vector3Glf&& to, Vector3Glf&& up);
+        void projection(float fov, float aspectRatio, float near, float far);
+
     private:
-        GlMatrix4f orientation_;
-        GlMatrix4f perspective_;
+        Matrix4Glf orientation_;
+        Matrix4Glf projection_;
     };
 
 } // namespace Cucca

@@ -14,6 +14,8 @@
 #include "../../include/Graphics/ShaderProgram.hpp"
 #include "../../include/Graphics/VertexData.hpp"
 #include "../../include/Graphics/Mesh.hpp"
+#include "../../include/Graphics/MeshComponent.hpp"
+#include "../../include/Graphics/BasicCamera.hpp"
 
 
 using namespace Cucca;
@@ -30,15 +32,6 @@ int unitTest(void) {
     ResourceManager<ResourceId> manager(device->getGraphicsTaskQueue(), pool.getTaskQueue());
 
     Node* root = device->getRoot();
-
-
-    Node child;
-    EventComponent sfmlEventComponent;
-
-    child.addComponent(std::move(sfmlEventComponent));
-    device->subscribeEvents(child.getComponents<EventComponent>().back(), EventBase::getEventTypeId<sf::Event>());
-    root->addChild(std::move(child));
-
 
     //  Resources
     ResourceInitInfo<Binary> vertexShaderBinaryInitInfo1;
@@ -92,22 +85,45 @@ int unitTest(void) {
     manager.addResourceInfo<Mesh>("MESH_1",
                                   meshInitInfo1,
                                   std::vector<ResourceId>{ "VERTEX_DATA_1" },
-                                  std::vector<ResourceId>(),
+                                  std::vector<ResourceId>{ "SHADER_PROGRAM_1" },
                                   true);
-
 
     auto shader1 = manager.getResource<ShaderProgram>("SHADER_PROGRAM_1");
     auto mesh1 = manager.getResource<Mesh>("MESH_1");
 
-    //  Run it
+    //  Nodes
+    Node eventNode;
+    eventNode.addComponent(EventComponent());
+    device->subscribeEvents(eventNode.getComponents<EventComponent>().back(), EventBase::getEventTypeId<sf::Event>());
+    root->addChild(std::move(eventNode));
+
+    Node graphicsNode;
+    graphicsNode.addComponent(MeshComponent(mesh1));
+    root->addChild(std::move(graphicsNode));
+
+    //  Visitors
+    BasicCamera camera;
+    camera.lookAt(Vector3Glf{ 0.0f, 0.0f, 1.0f },
+                  Vector3Glf{ 0.0f, 0.0f, 0.0f },
+                  Vector3Glf{ 0.0f, -1.0f, 0.0f });
+    camera.projection(1.5708f, 4.0f/3.0f, 0.05f, 100.0f);
+
     EventVisitor_SFML sfmlEventVisitor;
 
+    //  Some variables
+    float t(0.0f);
+
+    //  Run it
     while (device->status() == Device<Canvas_SFML>::STATUS_RUNNING) {
         device->handleEvents();
         device->getRoot()->accept(sfmlEventVisitor);
-        glUseProgram(shader1->getId());
-        mesh1->draw(); // TEMP
+        device->getRoot()->accept(camera);
         device->render();
+
+        t += 0.01f;
+        camera.lookAt(Vector3Glf{ 0.35f*cosf(t), 0.1f + 0.25f*sin(t*0.2f), 0.35f*sinf(t) },
+                      Vector3Glf{ 0.0f, 0.0f, 0.0f },
+                      Vector3Glf{ 0.0f, 1.0f, 0.0f });
     }
 
     return 0;

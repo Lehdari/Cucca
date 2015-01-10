@@ -1,6 +1,9 @@
 #version 330 core
+
+varying vec3 pos;
+
 out vec3 color;
 
 void main() {
-    color = vec3(1,0,0);
+    color = pos*10;
 }

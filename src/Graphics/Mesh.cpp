@@ -19,25 +19,31 @@ using namespace Cucca;
 
 
 Mesh::Mesh(void) :
+    vertexArrayObjectId_(0),
     usingTexCoords_(false),
     usingNormals_(false),
     usingIndexing_(false),
     nIndices_(0),
-    vertexArrayObjectId_(0),
     positionBufferId_(0),
     texCoordBufferId_(0),
     normalBufferId_(0),
-    elementBufferId_(0)
+    elementBufferId_(0),
+    shaderId_(0),
+    uniformPosition_MVP_(0)
 {}
 
 void Mesh::init(const ResourceInitInfo<Mesh>& initInfo,
                 const std::vector<ResourceId>& initResources,
                 const std::vector<ResourceId>& depResources,
                 ResourceManager<ResourceId>* resourceManager) {
-    if (initResources.size() == 0)
+    if (initResources.size() < 1 || depResources.size() < 1)
         return;
 
     auto vertexData = resourceManager->getResource<VertexData>(initResources[0]);
+    auto shader_ = resourceManager->getResource<ShaderProgram>(depResources[0]);
+
+    shaderId_ = shader_->getId();
+    uniformPosition_MVP_ = glGetUniformLocation(shaderId_, "MVP");
 
     usingTexCoords_ = vertexData->usesTextureCoordinates();
     usingNormals_ = vertexData->usesNormals();
@@ -47,6 +53,8 @@ void Mesh::init(const ResourceInitInfo<Mesh>& initInfo,
     auto texCoords = vertexData->getTextureCoordinates();
     auto normals = vertexData->getNormals();
     auto indices = vertexData->getIndices();
+
+
 
     //  create and bind the VAO
     glGenVertexArrays(1, &vertexArrayObjectId_);
@@ -99,8 +107,11 @@ void Mesh::destroy(void) {
         glDeleteBuffers(1, &elementBufferId_);
 }
 
-void Mesh::draw(void) { // TODO_IMPLEMENT: take transformation matrix as input
+void Mesh::draw(const Matrix4Glf& mvp) {
     glBindVertexArray(vertexArrayObjectId_);
+
+    glUseProgram(shaderId_);
+    glUniformMatrix4fv(uniformPosition_MVP_, 1, GL_FALSE, mvp.data());
 
     // TODO_IMPLEMENT: draw arrays if not using indexing
     glDrawElements(GL_TRIANGLES, nIndices_, GL_UNSIGNED_INT, (GLvoid*)0);

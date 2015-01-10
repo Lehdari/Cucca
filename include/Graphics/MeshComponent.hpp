@@ -6,7 +6,7 @@
 
     @version    0.1
     @author     Miika Lehtimäki
-    @date       2015-01-09
+    @date       2015-01-10
 **/
 
 
@@ -22,9 +22,14 @@ namespace Cucca {
 
     class MeshComponent : public Component {
     public:
+        friend class BasicCamera;
+
+        MeshComponent(ResourcePointer<Mesh, ResourceId>& mesh);
+
+        ResourcePointer<Mesh, ResourceId> getMesh(void);
 
     private:
-
+        ResourcePointer<Mesh, ResourceId> mesh_;
     };
 
 } // namespace Cucca

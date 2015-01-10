@@ -48,6 +48,7 @@ void ShaderObject::init(const ResourceInitInfo<ShaderObject>& initInfo,
 
                 char* infoLog = new char[infoLogLength];
                 glGetShaderInfoLog(objectId_, infoLogLength, NULL, &infoLog[0]);
+                fprintf(stderr, "%s", infoLog);
                 throw infoLog; // TODO_EXCEPTION: throw a proper exception
             }
         }

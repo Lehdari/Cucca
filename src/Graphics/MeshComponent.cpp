@@ -6,7 +6,7 @@
 
     @version    0.1
     @author     Miika Lehtimäki
-    @date       2014-12-27
+    @date       2015-01-10
 **/
 
 
@@ -15,3 +15,11 @@
 
 using namespace Cucca;
 
+
+MeshComponent::MeshComponent(ResourcePointer<Mesh, ResourceId>& mesh) :
+    mesh_(mesh)
+{}
+
+ResourcePointer<Mesh, ResourceId> MeshComponent::getMesh(void) {
+    return mesh_;
+}

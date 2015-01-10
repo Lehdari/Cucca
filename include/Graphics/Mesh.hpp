@@ -6,7 +6,7 @@
 
     @version    0.1
     @author     Miika Lehtimäki
-    @date       2015-01-09
+    @date       2015-01-10
 **/
 
 
@@ -15,6 +15,8 @@
 
 
 #include "../../include/Core/Resource.hpp"
+#include "../../include/Core/LinearAlgebra.hpp"
+#include "ShaderProgram.hpp"
 
 #include <GL/glew.h>
 
@@ -26,26 +28,37 @@ namespace Cucca {
         Mesh(void);
 
         //  Resource init and destroy member functions
+        /*
+            Initialization resources:
+                0: VertexData
+            Dependency resources:
+                0: ShaderProgram
+        */
         void init(const ResourceInitInfo<Mesh>& initInfo,
                   const std::vector<ResourceId>& initResources,
                   const std::vector<ResourceId>& depResources,
                   ResourceManager<ResourceId>* resourceManager);
         void destroy(void);
 
-        void draw(void); // TODO_IMPLEMENT: take transformation matrix as argument
+        void draw(const Matrix4Glf& mvp);
 
     private:
+        ResourcePointer<ShaderProgram, ResourceId> shader_;
+
+        GLuint vertexArrayObjectId_;
+
         bool usingTexCoords_;
         bool usingNormals_;
         bool usingIndexing_;
         unsigned nIndices_;
 
-        GLuint vertexArrayObjectId_;
-
         GLuint positionBufferId_;
         GLuint texCoordBufferId_;
         GLuint normalBufferId_;
         GLuint elementBufferId_;
+
+        GLuint shaderId_;
+        GLuint uniformPosition_MVP_;
     };
 
     CUCCA_RESOURCE_INIT_INFO(Mesh) { };

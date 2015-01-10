@@ -6,7 +6,7 @@
 
     @version    0.1
     @author     Miika Lehtimäki
-    @date       2014-12-27
+    @date       2014-01-10
 **/
 
 
@@ -15,8 +15,7 @@
 
 
 #include "../Core/Component.hpp"
-
-#include <Eigen/Dense>
+#include "../Core/LinearAlgebra.hpp"
 
 
 namespace Cucca {
@@ -24,9 +23,8 @@ namespace Cucca {
     class TransformationComponent : public Component {
     public:
 
-
     private:
-        Eigen::Matrix4f transformation_;
+        Matrix4Glf transformation_;
     };
 
 } // namespace Cucca
