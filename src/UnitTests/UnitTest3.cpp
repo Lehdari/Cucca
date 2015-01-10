@@ -14,6 +14,7 @@
 #include "../../include/Graphics/ShaderProgram.hpp"
 #include "../../include/Graphics/VertexData.hpp"
 #include "../../include/Graphics/Mesh.hpp"
+#include "../../include/Graphics/TransformationComponent.hpp"
 #include "../../include/Graphics/MeshComponent.hpp"
 #include "../../include/Graphics/BasicCamera.hpp"
 
@@ -24,7 +25,7 @@ using namespace Cucca;
 int unitTest(void) {
     //  First things first
     auto device = DEVICE(Canvas_SFML);
-    GLenum err = glewInit();
+    /*GLenum err = */glewInit();
 
     ThreadPool pool;
     pool.launchThreads(2);
@@ -98,6 +99,8 @@ int unitTest(void) {
     root->addChild(std::move(eventNode));
 
     Node graphicsNode;
+    graphicsNode.addComponent(TransformationComponent());
+    graphicsNode.getComponents<TransformationComponent>().back()->translate(Vector3Glf{ 0.1f, 0.0f, 0.0f }, false);
     graphicsNode.addComponent(MeshComponent(mesh1));
     root->addChild(std::move(graphicsNode));
 
@@ -121,7 +124,7 @@ int unitTest(void) {
         device->render();
 
         t += 0.01f;
-        camera.lookAt(Vector3Glf{ 0.35f*cosf(t), 0.1f + 0.25f*sin(t*0.2f), 0.35f*sinf(t) },
+        camera.lookAt(Vector3Glf{ 0.35f*cosf(t), 0.15f + 0.25f*sinf(t*0.2f), 0.35f*sinf(t) },
                       Vector3Glf{ 0.0f, 0.0f, 0.0f },
                       Vector3Glf{ 0.0f, 1.0f, 0.0f });
     }

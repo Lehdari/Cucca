@@ -11,7 +11,6 @@
 
 
 #include "../../include/Graphics/BasicCamera.hpp"
-#include <iostream> // TEMP
 
 
 using namespace Cucca;
@@ -22,8 +21,19 @@ BasicCamera::BasicCamera(void) :
     projection_(Matrix4Glf::Identity())
 {}
 
+void BasicCamera::nodeEnter(Node* node, TransformationComponent* component) {
+    if (transformations_.size() > 0)
+        transformations_.push(transformations_.top() * component->transformation_);
+    else
+        transformations_.push(component->transformation_);
+}
+
+void BasicCamera::nodeExit(Node* node, TransformationComponent* component) {
+    transformations_.pop();
+}
+
 void BasicCamera::nodeEnter(Node* node, MeshComponent* component) {
-    component->mesh_->draw(projection_ * orientation_);
+    component->mesh_->draw(projection_ * orientation_ * transformations_.top());
 }
 
 void BasicCamera::nodeExit(Node* node, MeshComponent* component) {

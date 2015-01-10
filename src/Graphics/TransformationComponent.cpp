@@ -6,7 +6,7 @@
 
     @version    0.1
     @author     Miika Lehtimäki
-    @date       2014-12-27
+    @date       2015-01-10
 **/
 
 
@@ -16,3 +16,17 @@
 using namespace Cucca;
 
 
+TransformationComponent::TransformationComponent(void) :
+    transformation_(Matrix4Glf::Identity())
+{}
+
+TransformationComponent::TransformationComponent(const Matrix4Glf& transformation) :
+    transformation_(transformation)
+{}
+
+void TransformationComponent::translate(const Vector3Glf& to, bool relative) {
+    if (relative)
+        transformation_.col(3) += (Vector4Glf() << to, 0.0f ).finished();
+    else
+        transformation_.col(3) = (Vector4Glf() << to, 1.0f ).finished();
+}

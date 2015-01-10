@@ -15,16 +15,21 @@
 
 
 #include "../../include/Core/Visitor.hpp"
+#include "../../include/Graphics/TransformationComponent.hpp"
 #include "../../include/Graphics/MeshComponent.hpp"
 #include "../../include/Core/LinearAlgebra.hpp"
+
+#include <stack>
 
 
 namespace Cucca {
 
-    CUCCA_VISITOR(BasicCamera, MeshComponent) {
+    CUCCA_VISITOR(BasicCamera, TransformationComponent, MeshComponent) {
     public:
         BasicCamera(void);
 
+        void nodeEnter(Node* node, TransformationComponent* component);
+        void nodeExit(Node* node, TransformationComponent* component);
         void nodeEnter(Node* node, MeshComponent* component);
         void nodeExit(Node* node, MeshComponent* component);
 
@@ -35,6 +40,8 @@ namespace Cucca {
     private:
         Matrix4Glf orientation_;
         Matrix4Glf projection_;
+
+        std::stack<Matrix4Glf> transformations_;
     };
 
 } // namespace Cucca

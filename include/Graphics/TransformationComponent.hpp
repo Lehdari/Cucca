@@ -22,6 +22,12 @@ namespace Cucca {
 
     class TransformationComponent : public Component {
     public:
+        friend class BasicCamera;
+
+        TransformationComponent(void);
+        TransformationComponent(const Matrix4Glf& transformation);
+
+        void translate(const Vector3Glf& to, bool relative = true);
 
     private:
         Matrix4Glf transformation_;
