@@ -12,6 +12,8 @@
 #include "../../include/Core/Binary.hpp"
 #include "../../include/Graphics/ShaderObject.hpp"
 #include "../../include/Graphics/ShaderProgram.hpp"
+#include "../../include/Graphics/Texture.hpp"
+#include "../../include/Graphics/Material.hpp"
 #include "../../include/Graphics/VertexData.hpp"
 #include "../../include/Graphics/Mesh.hpp"
 #include "../../include/Graphics/TransformationComponent.hpp"
@@ -76,9 +78,32 @@ int unitTest(void) {
                                            std::vector<ResourceId>(),
                                            true);
 
+    ResourceInitInfo<Binary> textureBinaryInitInfo1;
+    textureBinaryInitInfo1.source = ResourceInitInfo<Binary>::SOURCE_FILE;
+    textureBinaryInitInfo1.fileName = "res/models/capsule.png";
+    manager.addResourceInfo<Binary>("BINARY_TEXTURE_1", textureBinaryInitInfo1);
+
+    ResourceInitInfo<Texture> textureInitInfo1;
+    textureInitInfo1.source = ResourceInitInfo<Texture>::SOURCE_BINARY_PNG;
+    textureInitInfo1.wrapS = GL_REPEAT;
+    textureInitInfo1.wrapT = GL_REPEAT;
+    textureInitInfo1.minFiltering = GL_LINEAR_MIPMAP_LINEAR;
+    textureInitInfo1.magFiltering = GL_LINEAR;
+    manager.addResourceInfo<Texture>("TEXTURE_1",
+                                     textureInitInfo1,
+                                     std::vector<ResourceId>{ "BINARY_TEXTURE_1" },
+                                     std::vector<ResourceId>(),
+                                     true);
+
+    ResourceInitInfo<Material> materialInitInfo1;
+    manager.addResourceInfo<Material>("MATERIAL_1",
+                                      materialInitInfo1,
+                                      std::vector<ResourceId>(),
+                                      std::vector<ResourceId>{ "SHADER_PROGRAM_1", "TEXTURE_1" });
+
     ResourceInitInfo<Binary> vertexDataBinaryInitInfo1;
     vertexDataBinaryInitInfo1.source = ResourceInitInfo<Binary>::SOURCE_FILE;
-    vertexDataBinaryInitInfo1.fileName = "res/models/bunny.obj";
+    vertexDataBinaryInitInfo1.fileName = "res/models/capsule.obj";
     manager.addResourceInfo<Binary>("BINARY_VERTEX_DATA_1", vertexDataBinaryInitInfo1);
 
     ResourceInitInfo<VertexData> vertexDataInitInfo1;
@@ -92,10 +117,9 @@ int unitTest(void) {
     manager.addResourceInfo<Mesh>("MESH_1",
                                   meshInitInfo1,
                                   std::vector<ResourceId>{ "VERTEX_DATA_1" },
-                                  std::vector<ResourceId>{ "SHADER_PROGRAM_1" },
+                                  std::vector<ResourceId>{ "MATERIAL_1" },
                                   true);
 
-    auto shader1 = manager.getResource<ShaderProgram>("SHADER_PROGRAM_1");
     auto mesh1 = manager.getResource<Mesh>("MESH_1");
 
     //  Nodes
@@ -104,7 +128,7 @@ int unitTest(void) {
     device->subscribeEvents(eventNode.getComponents<EventComponent>().back(), EventBase::getEventTypeId<sf::Event>());
     root->addChild(std::move(eventNode));
 
-    for (auto i=0u; i<100; ++i) {
+    for (auto i=0u; i<1; ++i) {
         Node graphicsNode;
         graphicsNode.addComponent(TransformationComponent());
         graphicsNode.getComponents<TransformationComponent>().back()->translate(Vector3Glf{ 2.5f - 5.0f*rndf, 0.5f - 1.0f*rndf, 2.5f - 5.0f*rndf }, true);
@@ -132,7 +156,7 @@ int unitTest(void) {
         device->render();
 
         t += 0.001f;
-        camera.lookAt(Vector3Glf{ 0.35f*cosf(t*4.0f), 0.15f + 0.25f*sinf(t*0.6f), 0.35f*sinf(t*4.0f) },
+        camera.lookAt(Vector3Glf{ 10.0f*cosf(t*4.0f), 0.15f + 0.25f*sinf(t*0.6f), 10.0f*sinf(t*4.0f) },
                       Vector3Glf{ 0.0f, 0.0f, 0.0f },
                       Vector3Glf{ 0.0f, 1.0f, 0.0f });
     }

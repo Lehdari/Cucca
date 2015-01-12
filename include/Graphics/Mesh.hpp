@@ -16,7 +16,7 @@
 
 #include "../../include/Core/Resource.hpp"
 #include "../../include/Core/LinearAlgebra.hpp"
-#include "ShaderProgram.hpp"
+#include "Material.hpp"
 
 #include <GL/glew.h>
 
@@ -43,7 +43,7 @@ namespace Cucca {
         void draw(const Matrix4Glf& mvp);
 
     private:
-        ResourcePointer<ShaderProgram, ResourceId> shader_;
+        ResourcePointer<Material, ResourceId> material_;
 
         GLuint vertexArrayObjectId_;
 

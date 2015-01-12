@@ -6,7 +6,7 @@
 
     @version    0.1
     @author     Miika Lehtimäki
-    @date       2015-01-09
+    @date       2015-01-10
 **/
 
 
@@ -40,9 +40,9 @@ void Mesh::init(const ResourceInitInfo<Mesh>& initInfo,
         return;
 
     auto vertexData = resourceManager->getResource<VertexData>(initResources[0]);
-    auto shader_ = resourceManager->getResource<ShaderProgram>(depResources[0]);
+    material_ = resourceManager->getResource<Material>(depResources[0]);
 
-    shaderId_ = shader_->getId();
+    shaderId_ = material_->getShaderId();
     uniformPosition_MVP_ = glGetUniformLocation(shaderId_, "MVP");
 
     usingTexCoords_ = vertexData->usesTextureCoordinates();

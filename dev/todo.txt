@@ -7,13 +7,17 @@ TODO:
 
 (Put template definitions in .inl files[see google style guide!]) and unify the layout
 
-Start implementing graphics stuff
-	Camera
+Graphics stuff
 	Mesh
+		move uniform position information to material?
 	Material
+		Texture
 	Curves, animations
-	etc.
+	AdvancedCamera
 
+Implement a layer of abstraction between the engine and extrenal libraries (no direct dependency from, say, resource files)
+	think how to use init info structs properly to achieve this
+	
 Special file for typedefs (ResourceId)?
 	make proper implementation for ResourceId (bool overloading for validity check)?
 	typedefs for std::array in VertexData and Mesh classes (Cucca::Vector3f for example)
@@ -27,6 +31,7 @@ Renaming of CoreExtensions?
 	CoreInterface perhaps?
 
 Check thread safety
+	Resources
 	ResourcePointers / (ResourceManager)
 	nodes/components/visitors?
 
