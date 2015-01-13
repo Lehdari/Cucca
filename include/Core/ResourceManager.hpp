@@ -16,6 +16,7 @@
 #define CUCCA_CORE_RESOURCEMANAGER_HPP
 
 
+#include "Platform.hpp"
 #include "Resource.hpp"
 #include "ResourcePointer.hpp"
 #include "TaskQueue.hpp"
@@ -27,6 +28,7 @@
 #include <algorithm>
 #include <memory>
 #include <functional>
+#include <thread>
 #include <mutex>
 
 
@@ -99,6 +101,10 @@ namespace Cucca {
         //  note: make sure to lock mutex before calling!
         unsigned getLoadOrder(const ResourceId& resourceId, std::vector<std::deque<ResourceId>>& depList);
 
+        //  Info about the thread which created this ResourceManager
+        std::thread::id creatorThreadId_;
+        bool creatorThreadHasGlContext_;
+
         //  Resource info and resource maps
         std::unordered_map<ResourceIdType_T, ResourceInfo> resourceInfos_;
         std::unordered_map<ResourceIdType_T, std::unique_ptr<ResourceBase>> resources_;
@@ -116,6 +122,8 @@ namespace Cucca {
     // Member definitions
     template <typename ResourceIdType_T>
     ResourceManager<ResourceIdType_T>::ResourceManager(TaskQueue* graphicsTaskQueue, TaskQueue* threadPoolTaskQueue) :
+        creatorThreadId_(std::this_thread::get_id()),
+        creatorThreadHasGlContext_(threadHasGlContext()),
         graphicsTaskQueue_(graphicsTaskQueue),
         threadPoolTaskQueue_(threadPoolTaskQueue)
     {}
@@ -214,10 +222,26 @@ namespace Cucca {
                     for (auto& depResourceId : depListLayer) {
                         resourcesBeingInitialized_.push_back(depResourceId);
 
-                        if (threadPoolTaskQueue_)
-                            threadPoolTaskQueue_->pushTask(Task(Task::FLAG_RESOURCEMANAGER, resourceInfos_[depResourceId].init, depResourceId));
-                        else
-                            resourceInfos_[depResourceId].init(depResourceId);
+                        if (resourceInfos_[depResourceId].isGraphicsResource) {
+                            if (std::this_thread::get_id() == creatorThreadId_ && creatorThreadHasGlContext_) {
+                                resourceInfos_[depResourceId].init(depResourceId);
+                                printf("%s initialized\n", depResourceId.c_str());
+                            }
+                            else {
+                                graphicsTaskQueue_->pushTask(Task(Task::FLAG_RESOURCEMANAGER, resourceInfos_[depResourceId].init, depResourceId));
+                                printf("%s pushed to graphics task queue\n", depResourceId.c_str());
+                            }
+                        }
+                        else {
+                            if (threadPoolTaskQueue_) {
+                                threadPoolTaskQueue_->pushTask(Task(Task::FLAG_RESOURCEMANAGER, resourceInfos_[depResourceId].init, depResourceId));
+                                printf("%s pushed to thread pool task queue\n", depResourceId.c_str());
+                            }
+                            else {
+                                resourceInfos_[depResourceId].init(depResourceId);
+                                printf("%s initialized\n", depResourceId.c_str());
+                            }
+                        }
                     }
                 }
             }
@@ -258,6 +282,7 @@ namespace Cucca {
         }
         {
             std::unique_lock<std::mutex> lock(dependencyMutex_);
+            printf("%s waiting...\n", resourceId.c_str());
             dependencyCV_.wait(lock, [this, &resourceId, &depList] {
                 std::lock_guard<std::recursive_mutex> lock2(resourceMutex_);
 
@@ -274,13 +299,15 @@ namespace Cucca {
 
                 return false;
             });
+            printf("%s got all dependencies loaded\n", resourceId.c_str());
         }
 
-        if (isGraphicsResource) {
+        /*if (isGraphicsResource) {
             graphicsTaskQueue_->pushTask(Task(resource, Resource<ResourceType_T, ResourceIdType_T>::init, *initInfo, initResources, depResources, this));
         }
-        else
+        else*/
             resource->init(*initInfo, initResources, depResources, this);
+            printf("%s initialized\n", resourceId.c_str());
 
         {
             std::lock_guard<std::recursive_mutex> lock(resourceMutex_);
