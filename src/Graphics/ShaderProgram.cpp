@@ -44,10 +44,9 @@ void ShaderProgram::init(const ResourceInitInfo<ShaderProgram>& initInfo,
 
         char* infoLog = new char[infoLogLength];
         glGetProgramInfoLog(objectId_, infoLogLength, NULL, &infoLog[0]);
+        fprintf(stderr, "%s", infoLog);
         throw infoLog; // TODO_EXCEPTION: throw a proper exception
     }
-
-    printf("Shader ready\n");
 }
 
 void ShaderProgram::destroy(void) {

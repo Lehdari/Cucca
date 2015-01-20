@@ -45,12 +45,12 @@ int unitTest(void) {
     //  Resources
     ResourceInitInfo<Binary> vertexShaderBinaryInitInfo1;
     vertexShaderBinaryInitInfo1.source = ResourceInitInfo<Binary>::SOURCE_FILE;
-    vertexShaderBinaryInitInfo1.fileName = "res/shaders/VS_Simple.glsl";
+    vertexShaderBinaryInitInfo1.fileName = "res/shaders/VS_SingleTexture.glsl";
     manager.addResourceInfo<Binary>("BINARY_SHADER_VERTEX_1", vertexShaderBinaryInitInfo1);
 
     ResourceInitInfo<Binary> fragmentShaderBinaryInitInfo1;
     fragmentShaderBinaryInitInfo1.source = ResourceInitInfo<Binary>::SOURCE_FILE;
-    fragmentShaderBinaryInitInfo1.fileName = "res/shaders/FS_Simple.glsl";
+    fragmentShaderBinaryInitInfo1.fileName = "res/shaders/FS_SingleTexture.glsl";
     manager.addResourceInfo<Binary>("BINARY_SHADER_FRAGMENT_1", fragmentShaderBinaryInitInfo1);
 
     ResourceInitInfo<ShaderObject> vertexShaderInitInfo1;
@@ -80,7 +80,7 @@ int unitTest(void) {
 
     ResourceInitInfo<Binary> textureBinaryInitInfo1;
     textureBinaryInitInfo1.source = ResourceInitInfo<Binary>::SOURCE_FILE;
-    textureBinaryInitInfo1.fileName = "res/models/capsule.png";
+    textureBinaryInitInfo1.fileName = "res/models/cube.png";
     manager.addResourceInfo<Binary>("BINARY_TEXTURE_1", textureBinaryInitInfo1);
 
     ResourceInitInfo<Texture> textureInitInfo1;
@@ -99,11 +99,12 @@ int unitTest(void) {
     manager.addResourceInfo<Material>("MATERIAL_1",
                                       materialInitInfo1,
                                       std::vector<ResourceId>(),
-                                      std::vector<ResourceId>{ "SHADER_PROGRAM_1", "TEXTURE_1" });
+                                      std::vector<ResourceId>{ "SHADER_PROGRAM_1", "TEXTURE_1" },
+                                      true);
 
     ResourceInitInfo<Binary> vertexDataBinaryInitInfo1;
     vertexDataBinaryInitInfo1.source = ResourceInitInfo<Binary>::SOURCE_FILE;
-    vertexDataBinaryInitInfo1.fileName = "res/models/capsule.obj";
+    vertexDataBinaryInitInfo1.fileName = "res/models/cube.obj";
     manager.addResourceInfo<Binary>("BINARY_VERTEX_DATA_1", vertexDataBinaryInitInfo1);
 
     ResourceInitInfo<VertexData> vertexDataInitInfo1;
@@ -128,10 +129,10 @@ int unitTest(void) {
     device->subscribeEvents(eventNode.getComponents<EventComponent>().back(), EventBase::getEventTypeId<sf::Event>());
     root->addChild(std::move(eventNode));
 
-    for (auto i=0u; i<1; ++i) {
+    for (auto i=0u; i<100; ++i) {
         Node graphicsNode;
         graphicsNode.addComponent(TransformationComponent());
-        graphicsNode.getComponents<TransformationComponent>().back()->translate(Vector3Glf{ 2.5f - 5.0f*rndf, 0.5f - 1.0f*rndf, 2.5f - 5.0f*rndf }, true);
+        graphicsNode.getComponents<TransformationComponent>().back()->translate(Vector3Glf{ 25.0f - 50.0f*rndf, 5.0f - 10.0f*rndf, 25.0f - 50.0f*rndf }, true);
         graphicsNode.addComponent(MeshComponent(mesh1));
         root->addChild(std::move(graphicsNode));
     }
@@ -156,7 +157,7 @@ int unitTest(void) {
         device->render();
 
         t += 0.001f;
-        camera.lookAt(Vector3Glf{ 10.0f*cosf(t*4.0f), 0.15f + 0.25f*sinf(t*0.6f), 10.0f*sinf(t*4.0f) },
+        camera.lookAt(Vector3Glf{ 10.0f*cosf(t*4.0f), 1.5f + 2.5f*sinf(t*1.276f), 10.0f*sinf(t*4.0f) },
                       Vector3Glf{ 0.0f, 0.0f, 0.0f },
                       Vector3Glf{ 0.0f, 1.0f, 0.0f });
     }

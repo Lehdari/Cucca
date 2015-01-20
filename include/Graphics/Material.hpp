@@ -15,6 +15,7 @@
 
 
 #include "../../include/Core/Resource.hpp"
+#include "../../include/Core/LinearAlgebra.hpp"
 #include "ShaderProgram.hpp"
 #include "Texture.hpp"
 
@@ -26,6 +27,8 @@ namespace Cucca {
 
     CUCCA_RESOURCE(Material) {
     public:
+        Material(void);
+
         //  Resource init and destroy member functions
         /*
             Initialization resources:
@@ -39,12 +42,15 @@ namespace Cucca {
                   ResourceManager<ResourceId>* resourceManager);
         void destroy(void) {}
 
+        void useMaterial(const Matrix4Glf& mvp);
+
         GLuint getShaderId(void);
 
     private:
         ResourcePointer<ShaderProgram, ResourceId> shader_;
-
         std::vector<ResourcePointer<Texture, ResourceId>> textures_;
+
+        GLuint uniformPosition_MVP_;
     };
 
     CUCCA_RESOURCE_INIT_INFO(Material) { };

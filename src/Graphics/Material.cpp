@@ -18,6 +18,10 @@
 using namespace Cucca;
 
 
+Material::Material(void) :
+    uniformPosition_MVP_(0)
+{}
+
 void Material::init(const ResourceInitInfo<Material>& initInfo,
                 const std::vector<ResourceId>& initResources,
                 const std::vector<ResourceId>& depResources,
@@ -30,7 +34,12 @@ void Material::init(const ResourceInitInfo<Material>& initInfo,
     for (auto i=1u; i<depResources.size(); ++i)
         textures_.push_back(resourceManager->getResource<Texture>(depResources[1]));
 
-    printf("material ready, shader %s id: %u\n", depResources[0].c_str(), shader_->getId());
+    uniformPosition_MVP_ = glGetUniformLocation(shader_->getId(), "MVP");
+}
+
+void Material::useMaterial(const Matrix4Glf& mvp) {
+    glUseProgram(shader_->getId());
+    glUniformMatrix4fv(uniformPosition_MVP_, 1, GL_FALSE, mvp.data());
 }
 
 GLuint Material::getShaderId(void) {

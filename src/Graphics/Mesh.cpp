@@ -6,7 +6,7 @@
 
     @version    0.1
     @author     Miika Lehtimäki
-    @date       2015-01-10
+    @date       2015-01-21
 **/
 
 
@@ -27,9 +27,7 @@ Mesh::Mesh(void) :
     positionBufferId_(0),
     texCoordBufferId_(0),
     normalBufferId_(0),
-    elementBufferId_(0),
-    shaderId_(0),
-    uniformPosition_MVP_(0)
+    elementBufferId_(0)
 {}
 
 void Mesh::init(const ResourceInitInfo<Mesh>& initInfo,
@@ -42,9 +40,6 @@ void Mesh::init(const ResourceInitInfo<Mesh>& initInfo,
     auto vertexData = resourceManager->getResource<VertexData>(initResources[0]);
     material_ = resourceManager->getResource<Material>(depResources[0]);
 
-    shaderId_ = material_->getShaderId();
-    uniformPosition_MVP_ = glGetUniformLocation(shaderId_, "MVP");
-
     usingTexCoords_ = vertexData->usesTextureCoordinates();
     usingNormals_ = vertexData->usesNormals();
     usingIndexing_ = vertexData->usesIndexing();
@@ -53,8 +48,6 @@ void Mesh::init(const ResourceInitInfo<Mesh>& initInfo,
     auto texCoords = vertexData->getTextureCoordinates();
     auto normals = vertexData->getNormals();
     auto indices = vertexData->getIndices();
-
-
 
     //  create and bind the VAO
     glGenVertexArrays(1, &vertexArrayObjectId_);
@@ -72,7 +65,7 @@ void Mesh::init(const ResourceInitInfo<Mesh>& initInfo,
         glBindBuffer(GL_ARRAY_BUFFER, texCoordBufferId_);
         glBufferData(GL_ARRAY_BUFFER, texCoords.size() * sizeof(std::array<float, 3>), &texCoords[0], GL_STATIC_DRAW);
         glEnableVertexAttribArray(1);
-        glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
     }
 
     if (usingNormals_) {
@@ -80,7 +73,7 @@ void Mesh::init(const ResourceInitInfo<Mesh>& initInfo,
         glBindBuffer(GL_ARRAY_BUFFER, normalBufferId_);
         glBufferData(GL_ARRAY_BUFFER, normals.size() * sizeof(std::array<float, 3>), &normals[0], GL_STATIC_DRAW);
         glEnableVertexAttribArray(2);
-        glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
+        glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
     }
 
     if (usingIndexing_) {
@@ -108,10 +101,8 @@ void Mesh::destroy(void) {
 }
 
 void Mesh::draw(const Matrix4Glf& mvp) {
+    material_->useMaterial(mvp);
     glBindVertexArray(vertexArrayObjectId_);
-
-    glUseProgram(shaderId_);
-    glUniformMatrix4fv(uniformPosition_MVP_, 1, GL_FALSE, mvp.data());
 
     // TODO_IMPLEMENT: draw arrays if not using indexing
     glDrawElements(GL_TRIANGLES, nIndices_, GL_UNSIGNED_INT, (GLvoid*)0);

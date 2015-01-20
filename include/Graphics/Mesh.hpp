@@ -56,9 +56,6 @@ namespace Cucca {
         GLuint texCoordBufferId_;
         GLuint normalBufferId_;
         GLuint elementBufferId_;
-
-        GLuint shaderId_;
-        GLuint uniformPosition_MVP_;
     };
 
     CUCCA_RESOURCE_INIT_INFO(Mesh) { };

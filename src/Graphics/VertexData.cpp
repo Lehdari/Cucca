@@ -6,7 +6,7 @@
 
     @version    0.1
     @author     Miika Lehtimäki
-    @date       2015-01-08
+    @date       2015-01-21
 **/
 
 
@@ -77,10 +77,10 @@ void VertexData::init(const ResourceInitInfo<VertexData>& initInfo,
                 }
                 else if (strcmp(lineHeader, "f") == 0) {
                     std::array<unsigned, 9> index = {0, 0, 0,  0, 0, 0,  0, 0, 0};
-                    if (sscanf(buffer, "%u/%u/%u %u/%u/%u %u/%u/%u", &index[0], &index[3], &index[6], &index[1], &index[4], &index[7], &index[2], &index[5], &index[8]) == 9 ||
+                    if (sscanf(buffer, "%u %u %u", &index[0], &index[1], &index[2]) == 3 ||
                         sscanf(buffer, "%u//%u %u//%u %u//%u", &index[0], &index[6], &index[1], &index[7], &index[2], &index[8]) == 6 ||
                         sscanf(buffer, "%u/%u %u/%u %u/%u", &index[0], &index[3], &index[1], &index[4], &index[2], &index[5]) == 6 ||
-                        sscanf(buffer, "%u %u %u", &index[0], &index[1], &index[2]) == 3)
+                        sscanf(buffer, "%u/%u/%u %u/%u/%u %u/%u/%u", &index[0], &index[3], &index[6], &index[1], &index[4], &index[7], &index[2], &index[5], &index[8]) == 9)
                         indices.push_back(std::move(index));
                     else
                         throw "VertexData: invalid file!"; // TODO_EXCEPTION
@@ -141,8 +141,6 @@ void VertexData::init(const ResourceInitInfo<VertexData>& initInfo,
                 }
                 indices_.push_back(createdVertices[v3]);
             }
-
-            //printf("positions: %u, texCoords: %u, normals: %u, indices: %u\n", positions_.size(), texCoords_.size(), normals_.size(), indices_.size()); // TEMP
         }
     break;
     }
