@@ -7,9 +7,11 @@
 #include "../../include/Core/Device.hpp"
 #include "../../include/Core/ThreadPool.hpp"
 #include "../../include/Core/ResourceManager.hpp"
+#include "../../include/Core/Binary.hpp"
+
 #include "../../include/CoreExtensions/Canvas_SFML.hpp"
 #include "../../include/CoreExtensions/EventVisitor_SFML.hpp"
-#include "../../include/Core/Binary.hpp"
+
 #include "../../include/Graphics/ShaderObject.hpp"
 #include "../../include/Graphics/ShaderProgram.hpp"
 #include "../../include/Graphics/Texture.hpp"
@@ -19,6 +21,8 @@
 #include "../../include/Graphics/TransformationComponent.hpp"
 #include "../../include/Graphics/MeshComponent.hpp"
 #include "../../include/Graphics/BasicCamera.hpp"
+
+#include "../../include/GraphicsExtensions/HeightMap.hpp"
 
 #include <random>
 
@@ -121,7 +125,58 @@ int unitTest(void) {
                                   std::vector<ResourceId>{ "MATERIAL_1" },
                                   true);
 
+    //  Terrain
+    ResourceInitInfo<Binary> heightMapMajorBinaryInitInfo;
+    heightMapMajorBinaryInitInfo.source = ResourceInitInfo<Binary>::SOURCE_FILE;
+    heightMapMajorBinaryInitInfo.fileName = "res/heightmaps/heightmap_major_01.png";
+    manager.addResourceInfo<Binary>("BINARY_HEIGHTMAP_MAJOR", heightMapMajorBinaryInitInfo);
+
+    ResourceInitInfo<HeightMap> terrainHeightMapInitInfo;
+    manager.addResourceInfo<HeightMap>("HEIGHTMAP",
+                                       terrainHeightMapInitInfo,
+                                       std::vector<ResourceId>{ "BINARY_HEIGHTMAP_MAJOR" },
+                                       std::vector<ResourceId>());
+
+    ResourceInitInfo<VertexData> terrainVertexDataInitInfo;
+    terrainVertexDataInitInfo.source = ResourceInitInfo<VertexData>::SOURCE_HEIGHTMAP;
+    manager.addResourceInfo<VertexData>("VERTEX_DATA_TERRAIN",
+                                        terrainVertexDataInitInfo,
+                                        std::vector<ResourceId>{ "HEIGHTMAP" },
+                                        std::vector<ResourceId>());
+
+    ResourceInitInfo<Binary> textureBinaryInitInfo2;
+    textureBinaryInitInfo2.source = ResourceInitInfo<Binary>::SOURCE_FILE;
+    textureBinaryInitInfo2.fileName = "res/heightmaps/heightmap_diffuse_01.png";
+    manager.addResourceInfo<Binary>("BINARY_TEXTURE_2", textureBinaryInitInfo2);
+
+    ResourceInitInfo<Texture> textureInitInfo2;
+    textureInitInfo2.source = ResourceInitInfo<Texture>::SOURCE_BINARY_PNG;
+    textureInitInfo2.wrapS = GL_REPEAT;
+    textureInitInfo2.wrapT = GL_REPEAT;
+    textureInitInfo2.minFiltering = GL_LINEAR_MIPMAP_LINEAR;
+    textureInitInfo2.magFiltering = GL_LINEAR;
+    manager.addResourceInfo<Texture>("TEXTURE_2",
+                                     textureInitInfo2,
+                                     std::vector<ResourceId>{ "BINARY_TEXTURE_2" },
+                                     std::vector<ResourceId>(),
+                                     true);
+
+    ResourceInitInfo<Material> materialInitInfo2;
+    manager.addResourceInfo<Material>("MATERIAL_2",
+                                      materialInitInfo2,
+                                      std::vector<ResourceId>(),
+                                      std::vector<ResourceId>{ "SHADER_PROGRAM_1", "TEXTURE_2" },
+                                      true);
+
+    ResourceInitInfo<Mesh> terrainMeshInitInfo;
+    manager.addResourceInfo<Mesh>("MESH_TERRAIN",
+                                  meshInitInfo1,
+                                  std::vector<ResourceId>{ "VERTEX_DATA_TERRAIN" },
+                                  std::vector<ResourceId>{ "MATERIAL_2" },
+                                  true);
+
     auto mesh1 = manager.getResource<Mesh>("MESH_1");
+    auto terrainMesh = manager.getResource<Mesh>("MESH_TERRAIN");
 
     //  Nodes
     Node eventNode;
@@ -129,12 +184,20 @@ int unitTest(void) {
     device->subscribeEvents(eventNode.getComponents<EventComponent>().back(), EventBase::getEventTypeId<sf::Event>());
     root->addChild(std::move(eventNode));
 
-    for (auto i=0u; i<100; ++i) {
+    /*for (auto i=0u; i<100; ++i) {
         Node graphicsNode;
         graphicsNode.addComponent(TransformationComponent());
         graphicsNode.getComponents<TransformationComponent>().back()->translate(Vector3Glf{ 25.0f - 50.0f*rndf, 5.0f - 10.0f*rndf, 25.0f - 50.0f*rndf }, true);
         graphicsNode.addComponent(MeshComponent(mesh1));
         root->addChild(std::move(graphicsNode));
+    }*/
+
+    {
+        Node terrainNode;
+        terrainNode.addComponent(TransformationComponent());
+        terrainNode.getComponents<TransformationComponent>().back()->translate(Vector3Glf{ -512.0f, -20.0f ,-512.0f }, true);
+        terrainNode.addComponent(MeshComponent(terrainMesh));
+        root->addChild(std::move(terrainNode));
     }
 
     //  Visitors
@@ -142,7 +205,7 @@ int unitTest(void) {
     camera.lookAt(Vector3Glf{ 0.0f, 0.0f, 1.0f },
                   Vector3Glf{ 0.0f, 0.0f, 0.0f },
                   Vector3Glf{ 0.0f, -1.0f, 0.0f });
-    camera.projection(1.5708f, 4.0f/3.0f, 0.05f, 100.0f);
+    camera.projection(1.5708f, 4.0f/3.0f, 0.05f, 1000.0f);
 
     EventVisitor_SFML sfmlEventVisitor;
 
@@ -157,7 +220,7 @@ int unitTest(void) {
         device->render();
 
         t += 0.001f;
-        camera.lookAt(Vector3Glf{ 10.0f*cosf(t*4.0f), 1.5f + 2.5f*sinf(t*1.276f), 10.0f*sinf(t*4.0f) },
+        camera.lookAt(Vector3Glf{ 220.0f*cosf(t*2.0f), 50.0f + 15.0f*sinf(t*1.276f), 270.0f*sinf(t*2.0f) },
                       Vector3Glf{ 0.0f, 0.0f, 0.0f },
                       Vector3Glf{ 0.0f, 1.0f, 0.0f });
     }

@@ -32,7 +32,7 @@ namespace Cucca {
             Initialization resources:
                 0: VertexData
             Dependency resources:
-                0: ShaderProgram
+                0: Material
         */
         void init(const ResourceInitInfo<Mesh>& initInfo,
                   const std::vector<ResourceId>& initResources,

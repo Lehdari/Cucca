@@ -5,11 +5,10 @@ Priority descends downwards in the file
 
 TODO:
 
-(Put template definitions in .inl files[see google style guide!]) and unify the layout
+!Multiple component visitor visiting a node containing less component types than specified in visitor
 
 Graphics stuff
 	Mesh
-		move uniform position information to material?
 	Material
 		Texture
 	Curves, animations

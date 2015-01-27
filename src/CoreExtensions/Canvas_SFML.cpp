@@ -27,7 +27,7 @@ Cucca::Canvas_SFML::Canvas_SFML(void)
     settings.majorVersion = 3;
     settings.minorVersion = 3;
 
-    window_.create(sf::VideoMode(800, 600), "Cucca", sf::Style::Default, settings);
+    window_.create(sf::VideoMode(800, 600), "Cucca Game Engine", sf::Style::Default, settings);
     window_.setFramerateLimit(60);
 }
 

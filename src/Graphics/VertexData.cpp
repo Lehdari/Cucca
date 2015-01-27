@@ -13,6 +13,7 @@
 #include "../../include/Graphics/VertexData.hpp"
 #include "../../include/Core/ResourceManager.hpp"
 #include "../../include/Core/Binary.hpp"
+#include "../../include/GraphicsExtensions/HeightMap.hpp"
 
 #include <array>
 #include <cstring>
@@ -36,7 +37,7 @@ void VertexData::init(const ResourceInitInfo<VertexData>& initInfo,
     case ResourceInitInfo<VertexData>::SOURCE_BINARY_OBJ:
         {
             if (initResources.size() == 0)
-                return;
+                return; // TODO_EXCEPTION: maybe throw an exception instead?
 
             positions_.clear();
             texCoords_.clear();
@@ -141,6 +142,20 @@ void VertexData::init(const ResourceInitInfo<VertexData>& initInfo,
                 }
                 indices_.push_back(createdVertices[v3]);
             }
+        }
+    break;
+    case ResourceInitInfo<VertexData>::SOURCE_HEIGHTMAP:
+        {
+            if (initResources.size() == 0)
+                return; // TODO_EXCEPTION: maybe throw an exception?
+
+            auto heightMap = resourceManager->getResource<HeightMap>(initResources[0]);
+
+            usingTexCoords_ = true;
+            usingNormals_ = true;
+            usingIndexing_ = true;
+
+            heightMap->fillAttributeVectors(positions_, texCoords_, normals_, indices_);
         }
     break;
     }

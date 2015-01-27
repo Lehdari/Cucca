@@ -21,11 +21,16 @@
 
 namespace Cucca {
 
+    //  Resource
     CUCCA_RESOURCE(VertexData) {
     public:
         VertexData(void);
 
         //  Resource init and destroy member functions
+        /*
+            Initialization resources:
+                0: .obj file binary
+        */
         void init(const ResourceInitInfo<VertexData>& initInfo,
                   const std::vector<ResourceId>& initResources,
                   const std::vector<ResourceId>& depResources,
@@ -52,9 +57,12 @@ namespace Cucca {
         std::vector<unsigned> indices_;
     };
 
+
+    //  Initialization info
     CUCCA_RESOURCE_INIT_INFO(VertexData) {
         enum Source {
-            SOURCE_BINARY_OBJ      //  Loaded from .obj file
+            SOURCE_BINARY_OBJ,      //  from .obj file
+            SOURCE_HEIGHTMAP        //  from HeightMap resource
         } source;
     };
 

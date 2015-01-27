@@ -39,6 +39,7 @@ void Material::init(const ResourceInitInfo<Material>& initInfo,
 
 void Material::useMaterial(const Matrix4Glf& mvp) {
     glUseProgram(shader_->getId());
+
     glUniformMatrix4fv(uniformPosition_MVP_, 1, GL_FALSE, mvp.data());
 }
 
