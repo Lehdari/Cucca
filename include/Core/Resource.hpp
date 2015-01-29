@@ -18,14 +18,10 @@
     handling is required. This class also provides wrapped thread-safety for
     those functions.
 
-    For each Resource user should also define a ResourceLoadInfo template
-    specialization. This data structure is used to initialize the resource
-    correctly.
-
 
     @version    0.1
     @author     Miika Lehtimäki
-    @date       2014-12-27
+    @date       2015-01-29
 **/
 
 
@@ -34,6 +30,7 @@
 
 
 #include "ResourceBase.hpp"
+#include "ResourceInitializer.hpp"
 #include "ResourceId.hpp"
 #include "ResourcePointer.hpp"
 
@@ -42,29 +39,15 @@
 
 
 #define CUCCA_RESOURCE(RESOURCE_TYPE) class RESOURCE_TYPE : public Cucca::Resource<RESOURCE_TYPE, ResourceId>
-#define CUCCA_RESOURCE_INIT_INFO(RESOURCE_TYPE) template<> struct ResourceInitInfo<RESOURCE_TYPE> : public ResourceInitInfoBase
 
 
 namespace Cucca {
 
-    // Forward Declarations
-    template<typename ResourceIdType_T>
-    class ResourceManager;
-
-
-    // Structs and Classes
-    struct ResourceInitInfoBase {
-        virtual ~ResourceInitInfoBase(void) {}
-    };
-
-
-    template<typename ResourceType_T>
-    struct ResourceInitInfo : public ResourceInitInfoBase {};
-
-
     template<typename ResourceType_T, typename ResourceIdType_T>
     class Resource : public ResourceBase { // TODO_RO5 (?)
     public:
+        friend ResourceInitializerBase;
+
         Resource(void);
 
         Resource(ResourceBase&&);
@@ -76,12 +59,6 @@ namespace Cucca {
         /// ResourceBase is uncopyable (why would you want to copy a resource anyway)
         Resource(const Resource&) = delete;
         Resource& operator=(const Resource&) & = delete;
-
-        void init(ResourceInitInfo<ResourceType_T> initInfo,
-                  std::vector<ResourceIdType_T> initResources,
-                  std::vector<ResourceIdType_T> depResources,
-                  ResourceManager<ResourceIdType_T>* resourceManager);
-        void destroy(void);
     };
 
 
@@ -95,27 +72,6 @@ namespace Cucca {
     Resource<ResourceType_T, ResourceIdType_T>::Resource(ResourceBase&& other) :
         ResourceBase(std::move(other))
     {}
-
-    template<typename ResourceType_T, typename ResourceIdType_T>
-    void Resource<ResourceType_T, ResourceIdType_T>::init(ResourceInitInfo<ResourceType_T> initInfo,
-                                                          std::vector<ResourceIdType_T> initResources,
-                                                          std::vector<ResourceIdType_T> depResources,
-                                                          ResourceManager<ResourceIdType_T>* resourceManager) {
-        if (status() != STATUS_UNINITIALIZED)
-            return;
-        setStatus(STATUS_INITIALIZING);
-        static_cast<ResourceType_T*>(this)->init(initInfo, initResources, depResources, resourceManager);
-        setStatus(STATUS_READY);
-    }
-
-    template<typename ResourceType_T, typename ResourceIdType_T>
-    void Resource<ResourceType_T, ResourceIdType_T>::destroy(void) {
-        if (status() != STATUS_READY)
-            return;
-        setStatus(STATUS_DESTROYING);
-        static_cast<ResourceType_T*>(this)->destroy();
-        setStatus(STATUS_DESTROYED);
-    }
 
 } // namespace Cucca
 
