@@ -219,7 +219,7 @@ namespace Cucca {
                 std::vector<std::deque<ResourceId>> depList;
                 getLoadOrder(resourceId, depList);
 
-                for (auto& depListLayer : depList){
+                for (auto& depListLayer : depList) {
                     for (auto& depResourceId : depListLayer) {
                         resourcesBeingInitialized_.push_back(depResourceId);
 
@@ -343,7 +343,7 @@ namespace Cucca {
 
     template <typename ResourceIdType_T>
     unsigned ResourceManager<ResourceIdType_T>::getLoadOrder(const ResourceId& resourceId, std::vector<std::deque<ResourceId>>& depList) {
-        if (resourceId.empty())
+        if (!resourceId)
             return 0;
 
         unsigned depth = 0;

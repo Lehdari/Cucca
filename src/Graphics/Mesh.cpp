@@ -49,9 +49,6 @@ void Mesh::init(const ResourceInitInfo<Mesh>& initInfo,
     auto normals = vertexData->getNormals();
     auto indices = vertexData->getIndices();
 
-    printf("positions size: %u\ntexCoords size: %u\nnormals size: %u\nindices size: %u\n",
-           positions.size(), texCoords.size(), normals.size(), indices.size());
-
     //  create and bind the VAO
     glGenVertexArrays(1, &vertexArrayObjectId_);
     glBindVertexArray(vertexArrayObjectId_);

@@ -34,6 +34,7 @@
 
 
 #include "ResourceBase.hpp"
+#include "ResourceId.hpp"
 #include "ResourcePointer.hpp"
 
 #include <string>
@@ -45,10 +46,6 @@
 
 
 namespace Cucca {
-
-    // Typedefs
-    typedef std::string ResourceId;
-
 
     // Forward Declarations
     template<typename ResourceIdType_T>

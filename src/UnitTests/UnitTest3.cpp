@@ -177,6 +177,8 @@ int unitTest(void) {
 
     auto mesh1 = manager.getResource<Mesh>("MESH_1");
     auto terrainMesh = manager.getResource<Mesh>("MESH_TERRAIN");
+    if (!terrainMesh.get())
+        printf("invalid MESH_TERRAIN!\n");
 
     //  Nodes
     Node eventNode;
