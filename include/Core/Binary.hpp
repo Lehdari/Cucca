@@ -4,12 +4,17 @@
     This file is subject to the terms and conditions defined in
     file 'LICENSE.txt', which is part of this source code package.
 
+
     Binary is a resource consisting a buffer of binary data.
-    Buffer is null/terminated, thus it can be used as a C string.
+
+    Initialization details:
+    Buffer should be initialized null-terminated so it can be used
+    as a C-string.
+
 
     @version    0.1
     @author     Miika Lehtimäki
-    @date       2014-12-27
+    @date       2015-02-01
 **/
 
 
@@ -25,15 +30,10 @@ namespace Cucca {
     //  Structs and Classes
     CUCCA_RESOURCE(Binary) {
     public:
+        friend class ResourceInitializerBase;
+
         Binary(void);
         ~Binary(void);
-
-        //  Resource init and destroy member functions
-        void init(const ResourceInitInfo<Binary>& initInfo,
-                  const std::vector<ResourceId>& initResources,
-                  const std::vector<ResourceId>& depResources,
-                  ResourceManager<ResourceId>* resourceManager);
-        void destroy(void);
 
         char* getBufferPtr(void);
         unsigned long getBufferSize(void);
@@ -41,15 +41,6 @@ namespace Cucca {
     private:
         char* buffer_;
         unsigned long size_;
-    };
-
-
-    CUCCA_RESOURCE_INIT_INFO(Binary) {
-        enum Source {
-            SOURCE_FILE
-        } source;
-
-        std::string fileName;
     };
 
 } // namespace Cucca

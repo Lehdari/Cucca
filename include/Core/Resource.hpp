@@ -46,8 +46,6 @@ namespace Cucca {
     template<typename ResourceType_T, typename ResourceIdType_T>
     class Resource : public ResourceBase { // TODO_RO5 (?)
     public:
-        friend ResourceInitializerBase;
-
         Resource(void);
 
         Resource(ResourceBase&&);

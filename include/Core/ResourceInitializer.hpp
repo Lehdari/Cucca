@@ -5,8 +5,8 @@
     file 'LICENSE.txt', which is part of this source code package.
 
 
-    For each Resource user should define a ResourceInitializer template
-    specialization. This data structure is used to initialize the resource
+    For each Resource user should define a ResourceInitializer CRTP
+    implementation. This class is used to initialize the resource
     correctly.
 
 
@@ -26,7 +26,7 @@
 #include <vector>
 
 
-#define CUCCA_RESOURCE_INITIALIZER(RESOURCE_TYPE) template<> struct ResourceInitializer<RESOURCE_TYPE> : public ResourceInitializerBase
+#define CUCCA_RESOURCEINITIALIZER(RESOURCEINITIALIZER_TYPE, RESOURCE_TYPE) class RESOURCEINITIALIZER_TYPE : public ResourceInitializer<RESOURCEINITIALIZER_TYPE, RESOURCE_TYPE, ResourceId>
 
 
 namespace Cucca {
@@ -39,6 +39,7 @@ namespace Cucca {
     //  Structs and classes
     template<typename ResourceInitializerType_T, typename ResourceType_T, typename ResourceIdType_T>
     struct ResourceInitializer : public ResourceInitializerBase {
+    public:
         void init(ResourceType_T& resource,
                   std::vector<ResourceIdType_T> initResources,
                   std::vector<ResourceIdType_T> depResources,
