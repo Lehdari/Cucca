@@ -18,10 +18,6 @@
     handling is required. This class also provides wrapped thread-safety for
     those functions.
 
-    For each Resource user should also define a ResourceLoadInfo template
-    specialization. This data structure is used to initialize the resource
-    correctly.
-
 
     @version    0.1
     @author     Miika Lehtimäki
@@ -34,6 +30,7 @@
 
 
 #include "ResourceBase.hpp"
+#include "ResourceInitializer.hpp"
 #include "ResourceId.hpp"
 #include "ResourcePointer.hpp"
 
@@ -53,15 +50,20 @@
 
 namespace Cucca {
 
+<<<<<<< HEAD
     // Forward Declarations
     template<typename ResourceIdType_T>
     class ResourceManager;
 
 
     // Structs and Classes
+=======
+>>>>>>> master
     template<typename ResourceType_T, typename ResourceIdType_T>
     class Resource : public ResourceBase { // TODO_RO5 (?)
     public:
+        friend ResourceInitializerBase;
+
         Resource(void);
 
         Resource(ResourceBase&&);
@@ -73,6 +75,7 @@ namespace Cucca {
         /// ResourceBase is uncopyable (why would you want to copy a resource anyway)
         Resource(const Resource&) = delete;
         Resource& operator=(const Resource&) & = delete;
+<<<<<<< HEAD
 
         template<typename ResourceInitInfoType_T>
         void init(ResourceInitInfoType_T initInfo,
@@ -82,6 +85,8 @@ namespace Cucca {
 
         template<typename ResourceInitInfoType_T>
         void destroy(void);
+=======
+>>>>>>> master
     };
 
 
@@ -96,6 +101,7 @@ namespace Cucca {
         ResourceBase(std::move(other))
     {}
 
+<<<<<<< HEAD
     template<typename ResourceType_T, typename ResourceIdType_T>
     template<typename ResourceInitInfoType_T>
     void Resource<ResourceType_T, ResourceIdType_T>::init(ResourceInitInfoType_T initInfo,
@@ -119,6 +125,8 @@ namespace Cucca {
         setStatus(STATUS_DESTROYED);
     }
 
+=======
+>>>>>>> master
 } // namespace Cucca
 
 
