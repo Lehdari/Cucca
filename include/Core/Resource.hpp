@@ -25,7 +25,7 @@
 
     @version    0.1
     @author     Miika Lehtimäki
-    @date       2014-12-27
+    @date       2015-02-03
 **/
 
 
@@ -42,7 +42,6 @@
 
 
 #define CUCCA_RESOURCE(RESOURCE_TYPE) class RESOURCE_TYPE : public Cucca::Resource<RESOURCE_TYPE, ResourceId>
-#define CUCCA_RESOURCE_INIT_INFO(RESOURCE_TYPE) template<> struct ResourceInitInfo<RESOURCE_TYPE> : public ResourceInitInfoBase
 
 
 namespace Cucca {
@@ -53,15 +52,6 @@ namespace Cucca {
 
 
     // Structs and Classes
-    struct ResourceInitInfoBase {
-        virtual ~ResourceInitInfoBase(void) {}
-    };
-
-
-    template<typename ResourceType_T>
-    struct ResourceInitInfo : public ResourceInitInfoBase {};
-
-
     template<typename ResourceType_T, typename ResourceIdType_T>
     class Resource : public ResourceBase { // TODO_RO5 (?)
     public:
@@ -77,10 +67,13 @@ namespace Cucca {
         Resource(const Resource&) = delete;
         Resource& operator=(const Resource&) & = delete;
 
-        void init(ResourceInitInfo<ResourceType_T> initInfo,
+        template<typename ResourceInitInfoType_T>
+        void init(ResourceInitInfoType_T initInfo,
                   std::vector<ResourceIdType_T> initResources,
                   std::vector<ResourceIdType_T> depResources,
                   ResourceManager<ResourceIdType_T>* resourceManager);
+
+        template<typename ResourceInitInfoType_T>
         void destroy(void);
     };
 
@@ -97,7 +90,8 @@ namespace Cucca {
     {}
 
     template<typename ResourceType_T, typename ResourceIdType_T>
-    void Resource<ResourceType_T, ResourceIdType_T>::init(ResourceInitInfo<ResourceType_T> initInfo,
+    template<typename ResourceInitInfoType_T>
+    void Resource<ResourceType_T, ResourceIdType_T>::init(ResourceInitInfoType_T initInfo,
                                                           std::vector<ResourceIdType_T> initResources,
                                                           std::vector<ResourceIdType_T> depResources,
                                                           ResourceManager<ResourceIdType_T>* resourceManager) {
@@ -109,11 +103,12 @@ namespace Cucca {
     }
 
     template<typename ResourceType_T, typename ResourceIdType_T>
+    template<typename ResourceInitInfoType_T>
     void Resource<ResourceType_T, ResourceIdType_T>::destroy(void) {
         if (status() != STATUS_READY)
             return;
         setStatus(STATUS_DESTROYING);
-        static_cast<ResourceType_T*>(this)->destroy();
+        static_cast<ResourceType_T*>(this)->destroy<ResourceInitInfoType_T>();
         setStatus(STATUS_DESTROYED);
     }
 

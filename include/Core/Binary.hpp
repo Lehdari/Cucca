@@ -9,7 +9,7 @@
 
     @version    0.1
     @author     Miika Lehtimäki
-    @date       2014-12-27
+    @date       2015-02-03
 **/
 
 
@@ -29,10 +29,13 @@ namespace Cucca {
         ~Binary(void);
 
         //  Resource init and destroy member functions
-        void init(const ResourceInitInfo<Binary>& initInfo,
+        template<typename ResourceInitInfoType_T>
+        void init(const ResourceInitInfoType_T& initInfo,
                   const std::vector<ResourceId>& initResources,
                   const std::vector<ResourceId>& depResources,
                   ResourceManager<ResourceId>* resourceManager);
+
+        template<typename ResourceInitInfoType_T>
         void destroy(void);
 
         char* getBufferPtr(void);
@@ -41,15 +44,6 @@ namespace Cucca {
     private:
         char* buffer_;
         unsigned long size_;
-    };
-
-
-    CUCCA_RESOURCE_INIT_INFO(Binary) {
-        enum Source {
-            SOURCE_FILE
-        } source;
-
-        std::string fileName;
     };
 
 } // namespace Cucca

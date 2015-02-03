@@ -6,7 +6,7 @@
 
     @version    0.1
     @author     Miika Lehtimäki
-    @date       2015-01-25
+    @date       2015-02-03
 **/
 
 
@@ -30,11 +30,14 @@ namespace Cucca {
             Initialization resources:
                 0: Major texture (Binary[image file])
         */
-        void init(const ResourceInitInfo<HeightMap>& initInfo,
+        template<typename ResourceInitInfoType_T>
+        void init(const ResourceInitInfoType_T& initInfo,
                   const std::vector<ResourceId>& initResources,
                   const std::vector<ResourceId>& depResources,
                   ResourceManager<ResourceId>* resourceManager);
-        void destroy(void) {}
+
+        template<typename ResourceInitInfoType_T>
+        void destroy(void);
 
         void fillAttributeVectors(std::vector<std::array<float, 4>>& positions,
                                   std::vector<std::array<float, 3>>& texCoords,
@@ -43,11 +46,6 @@ namespace Cucca {
 
     private:
         sf::Image major_; // TODO_IMPLEMENT: provide a proper level of abstraction between Cucca and external libraries
-    };
-
-
-    //  Initialization info
-    CUCCA_RESOURCE_INIT_INFO(HeightMap) {
     };
 
 }; // namespace Cucca

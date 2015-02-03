@@ -7,11 +7,11 @@
 #include "../../include/Core/Device.hpp"
 #include "../../include/Core/ThreadPool.hpp"
 #include "../../include/Core/ResourceManager.hpp"
-#include "../../include/Core/Binary.hpp"
+#include "../../include/Core/Binary_File.hpp"
 
 #include "../../include/CoreExtensions/Canvas_SFML.hpp"
 #include "../../include/CoreExtensions/EventVisitor_SFML.hpp"
-
+/*
 #include "../../include/Graphics/ShaderObject.hpp"
 #include "../../include/Graphics/ShaderProgram.hpp"
 #include "../../include/Graphics/Texture.hpp"
@@ -21,7 +21,7 @@
 #include "../../include/Graphics/TransformationComponent.hpp"
 #include "../../include/Graphics/MeshComponent.hpp"
 #include "../../include/Graphics/BasicCamera.hpp"
-
+*/
 #include "../../include/GraphicsExtensions/HeightMap.hpp"
 
 #include <random>
@@ -47,17 +47,15 @@ int unitTest(void) {
     Node* root = device->getRoot();
 
     //  Resources
-    ResourceInitInfo<Binary> vertexShaderBinaryInitInfo1;
-    vertexShaderBinaryInitInfo1.source = ResourceInitInfo<Binary>::SOURCE_FILE;
+    BinaryInitInfoFile vertexShaderBinaryInitInfo1;
     vertexShaderBinaryInitInfo1.fileName = "res/shaders/VS_SingleTexture.glsl";
     manager.addResourceInfo<Binary>("BINARY_SHADER_VERTEX_1", vertexShaderBinaryInitInfo1);
 
-    ResourceInitInfo<Binary> fragmentShaderBinaryInitInfo1;
-    fragmentShaderBinaryInitInfo1.source = ResourceInitInfo<Binary>::SOURCE_FILE;
+    BinaryInitInfoFile fragmentShaderBinaryInitInfo1;
     fragmentShaderBinaryInitInfo1.fileName = "res/shaders/FS_SingleTexture.glsl";
     manager.addResourceInfo<Binary>("BINARY_SHADER_FRAGMENT_1", fragmentShaderBinaryInitInfo1);
 
-    ResourceInitInfo<ShaderObject> vertexShaderInitInfo1;
+    /*ResourceInitInfo<ShaderObject> vertexShaderInitInfo1;
     vertexShaderInitInfo1.source = ResourceInitInfo<ShaderObject>::SOURCE_CODE;
     vertexShaderInitInfo1.type = GL_VERTEX_SHADER;
     manager.addResourceInfo<ShaderObject>("SHADER_VERTEX_1",
@@ -81,12 +79,11 @@ int unitTest(void) {
                                            std::vector<ResourceId>{ "SHADER_VERTEX_1", "SHADER_FRAGMENT_1" },
                                            std::vector<ResourceId>(),
                                            true);
-
-    ResourceInitInfo<Binary> textureBinaryInitInfo1;
-    textureBinaryInitInfo1.source = ResourceInitInfo<Binary>::SOURCE_FILE;
+*/
+    BinaryInitInfoFile textureBinaryInitInfo1;
     textureBinaryInitInfo1.fileName = "res/models/cube.png";
     manager.addResourceInfo<Binary>("BINARY_TEXTURE_1", textureBinaryInitInfo1);
-
+/*
     ResourceInitInfo<Texture> textureInitInfo1;
     textureInitInfo1.source = ResourceInitInfo<Texture>::SOURCE_BINARY_PNG;
     textureInitInfo1.wrapS = GL_REPEAT;
@@ -105,12 +102,11 @@ int unitTest(void) {
                                       std::vector<ResourceId>(),
                                       std::vector<ResourceId>{ "SHADER_PROGRAM_1", "TEXTURE_1" },
                                       true);
-
-    ResourceInitInfo<Binary> vertexDataBinaryInitInfo1;
-    vertexDataBinaryInitInfo1.source = ResourceInitInfo<Binary>::SOURCE_FILE;
+*/
+    BinaryInitInfoFile vertexDataBinaryInitInfo1;
     vertexDataBinaryInitInfo1.fileName = "res/models/cube.obj";
     manager.addResourceInfo<Binary>("BINARY_VERTEX_DATA_1", vertexDataBinaryInitInfo1);
-
+/*
     ResourceInitInfo<VertexData> vertexDataInitInfo1;
     vertexDataInitInfo1.source = ResourceInitInfo<VertexData>::SOURCE_BINARY_OBJ;
     manager.addResourceInfo<VertexData>("VERTEX_DATA_1",
@@ -124,13 +120,12 @@ int unitTest(void) {
                                   std::vector<ResourceId>{ "VERTEX_DATA_1" },
                                   std::vector<ResourceId>{ "MATERIAL_1" },
                                   true);
-
+*/
     //  Terrain
-    ResourceInitInfo<Binary> heightMapMajorBinaryInitInfo;
-    heightMapMajorBinaryInitInfo.source = ResourceInitInfo<Binary>::SOURCE_FILE;
+    BinaryInitInfoFile heightMapMajorBinaryInitInfo;
     heightMapMajorBinaryInitInfo.fileName = "res/heightmaps/heightmap_major_01.png";
     manager.addResourceInfo<Binary>("BINARY_HEIGHTMAP_MAJOR", heightMapMajorBinaryInitInfo);
-
+/*
     ResourceInitInfo<HeightMap> terrainHeightMapInitInfo;
     manager.addResourceInfo<HeightMap>("HEIGHTMAP",
                                        terrainHeightMapInitInfo,
@@ -143,12 +138,11 @@ int unitTest(void) {
                                         terrainVertexDataInitInfo,
                                         std::vector<ResourceId>{ "HEIGHTMAP" },
                                         std::vector<ResourceId>());
-
-    ResourceInitInfo<Binary> textureBinaryInitInfo2;
-    textureBinaryInitInfo2.source = ResourceInitInfo<Binary>::SOURCE_FILE;
+*/
+    BinaryInitInfoFile textureBinaryInitInfo2;
     textureBinaryInitInfo2.fileName = "res/heightmaps/heightmap_diffuse_01.png";
     manager.addResourceInfo<Binary>("BINARY_TEXTURE_2", textureBinaryInitInfo2);
-
+/*
     ResourceInitInfo<Texture> textureInitInfo2;
     textureInitInfo2.source = ResourceInitInfo<Texture>::SOURCE_BINARY_PNG;
     textureInitInfo2.wrapS = GL_REPEAT;
@@ -174,11 +168,9 @@ int unitTest(void) {
                                   std::vector<ResourceId>{ "VERTEX_DATA_TERRAIN" },
                                   std::vector<ResourceId>{ "MATERIAL_2" },
                                   true);
-
-    auto mesh1 = manager.getResource<Mesh>("MESH_1");
-    auto terrainMesh = manager.getResource<Mesh>("MESH_TERRAIN");
-    if (!terrainMesh.get())
-        printf("invalid MESH_TERRAIN!\n");
+*/
+    //auto mesh1 = manager.getResource<Mesh>("MESH_1");
+   // auto terrainMesh = manager.getResource<Mesh>("MESH_TERRAIN");
 
     //  Nodes
     Node eventNode;
@@ -192,7 +184,7 @@ int unitTest(void) {
         graphicsNode.getComponents<TransformationComponent>().back()->translate(Vector3Glf{ 25.0f - 50.0f*rndf, 5.0f - 10.0f*rndf, 25.0f - 50.0f*rndf }, true);
         graphicsNode.addComponent(MeshComponent(mesh1));
         root->addChild(std::move(graphicsNode));
-    }*/
+    }
 
     {
         Node terrainNode;
@@ -200,14 +192,14 @@ int unitTest(void) {
         terrainNode.getComponents<TransformationComponent>().back()->translate(Vector3Glf{ -512.0f, -20.0f ,-512.0f }, true);
         terrainNode.addComponent(MeshComponent(terrainMesh));
         root->addChild(std::move(terrainNode));
-    }
+    }*/
 
     //  Visitors
-    BasicCamera camera;
+    /*BasicCamera camera;
     camera.lookAt(Vector3Glf{ 0.0f, 0.0f, 1.0f },
                   Vector3Glf{ 0.0f, 0.0f, 0.0f },
                   Vector3Glf{ 0.0f, -1.0f, 0.0f });
-    camera.projection(1.5708f, 4.0f/3.0f, 0.05f, 1000.0f);
+    camera.projection(1.5708f, 4.0f/3.0f, 0.05f, 1000.0f);*/
 
     EventVisitor_SFML sfmlEventVisitor;
 
@@ -218,13 +210,13 @@ int unitTest(void) {
     while (device->status() == Device<Canvas_SFML>::STATUS_RUNNING) {
         device->handleEvents();
         device->getRoot()->accept(sfmlEventVisitor);
-        device->getRoot()->accept(camera);
+        //device->getRoot()->accept(camera);
         device->render();
 
-        t += 0.001f;
+        /*t += 0.001f;
         camera.lookAt(Vector3Glf{ 220.0f*cosf(t*2.0f), 50.0f + 15.0f*sinf(t*1.276f), 270.0f*sinf(t*2.0f) },
                       Vector3Glf{ 0.0f, 0.0f, 0.0f },
-                      Vector3Glf{ 0.0f, 1.0f, 0.0f });
+                      Vector3Glf{ 0.0f, 1.0f, 0.0f });*/
     }
 
     return 0;

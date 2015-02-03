@@ -19,6 +19,7 @@
 #include "Platform.hpp"
 #include "Resource.hpp"
 #include "ResourcePointer.hpp"
+#include "ResourceInitInfoBase.hpp"
 #include "TaskQueue.hpp"
 #include "Device.hpp"
 
@@ -44,16 +45,16 @@ namespace Cucca {
         ~ResourceManager(void);
 
         //  Resource infos are required to load resources with their identifier
-        template<typename ResourceType_T>
+        template<typename ResourceType_T, typename ResourceInitInfoType_T>
         void addResourceInfo(const ResourceIdType_T& resourceId,
-                             ResourceInitInfo<ResourceType_T>& initInfo,
+                             ResourceInitInfoType_T& initInfo,
                              const std::vector<ResourceIdType_T>& initResources = std::vector<ResourceIdType_T>(),
                              const std::vector<ResourceIdType_T>& depResources = std::vector<ResourceIdType_T>(),
                              bool isGraphicsResource = false);
 
-        template<typename ResourceType_T>
+        template<typename ResourceType_T, typename ResourceInitInfoType_T>
         void addResourceInfo(const ResourceIdType_T& resourceId,
-                             ResourceInitInfo<ResourceType_T>&& initInfo,
+                             ResourceInitInfoType_T&& initInfo,
                              std::vector<ResourceIdType_T>&& initResources = std::vector<ResourceIdType_T>(),
                              std::vector<ResourceIdType_T>&& depResources = std::vector<ResourceIdType_T>(),
                              bool isGraphicsResource = false);
@@ -87,10 +88,10 @@ namespace Cucca {
             std::function<void(ResourceBase*)> destroy; // call to ResourceManager::destroyResource
         };
 
-        template<typename ResourceType_T>
+        template<typename ResourceType_T, typename ResourceInitInfoType_T>
         void initResource(const ResourceId& resourceId);
 
-        template<typename ResourceType_T>
+        template<typename ResourceType_T, typename ResourceInitInfoType_T>
         void destroyResource(ResourceBase* resource);
 
         //  Callback function for resource pointers to signal they've run out of references
@@ -153,20 +154,20 @@ namespace Cucca {
     }
 
     template <typename ResourceIdType_T>
-    template<typename ResourceType_T>
+    template<typename ResourceType_T, typename ResourceInitInfoType_T>
     void ResourceManager<ResourceIdType_T>::addResourceInfo(const ResourceIdType_T& resourceId,
-                                                            ResourceInitInfo<ResourceType_T>& initInfo,
+                                                            ResourceInitInfoType_T& initInfo,
                                                             const std::vector<ResourceIdType_T>& initResources,
                                                             const std::vector<ResourceIdType_T>& depResources,
                                                             bool isGraphicsResource) {
         ResourceInfo resourceInfo;
-        resourceInfo.initInfo = std::unique_ptr<ResourceInitInfoBase>(new ResourceInitInfo<ResourceType_T>(initInfo)); // TODO_UNIQUE, TODO_ALLOCATOR
+        resourceInfo.initInfo = std::unique_ptr<ResourceInitInfoBase>(new ResourceInitInfoType_T(initInfo)); // TODO_UNIQUE, TODO_ALLOCATOR
         resourceInfo.initResources = initResources;
         resourceInfo.depResources = depResources;
         resourceInfo.isGraphicsResource = isGraphicsResource;
         resourceInfo.referenceCount = std::unique_ptr<int>(new int(0));
-        resourceInfo.init = std::bind(&ResourceManager<ResourceIdType_T>::initResource<ResourceType_T>, this, std::placeholders::_1);
-        resourceInfo.destroy = std::bind(&ResourceManager<ResourceIdType_T>::destroyResource<ResourceType_T>, this, std::placeholders::_1);
+        resourceInfo.init = std::bind(&ResourceManager<ResourceIdType_T>::initResource<ResourceType_T, ResourceInitInfoType_T>, this, std::placeholders::_1);
+        resourceInfo.destroy = std::bind(&ResourceManager<ResourceIdType_T>::destroyResource<ResourceType_T, ResourceInitInfoType_T>, this, std::placeholders::_1);
 
         {
             std::lock_guard<std::recursive_mutex> lock(resourceMutex_);
@@ -175,13 +176,13 @@ namespace Cucca {
     }
 
     template <typename ResourceIdType_T>
-    template<typename ResourceType_T>
+    template<typename ResourceType_T, typename ResourceInitInfoType_T>
     void ResourceManager<ResourceIdType_T>::addResourceInfo(const ResourceIdType_T& resourceId,
-                                                            ResourceInitInfo<ResourceType_T>&& initInfo,
+                                                            ResourceInitInfoType_T&& initInfo,
                                                             std::vector<ResourceIdType_T>&& initResources,
                                                             std::vector<ResourceIdType_T>&& depResources,
                                                             bool isGraphicsResource) {
-        addResourceInfo(resourceId, initInfo, initResources, depResources, isGraphicsResource);
+        addResourceInfo<ResourceType_T>(resourceId, initInfo, initResources, depResources, isGraphicsResource);
     }
 
 
@@ -255,11 +256,11 @@ namespace Cucca {
     }
 
     template <typename ResourceIdType_T>
-    template<typename ResourceType_T>
+    template<typename ResourceType_T, typename ResourceInitInfoType_T>
     void ResourceManager<ResourceIdType_T>::initResource(const ResourceId& resourceId) {
         std::vector<ResourceId> depList;
         Resource<ResourceType_T, ResourceIdType_T>* resource;
-        ResourceInitInfo<ResourceType_T>* initInfo;
+        ResourceInitInfoType_T* initInfo;
         std::vector<ResourceId> initResources, depResources;
 
         {
@@ -270,7 +271,7 @@ namespace Cucca {
             resources_.insert(std::make_pair(resourceId, std::unique_ptr<ResourceType_T>(new ResourceType_T())));
             resource = static_cast<Resource<ResourceType_T, ResourceIdType_T>*>(resources_[resourceId].get());
 
-            initInfo = static_cast<ResourceInitInfo<ResourceType_T>*>(resourceInfos_[resourceId].initInfo.get());
+            initInfo = static_cast<ResourceInitInfoType_T*>(resourceInfos_[resourceId].initInfo.get());
             initResources = resourceInfos_[resourceId].initResources;
             depResources = resourceInfos_[resourceId].depResources;
         }
@@ -308,9 +309,9 @@ namespace Cucca {
     }
 
     template <typename ResourceIdType_T>
-    template<typename ResourceType_T>
+    template<typename ResourceType_T, typename ResourceInitInfoType_T>
     void ResourceManager<ResourceIdType_T>::destroyResource(ResourceBase* resource) {
-        static_cast<Resource<ResourceType_T, ResourceIdType_T>*>(resource)->destroy();
+        static_cast<Resource<ResourceType_T, ResourceIdType_T>*>(resource)->template destroy<ResourceInitInfoType_T>();
     }
 
     template <typename ResourceIdType_T>

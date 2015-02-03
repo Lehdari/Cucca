@@ -26,10 +26,13 @@ namespace Cucca {
         ShaderObject(void);
 
         //  Resource init and destroy member functions
-        void init(const ResourceInitInfo<ShaderObject>& initInfo,
+        template<typename ResourceInitInfoType_T>
+        void init(const ResourceInitInfoType_T& initInfo,
                   const std::vector<ResourceId>& initResources,
                   const std::vector<ResourceId>& depResources,
                   ResourceManager<ResourceId>* resourceManager);
+
+        template<typename ResourceInitInfoType_T>
         void destroy(void);
 
         GLuint getId(void) const;

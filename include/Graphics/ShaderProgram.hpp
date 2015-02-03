@@ -6,7 +6,7 @@
 
     @version    0.1
     @author     Miika Lehtimäki
-    @date       2015-01-08
+    @date       2015-02-03
 **/
 
 
@@ -26,10 +26,13 @@ namespace Cucca {
         ShaderProgram(void);
 
         //  Resource init and destroy member functions
-        void init(const ResourceInitInfo<ShaderProgram>& initInfo,
+        template<typename ResourceInitInfoType_T>
+        void init(const ResourceInitInfoType_T& initInfo,
                   const std::vector<ResourceId>& initResources,
                   const std::vector<ResourceId>& depResources,
                   ResourceManager<ResourceId>* resourceManager);
+
+        template<typename ResourceInitInfoType_T>
         void destroy(void);
 
         GLuint getId(void) const;

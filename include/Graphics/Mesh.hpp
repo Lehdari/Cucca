@@ -6,7 +6,7 @@
 
     @version    0.1
     @author     Miika Lehtimäki
-    @date       2015-01-10
+    @date       2015-02-03
 **/
 
 
@@ -57,8 +57,6 @@ namespace Cucca {
         GLuint normalBufferId_;
         GLuint elementBufferId_;
     };
-
-    CUCCA_RESOURCE_INIT_INFO(Mesh) { };
 
 } // namespace Cucca
 

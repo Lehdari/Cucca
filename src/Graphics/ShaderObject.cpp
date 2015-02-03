@@ -21,7 +21,7 @@ using namespace Cucca;
 ShaderObject::ShaderObject(void) :
     objectId_(0)
 {}
-
+/*
 void ShaderObject::init(const ResourceInitInfo<ShaderObject>& initInfo,
                         const std::vector<ResourceId>& initResources,
                         const std::vector<ResourceId>& depResources,
@@ -64,7 +64,7 @@ void ShaderObject::destroy(void) {
     if (objectId_ != 0)
         glDeleteShader(objectId_);
 }
-
+*/
 GLuint ShaderObject::getId(void) const {
     return objectId_;
 }

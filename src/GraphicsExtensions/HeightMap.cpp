@@ -17,7 +17,7 @@
 
 using namespace Cucca;
 
-
+/*
 void HeightMap::init(const ResourceInitInfo<HeightMap>& initInfo,
                   const std::vector<ResourceId>& initResources,
                   const std::vector<ResourceId>& depResources,
@@ -29,7 +29,7 @@ void HeightMap::init(const ResourceInitInfo<HeightMap>& initInfo,
 
     major_.loadFromMemory(majorBinary->getBufferPtr(), majorBinary->getBufferSize());
 }
-
+*/
 void HeightMap::fillAttributeVectors(std::vector<std::array<float, 4>>& positions,
                                      std::vector<std::array<float, 3>>& texCoords,
                                      std::vector<std::array<float, 3>>& normals,
