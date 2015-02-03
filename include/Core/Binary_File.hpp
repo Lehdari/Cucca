@@ -4,13 +4,16 @@
     This file is subject to the terms and conditions defined in
     file 'LICENSE.txt', which is part of this source code package.
 
-    This file specifies BinaryInitInfoFile class and Binary init
+
+    This file is a resource initialization file.
+    It specifies BinaryInitInfo_File struct and Binary init
     and destroy member function template specializations for
     initializing Binary resources from external files.
 
+
     @version    0.1
     @author     Miika Lehtimäki
-    @date       2015-02-03
+    @date       2015-02-04
 **/
 
 
@@ -18,20 +21,21 @@
 #define CUCCA_CORE_BINARY_FILE_HPP
 
 
+#include "ResourceManager.hpp"
 #include "Binary.hpp"
 
 
 namespace Cucca {
 
-    //  Structs and classes
-    struct BinaryInitInfoFile : public ResourceInitInfoBase {
+    /// Initialization info struct
+    struct BinaryInitInfo_File : public ResourceInitInfoBase {
         std::string fileName;
     };
 
 
-    //  Template specializations
+    /// Resource init and destroy template member function specializations
     template<>
-    void Binary::init<BinaryInitInfoFile>(const BinaryInitInfoFile& initInfo,
+    void Binary::init<BinaryInitInfo_File>(const BinaryInitInfo_File& initInfo,
                                           const std::vector<ResourceId>& initResources,
                                           const std::vector<ResourceId>& depResources,
                                           ResourceManager<ResourceId>* resourceManager) {
@@ -60,7 +64,7 @@ namespace Cucca {
     }
 
     template<>
-    void Binary::destroy<BinaryInitInfoFile>(void) {
+    void Binary::destroy<BinaryInitInfo_File>(void) {
         if (buffer_) {
             delete[] buffer_;
             buffer_ = nullptr;
@@ -68,7 +72,7 @@ namespace Cucca {
         }
     }
 
-};
+} // namespace Cucca
 
 
 #endif // CUCCA_CORE_BINARY_FILE_HPP

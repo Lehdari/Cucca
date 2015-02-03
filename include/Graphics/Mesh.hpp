@@ -6,7 +6,7 @@
 
     @version    0.1
     @author     Miika Lehtimäki
-    @date       2015-02-03
+    @date       2015-03-02
 **/
 
 
@@ -25,20 +25,10 @@ namespace Cucca {
 
     CUCCA_RESOURCE(Mesh) {
     public:
-        Mesh(void);
+        //  Resource init and destroy template member functions
+        CUCCA_RESOURCE_INIT_DESTROY
 
-        //  Resource init and destroy member functions
-        /*
-            Initialization resources:
-                0: VertexData
-            Dependency resources:
-                0: Material
-        */
-        void init(const ResourceInitInfo<Mesh>& initInfo,
-                  const std::vector<ResourceId>& initResources,
-                  const std::vector<ResourceId>& depResources,
-                  ResourceManager<ResourceId>* resourceManager);
-        void destroy(void);
+        Mesh(void);
 
         void draw(const Matrix4Glf& mvp);
 

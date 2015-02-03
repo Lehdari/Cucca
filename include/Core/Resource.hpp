@@ -43,6 +43,13 @@
 
 #define CUCCA_RESOURCE(RESOURCE_TYPE) class RESOURCE_TYPE : public Cucca::Resource<RESOURCE_TYPE, ResourceId>
 
+#define CUCCA_RESOURCE_INIT_DESTROY template<typename ResourceInitInfoType_T>\
+                                    void init(const ResourceInitInfoType_T& initInfo,\
+                                              const std::vector<ResourceId>& initResources,\
+                                              const std::vector<ResourceId>& depResources,\
+                                              ResourceManager<ResourceId>* resourceManager);\
+                                    template<typename ResourceInitInfoType_T>\
+                                    void destroy(void);\
 
 namespace Cucca {
 

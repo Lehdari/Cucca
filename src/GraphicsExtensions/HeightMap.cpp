@@ -17,19 +17,7 @@
 
 using namespace Cucca;
 
-/*
-void HeightMap::init(const ResourceInitInfo<HeightMap>& initInfo,
-                  const std::vector<ResourceId>& initResources,
-                  const std::vector<ResourceId>& depResources,
-                  ResourceManager<ResourceId>* resourceManager) {
-    if (initResources.size() < 1)
-        return; // TODO_EXCEPTION: maybe throw a proper exception instead?
 
-    auto majorBinary = resourceManager->getResource<Binary>(initResources[0]);
-
-    major_.loadFromMemory(majorBinary->getBufferPtr(), majorBinary->getBufferSize());
-}
-*/
 void HeightMap::fillAttributeVectors(std::vector<std::array<float, 4>>& positions,
                                      std::vector<std::array<float, 3>>& texCoords,
                                      std::vector<std::array<float, 3>>& normals,
@@ -43,28 +31,6 @@ void HeightMap::fillAttributeVectors(std::vector<std::array<float, 4>>& position
     texCoords.clear();
     normals.clear();
     indices.clear();
-
-    /*positions.push_back({ 0.0f, 0.0f, 0.0f, 1.0f });
-    positions.push_back({ 10.0f, 0.0f, 0.0f, 1.0f });
-    positions.push_back({ 0.0f, 0.0f, 10.0f, 1.0f });
-    positions.push_back({ 10.0f, 0.0f, 10.0f, 1.0f });
-
-    texCoords.push_back({ 0.0f, 0.0f, 0.0f });
-    texCoords.push_back({ 1.0f, 0.0f, 0.0f });
-    texCoords.push_back({ 0.0f, 1.0f, 0.0f });
-    texCoords.push_back({ 1.0f, 1.0f, 0.0f });
-
-    normals.push_back({ 0.0f, 1.0f, 0.0f });
-    normals.push_back({ 0.0f, 1.0f, 0.0f });
-    normals.push_back({ 0.0f, 1.0f, 0.0f });
-    normals.push_back({ 0.0f, 1.0f, 0.0f });
-
-    indices.push_back(0);
-    indices.push_back(2);
-    indices.push_back(1);
-    indices.push_back(1);
-    indices.push_back(2);
-    indices.push_back(3);*/
 
     positions.reserve(majorSize.x * majorSize.y);
     texCoords.reserve(majorSize.x * majorSize.y);

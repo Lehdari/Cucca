@@ -6,7 +6,7 @@
 
     @version    0.1
     @author     Miika Lehtimäki
-    @date       2015-01-12
+    @date       2015-02-03
 **/
 
 
@@ -23,34 +23,15 @@ namespace Cucca {
 
     CUCCA_RESOURCE(Texture) {
     public:
-        Texture(void);
+        //  Resource init and destroy template member functions
+        CUCCA_RESOURCE_INIT_DESTROY
 
-        //  Resource init and destroy member functions
-        /*
-            Initialization resources:
-                0: Binary (image file)
-            Dependency resources:
-        */
-        void init(const ResourceInitInfo<Texture>& initInfo,
-                  const std::vector<ResourceId>& initResources,
-                  const std::vector<ResourceId>& depResources,
-                  ResourceManager<ResourceId>* resourceManager);
-        void destroy(void);
+        Texture(void);
 
     private:
         GLuint textureId_;
     };
 
-    CUCCA_RESOURCE_INIT_INFO(Texture) {
-        enum Source {
-            SOURCE_BINARY_PNG      //  Loaded from .png file
-        } source;
-
-        GLint wrapS;
-        GLint wrapT;
-        GLint minFiltering;
-        GLint magFiltering;
-    };
 };
 
 

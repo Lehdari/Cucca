@@ -6,7 +6,7 @@
 
     @version    0.1
     @author     Miika Lehtimäki
-    @date       2015-01-08
+    @date       2015-03-02
 **/
 
 
@@ -23,31 +23,15 @@ namespace Cucca {
 
     CUCCA_RESOURCE(ShaderObject) {
     public:
+        //  Resource init and destroy template member functions
+        CUCCA_RESOURCE_INIT_DESTROY
+
         ShaderObject(void);
-
-        //  Resource init and destroy member functions
-        template<typename ResourceInitInfoType_T>
-        void init(const ResourceInitInfoType_T& initInfo,
-                  const std::vector<ResourceId>& initResources,
-                  const std::vector<ResourceId>& depResources,
-                  ResourceManager<ResourceId>* resourceManager);
-
-        template<typename ResourceInitInfoType_T>
-        void destroy(void);
 
         GLuint getId(void) const;
 
     private:
         GLuint objectId_;
-    };
-
-    CUCCA_RESOURCE_INIT_INFO(ShaderObject) {
-        enum Source {
-            SOURCE_CODE,       //  Loaded from plain GLSL code
-            SOURCE_BINARY      //  Loaded from precompiled binary
-        } source;
-
-        GLenum type; //  Shader type
     };
 
 } // namespace Cucca

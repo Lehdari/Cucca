@@ -25,19 +25,8 @@ namespace Cucca {
     //  Resource
     CUCCA_RESOURCE(HeightMap) {
     public:
-        //  Resource init and destroy member functions
-        /*
-            Initialization resources:
-                0: Major texture (Binary[image file])
-        */
-        template<typename ResourceInitInfoType_T>
-        void init(const ResourceInitInfoType_T& initInfo,
-                  const std::vector<ResourceId>& initResources,
-                  const std::vector<ResourceId>& depResources,
-                  ResourceManager<ResourceId>* resourceManager);
-
-        template<typename ResourceInitInfoType_T>
-        void destroy(void);
+        //  Resource init and destroy template member functions
+        CUCCA_RESOURCE_INIT_DESTROY
 
         void fillAttributeVectors(std::vector<std::array<float, 4>>& positions,
                                   std::vector<std::array<float, 3>>& texCoords,

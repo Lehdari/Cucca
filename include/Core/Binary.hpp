@@ -25,18 +25,11 @@ namespace Cucca {
     //  Structs and Classes
     CUCCA_RESOURCE(Binary) {
     public:
+        //  Resource init and destroy template member functions
+        CUCCA_RESOURCE_INIT_DESTROY
+
         Binary(void);
         ~Binary(void);
-
-        //  Resource init and destroy member functions
-        template<typename ResourceInitInfoType_T>
-        void init(const ResourceInitInfoType_T& initInfo,
-                  const std::vector<ResourceId>& initResources,
-                  const std::vector<ResourceId>& depResources,
-                  ResourceManager<ResourceId>* resourceManager);
-
-        template<typename ResourceInitInfoType_T>
-        void destroy(void);
 
         char* getBufferPtr(void);
         unsigned long getBufferSize(void);

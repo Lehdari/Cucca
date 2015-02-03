@@ -6,7 +6,7 @@
 
     @version    0.1
     @author     Miika Lehtimäki
-    @date       2015-01-12
+    @date       2015-03-02
 **/
 
 
@@ -27,20 +27,10 @@ namespace Cucca {
 
     CUCCA_RESOURCE(Material) {
     public:
-        Material(void);
+        //  Resource init and destroy template member functions
+        CUCCA_RESOURCE_INIT_DESTROY
 
-        //  Resource init and destroy member functions
-        /*
-            Initialization resources:
-            Dependency resources:
-                0: ShaderProgram
-                1-n: Texture
-        */
-        void init(const ResourceInitInfo<Material>& initInfo,
-                  const std::vector<ResourceId>& initResources,
-                  const std::vector<ResourceId>& depResources,
-                  ResourceManager<ResourceId>* resourceManager);
-        void destroy(void) {}
+        Material(void);
 
         void useMaterial(const Matrix4Glf& mvp);
 
@@ -53,7 +43,6 @@ namespace Cucca {
         GLuint uniformPosition_MVP_;
     };
 
-    CUCCA_RESOURCE_INIT_INFO(Material) { };
 };
 
 
