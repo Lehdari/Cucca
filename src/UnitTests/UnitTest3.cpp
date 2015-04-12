@@ -20,8 +20,8 @@
 #include "../../include/Graphics/Mesh_Default.hpp"
 #include "../../include/Graphics/TransformationComponent.hpp"
 #include "../../include/Graphics/MeshComponent.hpp"
-#include "../../include/Graphics/BasicCamera.hpp"
 
+#include "../../include/GraphicsExtensions/MovableCamera.hpp"
 #include "../../include/GraphicsExtensions/HeightMap_Default.hpp"
 #include "../../include/GraphicsExtensions/VertexData_HeightMap.hpp"
 
@@ -194,10 +194,10 @@ int unitTest(void) {
     }
 
     //  Visitors
-    BasicCamera camera;
+    MovableCamera camera(device->getCanvas()->getWindow());
     camera.lookAt(Vector3Glf{ 0.0f, 0.0f, 1.0f },
                   Vector3Glf{ 0.0f, 0.0f, 0.0f },
-                  Vector3Glf{ 0.0f, -1.0f, 0.0f });
+                  Vector3Glf{ 0.0f, 1.0f, 0.0f });
     camera.projection(1.5708f, 4.0f/3.0f, 0.05f, 1000.0f);
 
     EventVisitor_SFML sfmlEventVisitor;
@@ -208,14 +208,14 @@ int unitTest(void) {
     //  Run it
     while (device->status() == Device<Canvas_SFML>::STATUS_RUNNING) {
         device->handleEvents();
-        device->getRoot()->accept(sfmlEventVisitor);
         device->getRoot()->accept(camera);
+        device->getRoot()->accept(sfmlEventVisitor);
         device->render();
-
+/*
         t += 0.001f;
-        camera.lookAt(Vector3Glf{ 220.0f*cosf(t*2.0f), 50.0f + 15.0f*sinf(t*1.276f), 270.0f*sinf(t*2.0f) },
+        camera.lookAt(Vector3Glf{ 220.0f*cosf(t*20.0f), 50.0f + 15.0f*sinf(t*1.276f), 220.0f*sinf(t*20.0f) },
                       Vector3Glf{ 0.0f, 0.0f, 0.0f },
-                      Vector3Glf{ 0.0f, 1.0f, 0.0f });
+                      Vector3Glf{ 0.0f, 1.0f, 0.0f });*/
     }
 
     return 0;

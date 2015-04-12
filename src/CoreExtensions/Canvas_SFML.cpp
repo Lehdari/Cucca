@@ -50,3 +50,7 @@ std::shared_ptr<EventBase> Cucca::Canvas_SFML::pollEvent(void) {
     else
         return std::shared_ptr<EventBase>(nullptr);
 }
+
+sf::Window* Canvas_SFML::getWindow(void) {
+    return &window_;
+}

@@ -27,6 +27,8 @@ namespace Cucca {
         TransformationComponent(void);
         TransformationComponent(const Matrix4Glf& transformation);
 
+        const Matrix4Glf& getTransformation(void) const;
+
         void translate(const Vector3Glf& to, bool absolute = false);
 
     private:

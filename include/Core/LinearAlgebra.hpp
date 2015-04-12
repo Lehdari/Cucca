@@ -19,6 +19,9 @@
 #include <GL/glew.h>
 
 
+#define PI 3.14159265358979323846
+
+
 namespace Cucca {
 
     typedef Eigen::Matrix<float, 2, 1, Eigen::DontAlign> Vector2f;
@@ -36,6 +39,9 @@ namespace Cucca {
     typedef Eigen::Matrix<GLfloat, 2, 2, Eigen::DontAlign> Matrix2Glf;
     typedef Eigen::Matrix<GLfloat, 3, 3, Eigen::DontAlign> Matrix3Glf;
     typedef Eigen::Matrix<GLfloat, 4, 4, Eigen::DontAlign> Matrix4Glf;
+
+    typedef Eigen::Quaternion<float>  Quaternionf;
+    typedef Eigen::Quaternion<GLfloat>  QuaternionGlf;
 
 } // namespace Cucca
 

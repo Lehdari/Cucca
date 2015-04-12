@@ -8,7 +8,7 @@
 
     @version    0.1
     @author     Miika Lehtimäki
-    @date       2014-10-16
+    @date       2015-02-19
 **/
 
 
@@ -19,7 +19,7 @@
 #include "Component.hpp"
 #include "EventBase.hpp"
 
-#include <queue>
+#include <deque>
 #include <memory>
 
 
@@ -29,9 +29,11 @@ namespace Cucca {
     public:
         void pushEvent(std::shared_ptr<EventBase> event);
         std::shared_ptr<EventBase> pullEvent(void);
+        void clearEvents(void);
 
+        const std::deque<std::shared_ptr<EventBase>>& getEvents(void) const;
     private:
-        std::queue<std::shared_ptr<EventBase>> eventQueue_;
+        std::deque<std::shared_ptr<EventBase>> events_;
     };
 
 } // namespace Cucca

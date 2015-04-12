@@ -74,7 +74,10 @@ namespace Cucca {
         void subscribeEvents(EventComponent* eventComponent, int eventTypeId);
 
         //
-        TaskQueue* getGraphicsTaskQueue(void);
+        CanvasType_T* getCanvas(void); // TODO: const pointer?
+
+        //
+        TaskQueue* getGraphicsTaskQueue(void); // TODO: const pointer?
 
     private:
         //  Singleton pattern
@@ -217,10 +220,14 @@ namespace Cucca {
     }
 
     template<typename CanvasType_T>
+    CanvasType_T* Device<CanvasType_T>::getCanvas(void) {
+        return &canvas_;
+    }
+
+    template<typename CanvasType_T>
     TaskQueue* Device<CanvasType_T>::getGraphicsTaskQueue(void) {
         return &graphicsTasks_;
     }
-
 } // namespace Cucca
 
 

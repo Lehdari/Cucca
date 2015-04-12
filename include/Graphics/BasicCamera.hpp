@@ -14,10 +14,10 @@
 #define CUCCA_GRAPHICS_BASICCAMERA_HPP
 
 
-#include "../../include/Core/Visitor.hpp"
-#include "../../include/Graphics/TransformationComponent.hpp"
-#include "../../include/Graphics/MeshComponent.hpp"
-#include "../../include/Core/LinearAlgebra.hpp"
+#include "../Core/Visitor.hpp"
+#include "../Graphics/TransformationComponent.hpp"
+#include "../Graphics/MeshComponent.hpp"
+#include "../Core/LinearAlgebra.hpp"
 
 #include <stack>
 

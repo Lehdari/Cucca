@@ -19,8 +19,6 @@
 #include "../Core/Visitor.hpp"
 #include "../Core/EventComponent.hpp"
 
-#include <SFML/Window/Event.hpp>
-
 
 namespace Cucca {
 

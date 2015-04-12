@@ -33,6 +33,8 @@ namespace Cucca {
         void close(void);
         std::shared_ptr<EventBase> pollEvent(void);
 
+        sf::Window* getWindow(void);
+
     private:
         sf::Window window_;
     };

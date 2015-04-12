@@ -6,7 +6,7 @@
 
     @version    0.1
     @author     Miika Lehtimäki
-    @date       2014-12-27
+    @date       2015-02-19
 **/
 
 
@@ -17,14 +17,22 @@ using namespace Cucca;
 
 
 void EventComponent::pushEvent(std::shared_ptr<EventBase> event) {
-    eventQueue_.push(event);
+    events_.push_back(event);
 }
 
 std::shared_ptr<EventBase> EventComponent::pullEvent(void) {
-    if (eventQueue_.empty())
+    if (events_.empty())
         return std::shared_ptr<EventBase>(nullptr);
 
-    std::shared_ptr<EventBase> event = eventQueue_.front();
-    eventQueue_.pop();
+    std::shared_ptr<EventBase> event = events_.front();
+    events_.pop_front();
     return event;
+}
+
+void EventComponent::clearEvents(void) {
+    events_.clear();
+}
+
+const std::deque<std::shared_ptr<EventBase>>& EventComponent::getEvents(void) const {
+    return events_;
 }
