@@ -28,8 +28,12 @@ namespace Cucca {
 
     CUCCA_VISITOR(MovableCamera, EventComponent, TransformationComponent, MeshComponent) {
     public:
-        MovableCamera(void);
-        MovableCamera(sf::Window* window, bool lockCursor = true);
+        MovableCamera(sf::Window* window = nullptr,
+                      const Matrix4Glf& orientation = Matrix4Glf::Identity(),
+                      const Matrix4Glf& projection = Matrix4Glf::Identity(),
+                      float near = 1.0f, float far = 100.0f, float fov = 90.0f,
+                      const Vector3Glf& up = Vector3Glf(0.0f, 1.0f, 0.0f));
+        MovableCamera(sf::Window* window, const Vector3Glf& up);
 
         void nodeEnter(Node* node, EventComponent* component);
         void nodeExit(Node* node, EventComponent* component) {}
@@ -44,20 +48,27 @@ namespace Cucca {
 
     private:
         sf::Window* window_;
+
         bool lockCursor_;
+        sf::Vector2i cursorLockPosition_;
 
-        QuaternionGlf orientationQ_;
+        QuaternionGlf rotationQ_;
+        Vector3Glf position_;
 
-        Matrix4Glf orientation_;
+        Matrix4Glf orientation_; // formed using rotationQ_ and position_(see updateOrientation member function)
         Matrix4Glf projection_;
         float near_;
         float far_;
         float fov_;
+        Vector3Glf up_;
 
         std::stack<Matrix4Glf> transformations_;
 
-        int mouseXLast_;
-        int mouseYLast_;
+        Vector3Glf localSpeed_; // local axis(rotated) speed
+        Vector3Glf localAcceleration_; // local axis acceleration
+        float speedDamping_; // speed damping (must lie in range [0,1) )
+
+        void updateOrientation(void);
     };
 
 } // namespace Cucca

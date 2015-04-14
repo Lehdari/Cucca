@@ -20,18 +20,32 @@
 using namespace Cucca;
 
 
-MovableCamera::MovableCamera(void) :
-    window_(nullptr),
+MovableCamera::MovableCamera(sf::Window* window,
+                             const Matrix4Glf& orientation,
+                             const Matrix4Glf& projection,
+                             float near, float far, float fov,
+                             const Vector3Glf& up) :
+    window_(window),
     lockCursor_(false),
-    orientation_(Matrix4Glf::Identity()),
-    projection_(Matrix4Glf::Identity())
+    cursorLockPosition_(sf::Vector2i(0, 0)),
+    rotationQ_(QuaternionGlf::Identity()),
+    position_(0.0f, 0.0f, 0.0f),
+    orientation_(orientation),
+    projection_(projection),
+    near_(near),
+    far_(far),
+    fov_(fov),
+    up_(up),
+    localSpeed_(0.0f, 0.0f, 0.0f),
+    localAcceleration_(0.0f, 0.0f, 0.0f),
+    speedDamping_(0.9f)
 {}
 
-MovableCamera::MovableCamera(sf::Window* window, bool lockCursor) :
-    window_(window),
-    lockCursor_(lockCursor),
-    orientation_(Matrix4Glf::Identity()),
-    projection_(Matrix4Glf::Identity())
+MovableCamera::MovableCamera(sf::Window* window, const Vector3Glf& up) :
+    MovableCamera(window,
+                  Matrix4Glf::Identity(), Matrix4Glf::Identity(),
+                  1.0f, 100.0f, 90.0f,
+                  up)
 {}
 
 void MovableCamera::nodeEnter(Node* node, EventComponent* component) {
@@ -45,37 +59,107 @@ void MovableCamera::nodeEnter(Node* node, EventComponent* component) {
             sf::Event* event = static_cast<Event<sf::Event>*>(eventBase.get())->getEvent();
 
             switch (event->type) {
+            case sf::Event::MouseButtonPressed:
+                switch (event->mouseButton.button) {
+                case sf::Mouse::Right:
+                    lockCursor_ = true;
+                    cursorLockPosition_ = sf::Mouse::getPosition(*window_);
+                    window_->setMouseCursorVisible(false);
+                break;
+                default: break;
+                }
+            break;
+
+            case sf::Event::MouseButtonReleased:
+                switch (event->mouseButton.button) {
+                case sf::Mouse::Right:
+                    lockCursor_ = false;
+                    window_->setMouseCursorVisible(true);
+                break;
+                default: break;
+                }
+            break;
+
+            case sf::Event::MouseLeft:
+                lockCursor_ = false;
+                window_->setMouseCursorVisible(true);
+            break;
+
             case sf::Event::MouseMoved:
             {
-                std::cout << "MovableCamera mouse moved x: " << event->mouseMove.x - mouseXLast_ << ", y: " << event->mouseMove.y << std::endl;
-                float xHalfAngle = atan2f((event->mouseMove.x - mouseXLast_), far_) * 0.5f;
-                QuaternionGlf qx(cosf(xHalfAngle), 0.0f, sinf(xHalfAngle), 0.0f);
-
-                QuaternionGlf q = qx;
-
-                Matrix4Glf m;
-                    m << q.matrix(), Vector3Glf(0.0f, 0.0f, 0.0f),
-                         0.0f, 0.0f, 0.0f, 1.0f;
-
-                std::cout << m << std::endl;
-
-                orientation_ *= m;
-
-                mouseXLast_ = event->mouseMove.x;
-                mouseYLast_ = event->mouseMove.y;
-
                 if (window_ && lockCursor_) {
-                    auto ws = window_->getSize();
-                    sf::Mouse::setPosition(sf::Vector2i(ws.x/2, ws.y/2), *window_);
+                    float xHalfAngle = (event->mouseMove.x - cursorLockPosition_.x) * 0.001f;
+                    float yHalfAngle = (event->mouseMove.y - cursorLockPosition_.y) * 0.001f;
+
+                    QuaternionGlf qx(cosf(xHalfAngle), sinf(xHalfAngle)*up_(0), sinf(xHalfAngle)*up_(1), sinf(xHalfAngle)*up_(2));
+                    QuaternionGlf qy(cosf(yHalfAngle), sinf(yHalfAngle), 0.0f, 0.0f);
+
+                    rotationQ_ = qy * rotationQ_ * qx;
+
+                    /*Matrix4Glf mx, my;
+                        mx << qx.matrix(), Vector3Glf(0.0f, 0.0f, 0.0f),
+                              0.0f, 0.0f, 0.0f, 1.0f;
+                        my << qy.matrix(), Vector3Glf(0.0f, 0.0f, 0.0f),
+                              0.0f, 0.0f, 0.0f, 1.0f;*/
+
+                    //std::cout << m << std::endl;
+
+                    //orientation_ = my * orientation_ * mx;
+
+                    //auto ws = window_->getSize();
+
+                    sf::Mouse::setPosition(cursorLockPosition_, *window_);
                 }
             }
             break;
-            default:
 
+            case sf::Event::KeyPressed:
+                switch (event->key.code) {
+                case sf::Keyboard::W:
+                    localAcceleration_(2) -= 0.1f;
+                break;
+                case sf::Keyboard::S:
+                    localAcceleration_(2) += 0.1f;
+                break;
+                case sf::Keyboard::A:
+                    localAcceleration_(0) -= 0.1f;
+                break;
+                case sf::Keyboard::D:
+                    localAcceleration_(0) += 0.1f;
+                break;
+                default: break;
+                }
             break;
+
+            case sf::Event::KeyReleased:
+                switch (event->key.code) {
+                case sf::Keyboard::W:
+                    localAcceleration_(2) += 0.1f;
+                break;
+                case sf::Keyboard::S:
+                    localAcceleration_(2) -= 0.1f;
+                break;
+                case sf::Keyboard::A:
+                    localAcceleration_(0) += 0.1f;
+                break;
+                case sf::Keyboard::D:
+                    localAcceleration_(0) -= 0.1f;
+                break;
+                default: break;
+                }
+            break;
+
+            default: break;
             }
         }
     }
+
+    localSpeed_ += localAcceleration_;
+    clamp(localSpeed_, -1.0f, 1.0f);
+    position_ += rotationQ_.matrix().transpose() * localSpeed_;
+    localSpeed_ *= speedDamping_;
+
+    updateOrientation();
 
     component->clearEvents(); // TEMP make another visitor(EventClearer ?) for clearing events instead
 }
@@ -102,16 +186,20 @@ void MovableCamera::lookAt(const Vector3Glf& from, const Vector3Glf& to, const V
     xAxis = up.cross(zAxis).normalized();
     yAxis = zAxis.cross(xAxis);
 
-    orientation_ << xAxis[0]    , xAxis[1]  , xAxis[2]  , -xAxis.dot(from),
+    /*orientation_ << xAxis[0]    , xAxis[1]  , xAxis[2]  , -xAxis.dot(from),
                     yAxis[0]    , yAxis[1]  , yAxis[2]  , -yAxis.dot(from),
                     zAxis[0]    , zAxis[1]  , zAxis[2]  , -zAxis.dot(from),
-                    0.0f        , 0.0f      , 0.0f      , 1.0f;
+                    0.0f        , 0.0f      , 0.0f      , 1.0f;*/
 
-    auto w4i = 0.5f / sqrtf(1.0f + orientation_(0, 0) + orientation_(1, 1) + orientation_(2, 2));
-    orientationQ_ = std::move(QuaternionGlf(0.25f*(1.0f/w4i),
-                                            (orientation_(2, 1) - orientation_(1, 2))*w4i,
-                                            (orientation_(0, 2) - orientation_(2, 0))*w4i,
-                                            (orientation_(1, 0) - orientation_(0, 1))*w4i));
+    auto w4i = 0.5f / sqrtf(1.0f + xAxis(0) + yAxis(1) + zAxis(2));
+    rotationQ_ = std::move(QuaternionGlf(0.25f*(1.0f/w4i),
+                                         (yAxis(2) - zAxis(1))*w4i,
+                                         (zAxis(0) - xAxis(2))*w4i,
+                                         (xAxis(1) - yAxis(0))*w4i));
+
+    updateOrientation();
+
+    up_ = up;
 }
 
 void MovableCamera::lookAt(Vector3Glf&& from, Vector3Glf&& to, Vector3Glf&& up) {
@@ -130,4 +218,9 @@ void MovableCamera::projection(float fov, float aspectRatio, float near, float f
     near_ = near;
     far_ = far;
     fov_ = fov;
+}
+
+void MovableCamera::updateOrientation(void) {
+    orientation_ << rotationQ_.matrix(), rotationQ_.matrix() * -position_,
+                    0.0f, 0.0f, 0.0f, 1.0f;
 }

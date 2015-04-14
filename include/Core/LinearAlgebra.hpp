@@ -24,6 +24,8 @@
 
 namespace Cucca {
 
+    ///  Typedefs
+
     typedef Eigen::Matrix<float, 2, 1, Eigen::DontAlign> Vector2f;
     typedef Eigen::Matrix<float, 3, 1, Eigen::DontAlign> Vector3f;
     typedef Eigen::Matrix<float, 4, 1, Eigen::DontAlign> Vector4f;
@@ -42,6 +44,26 @@ namespace Cucca {
 
     typedef Eigen::Quaternion<float>  Quaternionf;
     typedef Eigen::Quaternion<GLfloat>  QuaternionGlf;
+
+
+    ///  Functions
+
+    template<typename T, int W, int H>
+    void clamp(Eigen::Matrix<T, W, H, Eigen::DontAlign>& matrix, const T& min, const T& max);
+
+
+    ///  Function definitions
+
+    //  Clamps all values in given matrix in range specified
+    template<typename T, int W, int H>
+    void clamp(Eigen::Matrix<T, W, H, Eigen::DontAlign>& matrix, const T& min, const T& max) {
+        for (auto x=0; x<W; ++x)
+            for (auto y=0; y<H; ++y)
+                if (matrix(x, y) < min)
+                    matrix(x, y) = min;
+                else if (matrix(x, y) > max)
+                    matrix(x, y) = max;
+    }
 
 } // namespace Cucca
 

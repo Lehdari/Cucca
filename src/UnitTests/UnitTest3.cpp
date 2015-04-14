@@ -37,7 +37,10 @@ using namespace Cucca;
 int unitTest(void) {
     //  First things first
     std::default_random_engine rnd;
+
     auto device = DEVICE(Canvas_SFML);
+    device->getCanvas()->getWindow()->setKeyRepeatEnabled(false); // TEMP?
+
     /*GLenum err = */glewInit();
 
     ThreadPool pool;
@@ -195,7 +198,7 @@ int unitTest(void) {
 
     //  Visitors
     MovableCamera camera(device->getCanvas()->getWindow());
-    camera.lookAt(Vector3Glf{ 0.0f, 0.0f, 1.0f },
+    camera.lookAt(Vector3Glf{ 1.0f, 0.0f, 0.0f },
                   Vector3Glf{ 0.0f, 0.0f, 0.0f },
                   Vector3Glf{ 0.0f, 1.0f, 0.0f });
     camera.projection(1.5708f, 4.0f/3.0f, 0.05f, 1000.0f);
