@@ -17,5 +17,9 @@
 #define CUCCA_CORE_RESOURCELOADINGEVENT_HPP
 
 
+class ResourceLoadingEvent {
+
+};
+
 
 #endif // CUCCA_CORE_RESOURCELOADINGEVENT_HPP

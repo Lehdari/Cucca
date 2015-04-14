@@ -28,10 +28,9 @@ namespace Cucca {
 
     class EventComponent : public Component {
     public:
-        void pushEvent(std::shared_ptr<EventBase> event);
+        EventComponent(void);
 
-        //  Clear all events
-        void clearEvents(void);
+        void pushEvent(std::shared_ptr<EventBase> event);
 
         //  Clear events of specific type (use EventBase::getEventTypeId for correct id)
         void clearEvents(int eventTypeId);

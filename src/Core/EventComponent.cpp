@@ -16,19 +16,25 @@
 using namespace Cucca;
 
 
+EventComponent::EventComponent(void) {
+    events_[-1];
+}
+
 void EventComponent::pushEvent(std::shared_ptr<EventBase> event) {
     if (event->getEventType() != -1)
         events_[event->getEventType()].push_back(event);
 }
 
-void EventComponent::clearEvents(void) {
-    events_.clear();
-}
-
 void EventComponent::clearEvents(int eventTypeId) {
-    events_[eventTypeId].clear();
+    if (eventTypeId != -1)
+        events_[eventTypeId].clear();
 }
 
 const std::deque<std::shared_ptr<EventBase>>& EventComponent::getEvents(int eventTypeId) const {
-    return events_.at(eventTypeId);
+    try {
+        return events_.at(eventTypeId);
+    }
+    catch (...) {
+        return events_.at(-1);
+    }
 }
