@@ -8,7 +8,7 @@
 
     @version    0.1
     @author     Miika Lehtimäki
-    @date       2015-02-19
+    @date       2015-04-15
 **/
 
 
@@ -19,6 +19,7 @@
 #include "Component.hpp"
 #include "EventBase.hpp"
 
+#include <unordered_map>
 #include <deque>
 #include <memory>
 
@@ -28,12 +29,18 @@ namespace Cucca {
     class EventComponent : public Component {
     public:
         void pushEvent(std::shared_ptr<EventBase> event);
-        std::shared_ptr<EventBase> pullEvent(void);
+
+        //  Clear all events
         void clearEvents(void);
 
-        const std::deque<std::shared_ptr<EventBase>>& getEvents(void) const;
+        //  Clear events of specific type (use EventBase::getEventTypeId for correct id)
+        void clearEvents(int eventTypeId);
+
+        //  Get events of specific type (use EventBase::getEventTypeId for correct id)
+        const std::deque<std::shared_ptr<EventBase>>& getEvents(int eventTypeId) const;
+
     private:
-        std::deque<std::shared_ptr<EventBase>> events_;
+        std::unordered_map<int, std::deque<std::shared_ptr<EventBase>>> events_;
     };
 
 } // namespace Cucca

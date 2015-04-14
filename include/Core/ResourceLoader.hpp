@@ -1,19 +1,20 @@
 /**
-    Cucca Game Engine - CoreExtensions - EventVisitor_SFML.hpp
+    Cucca Game Engine - Core - ResourceLoader.hpp
 
     This file is subject to the terms and conditions defined in
     file 'LICENSE.txt', which is part of this source code package.
 
-    EventVisitor_SFML is a Visitor designed to handle SFML events.
+    ResourceLoader is a visitor which (pre)loads resources according to
+    ResourceLoadingEvent instances.
 
     @version    0.1
     @author     Miika Lehtimäki
-    @date       2014-12-27
+    @date       2015-04-15
 **/
 
 
-#ifndef CUCCA_COREEXTENSIONS_EVENTVISITOR_SFML_HPP
-#define CUCCA_COREEXTENSIONS_EVENTVISITOR_SFML_HPP
+#ifndef CUCCA_CORE_RESOURCELOADER_HPP
+#define CUCCA_CORE_RESOURCELOADER_HPP
 
 
 #include "../Core/Visitor.hpp"
@@ -22,7 +23,7 @@
 
 namespace Cucca {
 
-    CUCCA_VISITOR(EventVisitor_SFML, EventComponent) {
+    CUCCA_VISITOR(ResourceLoader, EventComponent) {
     public:
         void nodeEnter(Node* node, EventComponent* component);
         void nodeExit(Node* node, EventComponent* component) {}
@@ -31,4 +32,4 @@ namespace Cucca {
 }
 
 
-#endif // CUCCA_COREEXTENSIONS_EVENTVISITOR_SFML_HPP
+#endif // CUCCA_CORE_RESOURCELOADER_HPP

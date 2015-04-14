@@ -64,6 +64,7 @@ namespace Cucca {
         std::unordered_map<unsigned, std::vector<std::unique_ptr<Component>>> components_;
         std::vector<std::unique_ptr<Node>> childs_;
 
+        //  Recursive enter/exit member functions for visitors
         template<typename VisitorType_T, typename FirstComponentType_T, typename ...RestComponentTypes_T>
         void nodeEnterRecursive(VisitorInterface<VisitorType_T, FirstComponentType_T, RestComponentTypes_T...>& visitor);
 

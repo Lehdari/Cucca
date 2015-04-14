@@ -26,11 +26,12 @@ using namespace Cucca;
 
 
 void EventVisitor_SFML::nodeEnter(Node* node, EventComponent* component) {
-    std::shared_ptr<EventBase> eventBase(component->pullEvent());
-    if (!eventBase)
-        return;
+    auto events = component->getEvents(EventBase::getEventTypeId<sf::Event>());
 
-    if (eventBase->getEventType() == EventBase::getEventTypeId<sf::Event>()) {
+    for (auto& eventBase : events) {
+        if (!eventBase)
+            return;
+
         sf::Event* event = static_cast<Event<sf::Event>*>(eventBase.get())->getEvent();
 
         switch (event->type) {
