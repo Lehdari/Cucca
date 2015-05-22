@@ -9,7 +9,7 @@
 
     @version    0.1
     @author     Miika Lehtimäki
-    @date       2014-12-28
+    @date       2015-05-22
 **/
 
 
@@ -31,8 +31,9 @@ namespace Cucca {
     class Node {
     public:
         //  Add new component (uses move semantics)
+        //  returns a pointer to the newly added component
         template<typename ComponentType_T>
-        void addComponent(ComponentType_T&& component);
+        ComponentType_T* addComponent(ComponentType_T&& component);
 
         //  Get vector of given type of components the node contains
         template<typename ComponentType_T>
@@ -44,10 +45,11 @@ namespace Cucca {
         void accept(Visitor<VisitorType_T, ComponentTypes_T...>& visitor);
 
         //  Add a child node (uses move semantics)
-        void addChild(Node&& node);
+        //  returns a pointer to the newly added node
+        Node* addChild(Node&& node);
 
-        //  Get reference to a vector of childs of the node
-        std::vector<std::unique_ptr<Node>>& getChilds(void);
+        //  Get reference to a vector of children of the node
+        std::vector<std::unique_ptr<Node>>& getChildren(void);
 
     private:
         /*  Component type information system. For every new component type, an
@@ -62,7 +64,7 @@ namespace Cucca {
 
         //  Component/child pointer data
         std::unordered_map<unsigned, std::vector<std::unique_ptr<Component>>> components_;
-        std::vector<std::unique_ptr<Node>> childs_;
+        std::vector<std::unique_ptr<Node>> children_;
 
         //  Recursive enter/exit member functions for visitors
         template<typename VisitorType_T, typename FirstComponentType_T, typename ...RestComponentTypes_T>
@@ -81,8 +83,10 @@ namespace Cucca {
 
     //  Member definitions
     template<typename ComponentType_T>
-    void Node::addComponent(ComponentType_T&& component) {
-        components_[getComponentTypeId<ComponentType_T>()].push_back(std::unique_ptr<Component>(new ComponentType_T(std::forward<ComponentType_T>(component))));
+    ComponentType_T* Node::addComponent(ComponentType_T&& component) {
+        auto componentTypeId = getComponentTypeId<ComponentType_T>();
+        components_[componentTypeId].push_back(std::unique_ptr<Component>(new ComponentType_T(std::forward<ComponentType_T>(component))));
+        return static_cast<ComponentType_T*>(components_[componentTypeId].back().get());
     }
 
     template<typename ComponentType_T>
@@ -98,7 +102,7 @@ namespace Cucca {
     void Node::accept(Visitor<VisitorType_T, ComponentTypes_T...>& visitor) {
         nodeEnterRecursive(*static_cast<VisitorInterface<VisitorType_T, ComponentTypes_T...>*>(&visitor));
 
-        for (auto& child : childs_)
+        for (auto& child : children_)
             child->accept(visitor);
 
         nodeExitRecursive(*static_cast<VisitorInterface<VisitorType_T, ComponentTypes_T...>*>(&visitor));

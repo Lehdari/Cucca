@@ -34,7 +34,10 @@
 namespace Cucca {
 
     /// Initialization info struct
-    struct VertexDataInitInfo_HeightMap : public ResourceInitInfoBase { };
+    struct VertexDataInitInfo_HeightMap : public ResourceInitInfoBase {
+        unsigned segmentX;
+        unsigned segmentY;
+    };
 
 
     /// Resource init and destroy template member function specializations
@@ -53,7 +56,8 @@ namespace Cucca {
             usingNormals_ = true;
             usingIndexing_ = true;
 
-            heightMap->fillAttributeVectors(positions_, texCoords_, normals_, indices_);
+            heightMap->fillAttributeVectors(initInfo.segmentX, initInfo.segmentY,
+                                            positions_, texCoords_, normals_, indices_);
     }
 
     template<>

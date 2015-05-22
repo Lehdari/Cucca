@@ -16,8 +16,7 @@
 
 #include "../../include/Core/Resource.hpp"
 
-// TODO_IMPLEMENT: provide a proper level of abstraction between Cucca and external libraries
-#include <SFML/Graphics/Image.hpp> // TEMP
+#include <SFML/Graphics/Image.hpp>
 
 
 namespace Cucca {
@@ -28,13 +27,30 @@ namespace Cucca {
         //  Resource init and destroy template member functions
         CUCCA_RESOURCE_INIT_DESTROY
 
-        void fillAttributeVectors(std::vector<std::array<float, 4>>& positions,
+        void fillAttributeVectors(unsigned segmentX,
+                                  unsigned segmentY,
+                                  std::vector<std::array<float, 4>>& positions,
                                   std::vector<std::array<float, 3>>& texCoords,
                                   std::vector<std::array<float, 3>>& normals,
                                   std::vector<unsigned>& indices);
 
+        unsigned getNumXSegments(void) const;
+        unsigned getNumYSegments(void) const;
+        float getSegmentXSize(void) const;
+        float getSegmentYSize(void) const;
+        float getOffsetX(void) const;
+        float getOffsetY(void) const;
+
     private:
-        sf::Image major_; // TODO_IMPLEMENT: provide a proper level of abstraction between Cucca and external libraries
+        sf::Image major_;
+        unsigned numXSegments_;
+        unsigned numYSegments_;
+        unsigned segmentXResolution_;
+        unsigned segmentYResolution_;
+        float segmentXSize_;
+        float segmentYSize_;
+        float offsetX_;
+        float offsetY_;
     };
 
 }; // namespace Cucca

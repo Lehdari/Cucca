@@ -16,7 +16,7 @@
 
     @version    0.1
     @author     Miika Lehtimäki
-    @date       2014-12-03
+    @date       2015-05-21
 **/
 
 
@@ -26,10 +26,15 @@
 
 namespace Cucca {
 
+    //  Forward declarations
+    class ResourceId;
+
     template<typename ResourceIdType_T>
     class ResourceManager;
 
-    template<typename ResourceType_T, typename ResourceIdType_T>
+
+    //  Structs/classes
+    template<typename ResourceType_T, typename ResourceIdType_T = ResourceId>
     class ResourcePointer {
     public:
         ResourcePointer(void);
@@ -48,8 +53,15 @@ namespace Cucca {
         ResourceType_T& operator*(void);
         ResourceType_T* operator->(void);
 
+        //  get resource pointer
         ResourceType_T* get(void);
+        //  get resource id
         const ResourceIdType_T& getId(void);
+
+        //  unload / reload the resource
+        void unload(void);
+        void reload(void);
+
     private:
         ResourceType_T* resource_;
         ResourceIdType_T resourceId_;
@@ -115,16 +127,14 @@ namespace Cucca {
 
     template<typename ResourceType_T, typename ResourceIdType_T>
     ResourcePointer<ResourceType_T, ResourceIdType_T>::~ResourcePointer(void) {
-        if (resource_)
-            if (--*referenceCount_ == 0) // note: can go to negative values
-                (resourceManager_->*outOfReferences_)(*this);
+        if (resource_ && --*referenceCount_ == 0) // note: can go to negative values
+            (resourceManager_->*outOfReferences_)(*this);
     }
 
     template<typename ResourceType_T, typename ResourceIdType_T>
     ResourcePointer<ResourceType_T, ResourceIdType_T>& ResourcePointer<ResourceType_T, ResourceIdType_T>::operator=(const ResourcePointer<ResourceType_T, ResourceIdType_T>& resourcePointer) {
-        if (resource_)
-            if (--*referenceCount_ == 0) // note: can go to negative values
-                (resourceManager_->*outOfReferences_)(*this);
+        if (resource_ && --*referenceCount_ == 0) // note: can go to negative values
+            (resourceManager_->*outOfReferences_)(*this);
 
         resource_ = resourcePointer.resource_;
         resourceId_ = resourcePointer.resourceId_;
@@ -140,9 +150,8 @@ namespace Cucca {
 
     template<typename ResourceType_T, typename ResourceIdType_T>
     ResourcePointer<ResourceType_T, ResourceIdType_T>& ResourcePointer<ResourceType_T, ResourceIdType_T>::operator=(ResourcePointer<ResourceType_T, ResourceIdType_T>&& resourcePointer) {
-        if (resource_)
-            if (--*referenceCount_ == 0) // note: can go to negative values
-                (resourceManager_->*outOfReferences_)(*this);
+        if (resource_ && --*referenceCount_ == 0) // note: can go to negative values
+            (resourceManager_->*outOfReferences_)(*this);
 
         resource_ = resourcePointer.resource_;
         resourceId_ = resourcePointer.resourceId_;
@@ -176,6 +185,19 @@ namespace Cucca {
     template<typename ResourceType_T, typename ResourceIdType_T>
     const ResourceIdType_T& ResourcePointer<ResourceType_T, ResourceIdType_T>::getId(void) {
         return resourceId_;
+    }
+
+    template<typename ResourceType_T, typename ResourceIdType_T>
+    void ResourcePointer<ResourceType_T, ResourceIdType_T>::unload(void) {
+        if (resource_ && --*referenceCount_ == 0) // note: can go to negative values
+            (resourceManager_->*outOfReferences_)(*this);
+
+        resource_ = nullptr;
+    }
+
+    template<typename ResourceType_T, typename ResourceIdType_T>
+    void ResourcePointer<ResourceType_T, ResourceIdType_T>::reload(void) {
+        *this = resourceManager_->getResource(resourceId_);
     }
 
 } // namespace Cucca

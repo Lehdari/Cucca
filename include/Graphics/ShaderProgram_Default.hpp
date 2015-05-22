@@ -47,21 +47,21 @@ namespace Cucca {
         if (initResources.size() == 0)
             return;
 
-        objectId_ = glCreateProgram();
+        programId_ = glCreateProgram();
 
         for (auto& initResourceId : initResources)
-            glAttachShader(objectId_, resourceManager->getResource<ShaderObject>(initResourceId)->getId());
+            glAttachShader(programId_, resourceManager->getResource<ShaderObject>(initResourceId)->getId());
 
-        glLinkProgram(objectId_);
+        glLinkProgram(programId_);
 
         GLint linkStatus, infoLogLength;
-        glGetProgramiv(objectId_, GL_LINK_STATUS, &linkStatus);
+        glGetProgramiv(programId_, GL_LINK_STATUS, &linkStatus);
 
         if (linkStatus == GL_FALSE) {
-            glGetShaderiv(objectId_, GL_INFO_LOG_LENGTH, &infoLogLength);
+            glGetShaderiv(programId_, GL_INFO_LOG_LENGTH, &infoLogLength);
 
             char* infoLog = new char[infoLogLength];
-            glGetProgramInfoLog(objectId_, infoLogLength, NULL, &infoLog[0]);
+            glGetProgramInfoLog(programId_, infoLogLength, NULL, &infoLog[0]);
             fprintf(stderr, "%s", infoLog);
             throw infoLog; // TODO_EXCEPTION: throw a proper exception
         }
@@ -69,8 +69,8 @@ namespace Cucca {
 
     template<>
     void ShaderProgram::destroy<ShaderProgramInitInfo_Default>(void) {
-        if (objectId_ != 0)
-            glDeleteProgram(objectId_);
+        if (programId_ != 0)
+            glDeleteProgram(programId_);
     }
 
 } // namespace Cucca

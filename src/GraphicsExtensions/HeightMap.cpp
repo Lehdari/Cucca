@@ -18,7 +18,9 @@
 using namespace Cucca;
 
 
-void HeightMap::fillAttributeVectors(std::vector<std::array<float, 4>>& positions,
+void HeightMap::fillAttributeVectors(unsigned segmentX,
+                                     unsigned segmentY,
+                                     std::vector<std::array<float, 4>>& positions,
                                      std::vector<std::array<float, 3>>& texCoords,
                                      std::vector<std::array<float, 3>>& normals,
                                      std::vector<unsigned>& indices) {
@@ -54,4 +56,28 @@ void HeightMap::fillAttributeVectors(std::vector<std::array<float, 4>>& position
             }
         }
     }
+}
+
+unsigned HeightMap::getNumXSegments(void) const {
+    return numXSegments_;
+}
+
+unsigned HeightMap::getNumYSegments(void) const {
+    return numYSegments_;
+}
+
+float HeightMap::getSegmentXSize(void) const {
+    return segmentXSize_;
+}
+
+float HeightMap::getSegmentYSize(void) const {
+    return segmentYSize_;
+}
+
+float HeightMap::getOffsetX(void) const {
+    return offsetX_;
+}
+
+float HeightMap::getOffsetY(void) const {
+    return offsetY_;
 }

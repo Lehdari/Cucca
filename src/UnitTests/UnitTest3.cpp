@@ -24,6 +24,7 @@
 #include "../../include/GraphicsExtensions/MovableCamera.hpp"
 #include "../../include/GraphicsExtensions/HeightMap_Default.hpp"
 #include "../../include/GraphicsExtensions/VertexData_HeightMap.hpp"
+#include "../../include/GraphicsExtensions/Terrain.hpp"
 
 #include <random>
 
@@ -125,22 +126,6 @@ int unitTest(void) {
                                   true);
 
     //  Terrain
-    BinaryInitInfo_File heightMapMajorBinaryInitInfo;
-    heightMapMajorBinaryInitInfo.fileName = "res/heightmaps/heightmap_major_01.png";
-    manager.addResourceInfo<Binary>("BINARY_HEIGHTMAP_MAJOR", heightMapMajorBinaryInitInfo);
-
-    HeightMapInitInfo_Default terrainHeightMapInitInfo;
-    manager.addResourceInfo<HeightMap>("HEIGHTMAP",
-                                       terrainHeightMapInitInfo,
-                                       std::vector<ResourceId>{ "BINARY_HEIGHTMAP_MAJOR" },
-                                       std::vector<ResourceId>());
-
-    VertexDataInitInfo_HeightMap terrainVertexDataInitInfo;
-    manager.addResourceInfo<VertexData>("VERTEX_DATA_TERRAIN",
-                                        terrainVertexDataInitInfo,
-                                        std::vector<ResourceId>{ "HEIGHTMAP" },
-                                        std::vector<ResourceId>());
-
     BinaryInitInfo_File textureBinaryInitInfo2;
     textureBinaryInitInfo2.fileName = "res/heightmaps/heightmap_diffuse_01.png";
     manager.addResourceInfo<Binary>("BINARY_TEXTURE_2", textureBinaryInitInfo2);
@@ -164,15 +149,19 @@ int unitTest(void) {
                                       std::vector<ResourceId>{ "SHADER_PROGRAM_1", "TEXTURE_2" },
                                       true);
 
-    MeshInitInfo_Default terrainMeshInitInfo;
-    manager.addResourceInfo<Mesh>("MESH_TERRAIN",
-                                  meshInitInfo1,
-                                  std::vector<ResourceId>{ "VERTEX_DATA_TERRAIN" },
-                                  std::vector<ResourceId>{ "MATERIAL_2" },
-                                  true);
+    BinaryInitInfo_File heightMapMajorBinaryInitInfo;
+    heightMapMajorBinaryInitInfo.fileName = "res/heightmaps/heightmap_major_01.png";
+    manager.addResourceInfo<Binary>("BINARY_HEIGHTMAP_MAJOR", heightMapMajorBinaryInitInfo);
+
+    HeightMapInitInfo_Default terrainHeightMapInitInfo;
+    manager.addResourceInfo<HeightMap>("HEIGHTMAP",
+                                       terrainHeightMapInitInfo,
+                                       std::vector<ResourceId>{ "BINARY_HEIGHTMAP_MAJOR" },
+                                       std::vector<ResourceId>());
+
+    Terrain terrain(manager, root, "HEIGHTMAP", "MATERIAL_2", "TERRAINSEGMENT");
 
     auto mesh1 = manager.getResource<Mesh>("MESH_1");
-    auto terrainMesh = manager.getResource<Mesh>("MESH_TERRAIN");
 
     //  Nodes
     Node eventNode;
@@ -188,6 +177,7 @@ int unitTest(void) {
         root->addChild(std::move(graphicsNode));
     }
 */
+/*
     {
         Node terrainNode;
         terrainNode.addComponent(TransformationComponent());
@@ -195,6 +185,7 @@ int unitTest(void) {
         terrainNode.addComponent(MeshComponent(terrainMesh));
         root->addChild(std::move(terrainNode));
     }
+*/
 
     //  Visitors
     MovableCamera camera(device->getCanvas()->getWindow());

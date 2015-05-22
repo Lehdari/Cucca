@@ -31,7 +31,7 @@ namespace Cucca {
         GLuint getId(void) const;
 
     private:
-        GLuint objectId_;
+        GLuint programId_;
     };
 
 } // namespace Cucca

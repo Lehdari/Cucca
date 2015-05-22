@@ -49,6 +49,7 @@ namespace Cucca {
 
 namespace std {
 
+    //  hash function specialization for ResourceId
     template <>
     struct hash<Cucca::ResourceId> {
         std::size_t operator()(const Cucca::ResourceId& resourceId) const {

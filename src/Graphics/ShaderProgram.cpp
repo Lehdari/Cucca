@@ -17,9 +17,9 @@ using namespace Cucca;
 
 
 ShaderProgram::ShaderProgram(void) :
-    objectId_(0)
+    programId_(0)
 {}
 
 GLuint ShaderProgram::getId(void) const {
-    return objectId_;
+    return programId_;
 }

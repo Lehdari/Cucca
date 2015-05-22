@@ -18,7 +18,7 @@
 
     @version    0.1
     @author     Miika Lehtimäki
-    @date       2015-02-04
+    @date       2015-05-21
 **/
 
 
@@ -33,7 +33,16 @@
 namespace Cucca {
 
     /// Initialization info struct
-    struct HeightMapInitInfo_Default : public ResourceInitInfoBase { };
+    struct HeightMapInitInfo_Default : public ResourceInitInfoBase {
+        unsigned numXSegments;
+        unsigned numYSegments;
+        unsigned segmentXResolution;
+        unsigned segmentYResolution;
+        float segmentXSize;
+        float segmentYSize;
+        float offsetX;
+        float offsetY;
+    };
 
 
     /// Resource init and destroy template member function specializations
@@ -44,6 +53,15 @@ namespace Cucca {
                                                     ResourceManager<ResourceId>* resourceManager) {
         if (initResources.size() < 1)
             return; // TODO_EXCEPTION: maybe throw a proper exception instead?
+
+        numXSegments_ = initInfo.numXSegments;
+        numYSegments_ = initInfo.numYSegments;
+        segmentXResolution_ = initInfo.segmentXResolution;
+        segmentYResolution_ = initInfo.segmentYResolution;
+        segmentXSize_ = initInfo.segmentXSize;
+        segmentYSize_ = initInfo.segmentYSize;
+        offsetX_ = initInfo.offsetX;
+        offsetY_ = initInfo.offsetY;
 
         auto majorBinary = resourceManager->getResource<Binary>(initResources[0]);
 
