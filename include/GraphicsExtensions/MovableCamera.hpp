@@ -46,6 +46,8 @@ namespace Cucca {
         void lookAt(Vector3Glf&& from, Vector3Glf&& to, Vector3Glf&& up);
         void projection(float fov, float aspectRatio, float near, float far);
 
+        const Vector3Glf& getPosition(void) const;
+
     private:
         sf::Window* window_;
 

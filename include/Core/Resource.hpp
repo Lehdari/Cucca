@@ -100,7 +100,8 @@ namespace Cucca {
         if (status() != STATUS_UNINITIALIZED)
             return;
         setStatus(STATUS_INITIALIZING);
-        static_cast<ResourceType_T*>(this)->init(initInfo, initResources, depResources, resourceManager);
+        auto asd = static_cast<ResourceType_T*>(this);
+        asd->init(initInfo, initResources, depResources, resourceManager);
         setStatus(STATUS_READY);
     }
 

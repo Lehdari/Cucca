@@ -17,13 +17,13 @@
 #include "../../include/Graphics/Texture_Binary.hpp"
 #include "../../include/Graphics/Material_Default.hpp"
 #include "../../include/Graphics/VertexData_Binary.hpp"
-#include "../../include/Graphics/Mesh_Default.hpp"
+#include "../../include/Graphics/Mesh_Init_Default.hpp"
 #include "../../include/Graphics/TransformationComponent.hpp"
 #include "../../include/Graphics/MeshComponent.hpp"
 
 #include "../../include/GraphicsExtensions/MovableCamera.hpp"
 #include "../../include/GraphicsExtensions/HeightMap_Default.hpp"
-#include "../../include/GraphicsExtensions/VertexData_HeightMap.hpp"
+#include "../../include/GraphicsExtensions/VertexData_Init_HeightMap.hpp"
 #include "../../include/GraphicsExtensions/Terrain.hpp"
 
 #include <random>
@@ -45,9 +45,9 @@ int unitTest(void) {
     /*GLenum err = */glewInit();
 
     ThreadPool pool;
-    pool.launchThreads(2);
+    //pool.launchThreads(2);
 
-    ResourceManager<ResourceId> manager(device->getGraphicsTaskQueue(), pool.getTaskQueue());
+    ResourceManager<ResourceId> manager(device->getGraphicsTaskQueue()/*, pool.getTaskQueue()*/);
 
     Node* root = device->getRoot();
 
@@ -154,6 +154,15 @@ int unitTest(void) {
     manager.addResourceInfo<Binary>("BINARY_HEIGHTMAP_MAJOR", heightMapMajorBinaryInitInfo);
 
     HeightMapInitInfo_Default terrainHeightMapInitInfo;
+    terrainHeightMapInitInfo.numXSegments = 1;
+    terrainHeightMapInitInfo.numYSegments = 1;
+    terrainHeightMapInitInfo.segmentXResolution = 256;
+    terrainHeightMapInitInfo.segmentYResolution = 256;
+    terrainHeightMapInitInfo.segmentXSize = 10.0f;
+    terrainHeightMapInitInfo.segmentYSize = 10.0f;
+    terrainHeightMapInitInfo.offsetX = -5.0f;
+    terrainHeightMapInitInfo.offsetY = -5.0f;
+
     manager.addResourceInfo<HeightMap>("HEIGHTMAP",
                                        terrainHeightMapInitInfo,
                                        std::vector<ResourceId>{ "BINARY_HEIGHTMAP_MAJOR" },
@@ -197,7 +206,7 @@ int unitTest(void) {
     EventVisitor_SFML sfmlEventVisitor;
 
     //  Some variables
-    float t(0.0f);
+    //float t(0.0f);
 
     //  Run it
     while (device->status() == Device<Canvas_SFML>::STATUS_RUNNING) {
@@ -205,6 +214,8 @@ int unitTest(void) {
         device->getRoot()->accept(camera);
         device->getRoot()->accept(sfmlEventVisitor);
         device->render();
+
+        terrain.update(camera.getPosition(), 40.0f, 20.0f);
 /*
         t += 0.001f;
         camera.lookAt(Vector3Glf{ 220.0f*cosf(t*20.0f), 50.0f + 15.0f*sinf(t*1.276f), 220.0f*sinf(t*20.0f) },

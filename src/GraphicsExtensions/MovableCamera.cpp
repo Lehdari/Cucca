@@ -200,6 +200,10 @@ void MovableCamera::projection(float fov, float aspectRatio, float near, float f
     fov_ = fov;
 }
 
+const Vector3Glf& MovableCamera::getPosition(void) const {
+    return position_;
+}
+
 void MovableCamera::updateOrientation(void) {
     orientation_ << rotationQ_.matrix(), rotationQ_.matrix() * -position_,
                     0.0f, 0.0f, 0.0f, 1.0f;
