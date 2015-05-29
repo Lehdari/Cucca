@@ -19,11 +19,19 @@ using namespace Cucca;
 unsigned Node::numComponentTypes__ = 0;
 
 
-Node* Cucca::Node::addChild(Node&& node) {
+Node* Node::addChild(Node&& node) {
     children_.push_back(std::unique_ptr<Node>(new Node(std::forward<Node>(node))));
     return children_.back().get();
 }
 
-std::vector<std::unique_ptr<Node>>& Cucca::Node::getChildren(void) {
+void Node::removeChild(Node* node) {
+    for (auto it = children_.begin(); it != children_.end(); ++it)
+        if (it->get() == node) {
+            children_.erase(it);
+            return;
+        }
+}
+
+std::vector<std::unique_ptr<Node>>& Node::getChildren(void) {
     return children_;
 }

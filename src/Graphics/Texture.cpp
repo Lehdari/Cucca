@@ -6,7 +6,7 @@
 
     @version    0.1
     @author     Miika Lehtimäki
-    @date       2015-02-04
+    @date       2015-05-29
 **/
 
 
@@ -19,3 +19,7 @@ using namespace Cucca;
 Texture::Texture(void) :
     textureId_(0)
 {}
+
+void Texture::bind(GLenum target) const {
+    glBindTexture(target, textureId_);
+}

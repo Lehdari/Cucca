@@ -6,7 +6,7 @@
 
     @version    0.1
     @author     Miika Lehtimäki
-    @date       2015-02-03
+    @date       2015-05-29
 **/
 
 
@@ -27,6 +27,9 @@ namespace Cucca {
         CUCCA_RESOURCE_INIT_DESTROY
 
         Texture(void);
+
+        //  Bind the texture to given OpenGL target
+        void bind(GLenum target) const;
 
     private:
         GLuint textureId_;

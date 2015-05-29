@@ -6,7 +6,7 @@
 
     @version    0.1
     @author     Miika Lehtimäki
-    @date       2015-02-04
+    @date       2015-05-29
 **/
 
 
@@ -22,6 +22,10 @@ Material::Material(void) :
 
 void Material::useMaterial(const Matrix4Glf& mvp) {
     glUseProgram(shader_->getId());
+
+    //  TODO_IMPLEMENT: we're using just one texture here. fix this.
+    glActiveTexture(GL_TEXTURE0);
+    textures_[0]->bind(GL_TEXTURE_2D);
 
     glUniformMatrix4fv(uniformPosition_MVP_, 1, GL_FALSE, mvp.data());
 }

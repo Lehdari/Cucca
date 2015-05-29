@@ -27,6 +27,8 @@
 #include "../../include/GraphicsExtensions/Terrain.hpp"
 
 #include <random>
+#include <iostream> //TEMP
+#include "../../include/Debug/Time.hpp" // TEMP
 
 
 #define rndf ((float)rnd() / rnd.max())
@@ -154,14 +156,14 @@ int unitTest(void) {
     manager.addResourceInfo<Binary>("BINARY_HEIGHTMAP_MAJOR", heightMapMajorBinaryInitInfo);
 
     HeightMapInitInfo_Default terrainHeightMapInitInfo;
-    terrainHeightMapInitInfo.numXSegments = 1;
-    terrainHeightMapInitInfo.numYSegments = 1;
-    terrainHeightMapInitInfo.segmentXResolution = 256;
-    terrainHeightMapInitInfo.segmentYResolution = 256;
-    terrainHeightMapInitInfo.segmentXSize = 10.0f;
-    terrainHeightMapInitInfo.segmentYSize = 10.0f;
-    terrainHeightMapInitInfo.offsetX = -5.0f;
-    terrainHeightMapInitInfo.offsetY = -5.0f;
+    terrainHeightMapInitInfo.numXSegments = 128;
+    terrainHeightMapInitInfo.numYSegments = 128;
+    terrainHeightMapInitInfo.segmentXResolution = 32;
+    terrainHeightMapInitInfo.segmentYResolution = 32;
+    terrainHeightMapInitInfo.segmentXSize = 200.0f;
+    terrainHeightMapInitInfo.segmentYSize = 200.0f;
+    terrainHeightMapInitInfo.offsetX = -12800.0f;
+    terrainHeightMapInitInfo.offsetY = -12800.0f;
 
     manager.addResourceInfo<HeightMap>("HEIGHTMAP",
                                        terrainHeightMapInitInfo,
@@ -198,10 +200,10 @@ int unitTest(void) {
 
     //  Visitors
     MovableCamera camera(device->getCanvas()->getWindow());
-    camera.lookAt(Vector3Glf{ 1.0f, 0.0f, 0.0f },
+    camera.lookAt(Vector3Glf{ 0.0f, 5.0f, 10.0f },
                   Vector3Glf{ 0.0f, 0.0f, 0.0f },
                   Vector3Glf{ 0.0f, 1.0f, 0.0f });
-    camera.projection(1.5708f, 4.0f/3.0f, 0.05f, 1000.0f);
+    camera.projection(1.5708f, 4.0f/3.0f, 0.05f, 1200.0f);
 
     EventVisitor_SFML sfmlEventVisitor;
 
@@ -215,7 +217,8 @@ int unitTest(void) {
         device->getRoot()->accept(sfmlEventVisitor);
         device->render();
 
-        terrain.update(camera.getPosition(), 40.0f, 20.0f);
+        terrain.update(camera.getPosition(), 1600.0f, 1300.0f);
+
 /*
         t += 0.001f;
         camera.lookAt(Vector3Glf{ 220.0f*cosf(t*20.0f), 50.0f + 15.0f*sinf(t*1.276f), 220.0f*sinf(t*20.0f) },

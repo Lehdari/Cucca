@@ -48,6 +48,9 @@ namespace Cucca {
         //  returns a pointer to the newly added node
         Node* addChild(Node&& node);
 
+        //  remove a child node
+        void removeChild(Node* node);
+
         //  Get reference to a vector of children of the node
         std::vector<std::unique_ptr<Node>>& getChildren(void);
 

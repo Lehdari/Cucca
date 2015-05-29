@@ -6,7 +6,7 @@
 
     @version    0.1
     @author     Miika Lehtimäki
-    @date       2015-04-15
+    @date       2015-05-29
 **/
 
 
@@ -176,6 +176,7 @@ void MovableCamera::lookAt(const Vector3Glf& from, const Vector3Glf& to, const V
                                          (yAxis(2) - zAxis(1))*w4i,
                                          (zAxis(0) - xAxis(2))*w4i,
                                          (xAxis(1) - yAxis(0))*w4i));
+    position_ = from;
 
     updateOrientation();
 

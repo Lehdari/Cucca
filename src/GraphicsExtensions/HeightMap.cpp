@@ -34,25 +34,47 @@ void HeightMap::fillAttributeVectors(unsigned segmentX,
     normals.clear();
     indices.clear();
 
-    positions.reserve(majorSize.x * majorSize.y);
-    texCoords.reserve(majorSize.x * majorSize.y);
-    normals.reserve(majorSize.x * majorSize.y);
-    indices.reserve((majorSize.x-1) * (majorSize.y-1) * 6);
+    const unsigned segmentDataSize = (segmentXResolution_+1) * (segmentYResolution_+1);
+    const float segmentXResInv = 1.0f / segmentXResolution_;
+    const float segmentYResInv = 1.0f / segmentYResolution_;
 
-    for (auto y=0u; y<majorSize.y; ++y) {
-        for (auto x=0u; x<majorSize.x; ++x) {
-            auto pix = major_.getPixel(x, y);
-            positions.push_back({ (float)x, pix.r/5.0f, (float)y, 1.0f});
-            texCoords.push_back({ x/(float)majorSize.x, y/(float)majorSize.y, 0.0f });
+    positions.reserve(segmentDataSize);
+    texCoords.reserve(segmentDataSize);
+    normals.reserve(segmentDataSize);
+    indices.reserve(segmentXResolution_ * segmentYResolution_ * 6);
+
+    for (auto y=0u; y<=segmentYResolution_; ++y) {
+        for (auto x=0u; x<=segmentXResolution_; ++x) {
+            float sampleX = (segmentX + segmentXResInv*x) / numXSegments_;
+            float sampleY = (segmentY + segmentYResInv*y) / numYSegments_;
+
+            float majorSampleX = sampleX * majorSize.x;
+            float majorSampleY = sampleY * majorSize.y;
+
+            float majorSample[2][2];
+            majorSample[0][0] = major_.getPixel((unsigned)majorSampleX,   (unsigned)majorSampleY  ).r;
+            majorSample[1][0] = major_.getPixel((unsigned)majorSampleX+1, (unsigned)majorSampleY  ).r;
+            majorSample[0][1] = major_.getPixel((unsigned)majorSampleX,   (unsigned)majorSampleY+1).r;
+            majorSample[1][1] = major_.getPixel((unsigned)majorSampleX+1, (unsigned)majorSampleY+1).r;
+
+            float majorSampleXdec = majorSampleX-(unsigned)majorSampleX;
+            float majorSampleYdec = majorSampleY-(unsigned)majorSampleY;
+            float majorSampleX1 = majorSample[0][0] + majorSampleXdec * (majorSample[1][0] - majorSample[0][0]);
+            float majorSampleX2 = majorSample[0][1] + majorSampleXdec * (majorSample[1][1] - majorSample[0][1]);
+            float majorSampleInterpolated = majorSampleX1 + majorSampleYdec * (majorSampleX2 - majorSampleX1);
+
+            positions.push_back({ segmentXResInv*x*segmentXSize_, majorSampleInterpolated * 2.0f,
+                                  segmentYResInv*y*segmentYSize_, 1.0f });
+            texCoords.push_back({ sampleX, sampleY, 0.0f });
             normals.push_back({ 0.0f, 1.0f, 0.0f });
 
-            if (x<majorSize.x-1 && y<majorSize.y-1) {
-                indices.push_back(x + majorSize.x*y);
-                indices.push_back(x + majorSize.x*(y+1));
-                indices.push_back(x + majorSize.x*y + 1);
-                indices.push_back(x + majorSize.x*y + 1);
-                indices.push_back(x + majorSize.x*(y+1));
-                indices.push_back(x + majorSize.x*(y+1) + 1);
+            if (x<segmentXResolution_ && y<segmentYResolution_) {
+                indices.push_back(x + (segmentXResolution_+1)*y);
+                indices.push_back(x + (segmentXResolution_+1)*(y+1));
+                indices.push_back(x + (segmentXResolution_+1)*y + 1);
+                indices.push_back(x + (segmentXResolution_+1)*y + 1);
+                indices.push_back(x + (segmentXResolution_+1)*(y+1));
+                indices.push_back(x + (segmentXResolution_+1)*(y+1) + 1);
             }
         }
     }
