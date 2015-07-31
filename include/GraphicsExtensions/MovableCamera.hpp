@@ -6,7 +6,7 @@
 
     @version    0.1
     @author     Miika Lehtimäki
-    @date       2015-05-24
+    @date       2015-05-31
 **/
 
 
@@ -68,6 +68,8 @@ namespace Cucca {
 
         Vector3Glf localSpeed_; // local axis(rotated) speed
         Vector3Glf localAcceleration_; // local axis acceleration
+        float acceleration_; // value the acceleration is set to when key is pressed
+        float maxSpeed_;
         float speedDamping_; // speed damping (must lie in range [0,1) )
 
         void updateOrientation(void);

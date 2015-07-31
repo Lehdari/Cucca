@@ -63,7 +63,7 @@ void HeightMap::fillAttributeVectors(unsigned segmentX,
             float majorSampleX2 = majorSample[0][1] + majorSampleXdec * (majorSample[1][1] - majorSample[0][1]);
             float majorSampleInterpolated = majorSampleX1 + majorSampleYdec * (majorSampleX2 - majorSampleX1);
 
-            positions.push_back({ segmentXResInv*x*segmentXSize_, majorSampleInterpolated * 2.0f,
+            positions.push_back({ segmentXResInv*x*segmentXSize_, majorSampleInterpolated * 4.0f,
                                   segmentYResInv*y*segmentYSize_, 1.0f });
             texCoords.push_back({ sampleX, sampleY, 0.0f });
             normals.push_back({ 0.0f, 1.0f, 0.0f });

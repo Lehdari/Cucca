@@ -6,7 +6,7 @@
 
     @version    0.1
     @author     Miika Lehtimäki
-    @date       2015-05-29
+    @date       2015-05-31
 **/
 
 
@@ -37,6 +37,8 @@ MovableCamera::MovableCamera(sf::Window* window,
     up_(up),
     localSpeed_(0.0f, 0.0f, 0.0f),
     localAcceleration_(0.0f, 0.0f, 0.0f),
+    acceleration_(0.1f),
+    maxSpeed_(1.0f),
     speedDamping_(0.9f)
 {}
 
@@ -102,16 +104,21 @@ void MovableCamera::nodeEnter(Node* node, EventComponent* component) {
         case sf::Event::KeyPressed:
             switch (event->key.code) {
             case sf::Keyboard::W:
-                localAcceleration_(2) -= 0.1f;
+                localAcceleration_(2) -= acceleration_;
             break;
             case sf::Keyboard::S:
-                localAcceleration_(2) += 0.1f;
+                localAcceleration_(2) += acceleration_;
             break;
             case sf::Keyboard::A:
-                localAcceleration_(0) -= 0.1f;
+                localAcceleration_(0) -= acceleration_;
             break;
             case sf::Keyboard::D:
-                localAcceleration_(0) += 0.1f;
+                localAcceleration_(0) += acceleration_;
+            break;
+            case sf::Keyboard::LShift:
+                maxSpeed_ = 10.0f;
+                acceleration_ *= 10.0f;
+                localAcceleration_ *= 10.0f;
             break;
             default: break;
             }
@@ -120,16 +127,21 @@ void MovableCamera::nodeEnter(Node* node, EventComponent* component) {
         case sf::Event::KeyReleased:
             switch (event->key.code) {
             case sf::Keyboard::W:
-                localAcceleration_(2) += 0.1f;
+                localAcceleration_(2) += acceleration_;
             break;
             case sf::Keyboard::S:
-                localAcceleration_(2) -= 0.1f;
+                localAcceleration_(2) -= acceleration_;
             break;
             case sf::Keyboard::A:
-                localAcceleration_(0) += 0.1f;
+                localAcceleration_(0) += acceleration_;
             break;
             case sf::Keyboard::D:
-                localAcceleration_(0) -= 0.1f;
+                localAcceleration_(0) -= acceleration_;
+            break;
+            case sf::Keyboard::LShift:
+                maxSpeed_ = 1.0f;
+                acceleration_ *= 0.1f;
+                localAcceleration_ *= 0.1f;
             break;
             default: break;
             }
@@ -140,7 +152,7 @@ void MovableCamera::nodeEnter(Node* node, EventComponent* component) {
     }
 
     localSpeed_ += localAcceleration_;
-    clamp(localSpeed_, -1.0f, 1.0f);
+    clamp(localSpeed_, -maxSpeed_, maxSpeed_);
     position_ += rotationQ_.matrix().transpose() * localSpeed_;
     localSpeed_ *= speedDamping_;
 

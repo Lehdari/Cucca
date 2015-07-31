@@ -156,14 +156,14 @@ int unitTest(void) {
     manager.addResourceInfo<Binary>("BINARY_HEIGHTMAP_MAJOR", heightMapMajorBinaryInitInfo);
 
     HeightMapInitInfo_Default terrainHeightMapInitInfo;
-    terrainHeightMapInitInfo.numXSegments = 128;
-    terrainHeightMapInitInfo.numYSegments = 128;
+    terrainHeightMapInitInfo.numXSegments = 256;
+    terrainHeightMapInitInfo.numYSegments = 256;
     terrainHeightMapInitInfo.segmentXResolution = 32;
     terrainHeightMapInitInfo.segmentYResolution = 32;
-    terrainHeightMapInitInfo.segmentXSize = 200.0f;
-    terrainHeightMapInitInfo.segmentYSize = 200.0f;
-    terrainHeightMapInitInfo.offsetX = -12800.0f;
-    terrainHeightMapInitInfo.offsetY = -12800.0f;
+    terrainHeightMapInitInfo.segmentXSize = 128.0f;
+    terrainHeightMapInitInfo.segmentYSize = 128.0f;
+    terrainHeightMapInitInfo.offsetX = -16384.0f;
+    terrainHeightMapInitInfo.offsetY = -16384.0f;
 
     manager.addResourceInfo<HeightMap>("HEIGHTMAP",
                                        terrainHeightMapInitInfo,
@@ -203,7 +203,7 @@ int unitTest(void) {
     camera.lookAt(Vector3Glf{ 0.0f, 5.0f, 10.0f },
                   Vector3Glf{ 0.0f, 0.0f, 0.0f },
                   Vector3Glf{ 0.0f, 1.0f, 0.0f });
-    camera.projection(1.5708f, 4.0f/3.0f, 0.05f, 1200.0f);
+    camera.projection(1.5708f, 4.0f/3.0f, 0.05f, 1024.0f);
 
     EventVisitor_SFML sfmlEventVisitor;
 
@@ -217,7 +217,7 @@ int unitTest(void) {
         device->getRoot()->accept(sfmlEventVisitor);
         device->render();
 
-        terrain.update(camera.getPosition(), 1600.0f, 1300.0f);
+        terrain.update(camera.getPosition(), 1024.0f, 800.0f);
 
 /*
         t += 0.001f;
