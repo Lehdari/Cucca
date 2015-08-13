@@ -81,22 +81,17 @@ void Terrain::update(const Vector3Glf& position,
     float offsetX = heightMap_->getOffsetX();
     float offsetY = heightMap_->getOffsetY();
 
-    //  determine area which to check
+    //  determine area to check
     int xMin = std::max(0, (int)((position(0) - offsetX - loadingRadius) / segXSize));
     int yMin = std::max(0, (int)((position(2) - offsetY - loadingRadius) / segYSize));
     int xMax = std::min((int)numXSegments, (int)(((position(0) - offsetX + loadingRadius) / segXSize) + 1));
     int yMax = std::min((int)numYSegments, (int)(((position(2) - offsetY + loadingRadius) / segYSize) + 1));
-
-    //printf("xMin: %i, yMin: %i, xMax: %i, yMax: %i ", xMin, yMin, xMax, yMax);
 
     for (auto j=yMin; j<yMax; ++j) {
         for (auto i=xMin; i<xMax; ++i) {
             float x = offsetX + (i+0.5f)*segXSize - position(0);
             float y = offsetY + (j+0.5f)*segYSize - position(2);
             float dis = sqrtf(x*x + y*y);
-
-            if (i == 1 && j == 0)
-                printf("dis: %f status: %d\n", dis, segmentData_[i][j].status);
 
             if (dis < loadingRadius && dis > activationRadius) {
                 if (segmentData_[i][j].status == SEGMENTSTATUS_UNLOADED) {

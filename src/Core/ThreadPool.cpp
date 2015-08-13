@@ -88,8 +88,8 @@ void ThreadPool::loop(void) {
 
         {
             std::unique_lock<std::mutex> lock(taskMutex_);
-            // wait for notification
 
+            // wait for notification
             taskCV_.wait(lock, [this] { return !tasks_.empty() ||
                                                status_ == STATUS_TERMINATING ||
                                                threadsToJoin_ > 0; });

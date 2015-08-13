@@ -28,7 +28,7 @@
 
 #include <random>
 #include <iostream> //TEMP
-#include "../../include/Debug/Time.hpp" // TEMP
+#include "../../include/Debug/Debug.hpp" // TEMP
 
 
 #define rndf ((float)rnd() / rnd.max())
@@ -47,9 +47,9 @@ int unitTest(void) {
     /*GLenum err = */glewInit();
 
     ThreadPool pool;
-    //pool.launchThreads(2);
+    pool.launchThreads(2);
 
-    ResourceManager<ResourceId> manager(device->getGraphicsTaskQueue()/*, pool.getTaskQueue()*/);
+    ResourceManager<ResourceId> manager(device->getGraphicsTaskQueue(), pool.getTaskQueue());
 
     Node* root = device->getRoot();
 
