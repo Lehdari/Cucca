@@ -18,6 +18,9 @@
 #include <chrono>
 
 
+std::recursive_mutex Cucca::debugPrintMutex;
+
+
 /// Function definitions
 std::string Cucca::debugPrintPrefix(void) {
     std::time_t now_c = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
@@ -43,6 +46,8 @@ namespace Cucca {
 
     //  FormatString values
     template<> const char* FormatString<int>::value(void)               { return "%d"; }
+    template<> const char* FormatString<long int>::value(void)          { return "%ld"; }
+    template<> const char* FormatString<long long int>::value(void)     { return "%lld"; }
     template<> const char* FormatString<unsigned int>::value(void)      { return "%u"; }
     template<> const char* FormatString<float>::value(void)             { return "%0.4f"; }
     template<> const char* FormatString<double>::value(void)            { return "%g"; }

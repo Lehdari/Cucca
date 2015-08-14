@@ -10,6 +10,7 @@
 **/
 
 
+#include "../../include/Debug/Debug.hpp"
 #include "../../include/GraphicsExtensions/Terrain.hpp"
 #include "../../include/Core/ResourceManager.hpp"
 #include "../../include/Core/Node.hpp"
@@ -96,12 +97,12 @@ void Terrain::update(const Vector3Glf& position,
             if (dis < loadingRadius && dis > activationRadius) {
                 if (segmentData_[i][j].status == SEGMENTSTATUS_UNLOADED) {
                     //  segment entering loading radius, preload the resource
-                    printf("Terrain: preloading node resources (%i, %i)\n", i , j);
+                    CUCCA_DPRINTF("Terrain: preloading node resources (%, %)\n", i , j);
                     resourceManager_.loadResource(segmentData_[i][j].meshResourceId);
                 }
                 else if (segmentData_[i][j].status == SEGMENTSTATUS_ACTIVE) {
                     //  segment exiting activation radius, delete node
-                    printf("Terrain: unloading node (%i, %i)\n", i , j);
+                    CUCCA_DPRINTF("Terrain: unloading node (%, %)\n", i , j);
                     node_->removeChild(segmentData_[i][j].node);
                 }
 
@@ -109,7 +110,7 @@ void Terrain::update(const Vector3Glf& position,
             }
             else if (dis < activationRadius && segmentData_[i][j].status != SEGMENTSTATUS_ACTIVE) {
                 //  segment entering activation radius, create new node
-                printf("Terrain: creating new node (%i, %i)\n", i , j);
+                CUCCA_DPRINTF("Terrain: creating new node (%, %)\n", i , j);
                 Node newNode;
                 auto meshPointer = resourceManager_.getResource<Mesh>(segmentData_[i][j].meshResourceId);
                 newNode.addComponent(MeshComponent(meshPointer));

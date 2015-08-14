@@ -28,7 +28,7 @@
 namespace Cucca {
 
     //  Mutex preventing output tearing
-    static std::recursive_mutex debugPrintMutex;
+    extern std::recursive_mutex debugPrintMutex;
 
 
     //  Prefix with thread and time info
@@ -51,7 +51,7 @@ namespace Cucca {
     //  TMP struct for formatting codes
     template<typename T>
     struct FormatString {
-        constexpr static const char* value(void);
+        static const char* value(void);
     };
 
     template<typename T>

@@ -22,6 +22,7 @@
 #include "ResourceInitInfoBase.hpp"
 #include "TaskQueue.hpp"
 #include "Device.hpp"
+#include "../Debug/Debug.hpp"
 
 #include <unordered_map>
 #include <vector>
@@ -202,6 +203,8 @@ namespace Cucca {
 
     template <typename ResourceIdType_T>
     void ResourceManager<ResourceIdType_T>::loadResource(const ResourceIdType_T& resourceId, bool waitForFinish) {
+        CUCCA_DPRINTF("Loading resource %_%\n", resourceId.name(), resourceId.id());
+
         std::vector<ResourceId> graphicsResources;
         {
             std::lock_guard<std::recursive_mutex> lock(resourceMutex_);
