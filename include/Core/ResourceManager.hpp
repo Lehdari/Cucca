@@ -16,13 +16,13 @@
 #define CUCCA_CORE_RESOURCEMANAGER_HPP
 
 
+#include "../Debug/Debug.hpp"
 #include "Platform.hpp"
 #include "Resource.hpp"
 #include "ResourcePointer.hpp"
 #include "ResourceInitInfoBase.hpp"
 #include "TaskQueue.hpp"
 #include "Device.hpp"
-#include "../Debug/Debug.hpp"
 
 #include <unordered_map>
 #include <vector>
@@ -203,8 +203,7 @@ namespace Cucca {
 
     template <typename ResourceIdType_T>
     void ResourceManager<ResourceIdType_T>::loadResource(const ResourceIdType_T& resourceId, bool waitForFinish) {
-        CUCCA_DPRINTF("Loading resource %_%\n", resourceId.name(), resourceId.id());
-
+        //  vector for graphics resources to be initialized after asynchronous ones have been queued
         std::vector<ResourceId> graphicsResources;
         {
             std::lock_guard<std::recursive_mutex> lock(resourceMutex_);
@@ -219,6 +218,7 @@ namespace Cucca {
                 if (resourceInfos_.find(resourceId) == resourceInfos_.end())
                     throw "ResourceManager: unable to load resource (no resource info)"; // TODO_EXCEPTION: throw a proper exception
 
+                //  *MARK_3
                 //  initialize initialization and dependency resources in correct (bottom-up) order
                 std::vector<std::deque<ResourceId>> depList;
                 getLoadOrder(resourceId, depList);
@@ -227,6 +227,8 @@ namespace Cucca {
                     for (auto& depResourceId : depListLayer) {
                         resourcesBeingInitialized_.push_back(depResourceId);
 
+                        //  graphics resources are required to be initialized synchronously, given that
+                        //  gl context is present
                         if (resourceInfos_[depResourceId].isGraphicsResource) {
                             if (std::this_thread::get_id() == creatorThreadId_ && creatorThreadHasGlContext_)
                                 graphicsResources.push_back(depResourceId);
@@ -247,6 +249,8 @@ namespace Cucca {
         for (auto& graphicsResourceId : graphicsResources)
             resourceInfos_[graphicsResourceId].init(graphicsResourceId);
 
+        //  if synchronous resource loading is desired, wait until resource is no longer found in
+        //  resourcesBeingInitialized_ vector (see MARK_2)
         if (waitForFinish) {
             std::unique_lock<std::mutex> lock(dependencyMutex_);
             dependencyCV_.wait(lock, [this, &resourceId] {
@@ -267,6 +271,8 @@ namespace Cucca {
         std::vector<ResourceId> initResources, depResources;
 
         {
+            //  all initialization info must be copied because of (potentially) asynchronous
+            //  initialization of dependency resources
             std::lock_guard<std::recursive_mutex> lock(resourceMutex_);
 
             depList.insert(depList.end(), resourceInfos_[resourceId].initResources.begin(), resourceInfos_[resourceId].initResources.end());
@@ -279,11 +285,15 @@ namespace Cucca {
             depResources = resourceInfos_[resourceId].depResources;
         }
         {
+            //  *MARK_1
+            //  wait until all dependency resources have been initialized
             std::unique_lock<std::mutex> lock(dependencyMutex_);
             dependencyCV_.wait(lock, [this, &resourceId, &depList] {
                 std::lock_guard<std::recursive_mutex> lock2(resourceMutex_);
 
-                //  erase all elements from the depList which are not found from the resourcesBeingInitialized_ vector (remove/erase idiom)
+                //  erase all elements from the depList which are not found from the
+                //  resourcesBeingInitialized_ vector (remove/erase idiom)
+                //  those resources are already initialized, loadResource takes care of that (see MARK_3)
                 depList.erase(std::remove_if(depList.begin(), depList.end(),
                 [this](const ResourceId& depResourceId) {
                     return std::find(resourcesBeingInitialized_.begin(),
@@ -298,15 +308,19 @@ namespace Cucca {
             });
         }
 
+        //  all dependency resources initialized, proceed to initialization
         resource->init(*initInfo, initResources, depResources, this);
 
         {
+            //  *MARK_2
+            //  initialization successful, remove it from resourcesBeingInitialized_ vector
             std::lock_guard<std::recursive_mutex> lock(resourceMutex_);
             resourcesBeingInitialized_.erase(std::remove(resourcesBeingInitialized_.begin(),
                                                          resourcesBeingInitialized_.end(),
                                                          resourceId), resourcesBeingInitialized_.end());
         }
 
+        //  notify other threads possibly waiting for this one to finish (see MARK_1)
         std::unique_lock<std::mutex> lock(dependencyMutex_);
         dependencyCV_.notify_all();
     }

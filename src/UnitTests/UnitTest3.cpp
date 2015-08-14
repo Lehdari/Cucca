@@ -47,7 +47,7 @@ int unitTest(void) {
     /*GLenum err = */glewInit();
 
     ThreadPool pool;
-    pool.launchThreads(2);
+    pool.launchThreads(1);
 
     ResourceManager<ResourceId> manager(device->getGraphicsTaskQueue(), pool.getTaskQueue());
 

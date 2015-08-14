@@ -63,7 +63,8 @@ Terrain::Terrain(ResourceManager<ResourceId>& resourceManager,
             resourceManager_.addResourceInfo<Mesh>(segData.meshResourceId,
                                                    meshInitInfo,
                                                    std::vector<ResourceId>{ segData.vertexDataResourceId },
-                                                   std::vector<ResourceId>{ materialId });
+                                                   std::vector<ResourceId>{ materialId },
+                                                   true);
 
             segDataCol.push_back(std::move(segData));
         }
@@ -97,12 +98,12 @@ void Terrain::update(const Vector3Glf& position,
             if (dis < loadingRadius && dis > activationRadius) {
                 if (segmentData_[i][j].status == SEGMENTSTATUS_UNLOADED) {
                     //  segment entering loading radius, preload the resource
-                    CUCCA_DPRINTF("Terrain: preloading node resources (%, %)\n", i , j);
+                    //CUCCA_DPRINTF("Terrain: preloading node resources (%, %)", i , j);
                     resourceManager_.loadResource(segmentData_[i][j].meshResourceId);
                 }
                 else if (segmentData_[i][j].status == SEGMENTSTATUS_ACTIVE) {
                     //  segment exiting activation radius, delete node
-                    CUCCA_DPRINTF("Terrain: unloading node (%, %)\n", i , j);
+                    //CUCCA_DPRINTF("Terrain: unloading node (%, %)", i , j);
                     node_->removeChild(segmentData_[i][j].node);
                 }
 
@@ -110,7 +111,7 @@ void Terrain::update(const Vector3Glf& position,
             }
             else if (dis < activationRadius && segmentData_[i][j].status != SEGMENTSTATUS_ACTIVE) {
                 //  segment entering activation radius, create new node
-                CUCCA_DPRINTF("Terrain: creating new node (%, %)\n", i , j);
+                //CUCCA_DPRINTF("Terrain: creating new node (%, %)", i , j);
                 Node newNode;
                 auto meshPointer = resourceManager_.getResource<Mesh>(segmentData_[i][j].meshResourceId);
                 newNode.addComponent(MeshComponent(meshPointer));

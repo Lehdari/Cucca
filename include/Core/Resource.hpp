@@ -29,6 +29,7 @@
 #define CUCCA_CORE_RESOURCE_HPP
 
 
+#include "../Debug/Debug.hpp"
 #include "ResourceBase.hpp"
 #include "ResourceId.hpp"
 #include "ResourcePointer.hpp"
@@ -100,8 +101,7 @@ namespace Cucca {
         if (status() != STATUS_UNINITIALIZED)
             return;
         setStatus(STATUS_INITIALIZING);
-        auto asd = static_cast<ResourceType_T*>(this);  //  TEMP
-        asd->init(initInfo, initResources, depResources, resourceManager);
+        static_cast<ResourceType_T*>(this)->init(initInfo, initResources, depResources, resourceManager);
         setStatus(STATUS_READY);
     }
 

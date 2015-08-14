@@ -41,7 +41,11 @@ namespace Cucca {
     void debugPrintFormat(const char* format, bool first) {
         std::lock_guard<std::recursive_mutex> lock(debugPrintMutex);
 
+        if (first)
+            printf(debugPrintPrefix().c_str());
+
         printf(format);
+        printf("\n");
     }
 
     //  FormatString values

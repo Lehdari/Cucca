@@ -22,7 +22,7 @@
 
 
 //  Print formatted output
-#define CUCCA_DPRINTF(format, params...) Cucca::debugPrintFormat(format, true, params);
+#define CUCCA_DPRINTF(format, ...) Cucca::debugPrintFormat(format, true, ##__VA_ARGS__);
 
 //  Print single variable output
 #define CUCCA_DPRINTS(var) Cucca::debugPrintSingle(#var, var);
@@ -35,7 +35,7 @@
 #else   //  CUCCA_DEBUG
 
 
-#define CUCCA_DPRINT(fstr, params...)
+#define CUCCA_DPRINTF(fstr, params...)
 
 
 #endif  //  CUCCA_DEBUG
