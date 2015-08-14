@@ -27,8 +27,8 @@ namespace Cucca {
 
     CUCCA_RESOURCE(Material) {
     public:
-        //  Resource init and destroy template member functions
-        CUCCA_RESOURCE_INIT_DESTROY
+        //  Resource init and destroy template member function declarations
+        CUCCA_RESOURCE_INIT_DESTROY_DECL
 
         Material(void);
 

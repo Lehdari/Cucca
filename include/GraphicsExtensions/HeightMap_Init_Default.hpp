@@ -1,5 +1,5 @@
 /**
-    Cucca Game Engine - GraphicsExtensions - HeightMap_Default.hpp
+    Cucca Game Engine - GraphicsExtensions - HeightMap_Init_Default.hpp
 
     This file is subject to the terms and conditions defined in
     file 'LICENSE.txt', which is part of this source code package.
@@ -22,8 +22,8 @@
 **/
 
 
-#ifndef CUCCA_GRAPHICSEXTENSIONS_HEIGHTMAP_DEFAULT_HPP
-#define CUCCA_GRAPHICSEXTENSIONS_HEIGHTMAP_DEFAULT_HPP
+#ifndef CUCCA_GRAPHICSEXTENSIONS_HEIGHTMAP_INIT_DEFAULT_HPP
+#define CUCCA_GRAPHICSEXTENSIONS_HEIGHTMAP_INIT_DEFAULT_HPP
 
 
 #include "../Core/ResourceManager.hpp"
@@ -46,11 +46,7 @@ namespace Cucca {
 
 
     /// Resource init and destroy template member function specializations
-    template<>
-    void HeightMap::init<HeightMapInitInfo_Default>(const HeightMapInitInfo_Default& initInfo,
-                                                    const std::vector<ResourceId>& initResources,
-                                                    const std::vector<ResourceId>& depResources,
-                                                    ResourceManager<ResourceId>* resourceManager) {
+    CUCCA_RESOURCE_INIT(HeightMap, HeightMapInitInfo_Default) {
         if (initResources.size() < 1)
             return; // TODO_EXCEPTION: maybe throw a proper exception instead?
 
@@ -68,10 +64,9 @@ namespace Cucca {
         major_.loadFromMemory(majorBinary->getBufferPtr(), majorBinary->getBufferSize());
     }
 
-    template<>
-    void HeightMap::destroy<HeightMapInitInfo_Default>(void) {}
+    CUCCA_RESOURCE_DESTROY(HeightMap, HeightMapInitInfo_Default) {}
 
 } // namespace Cucca
 
 
-#endif // CUCCA_GRAPHICSEXTENSIONS_HEIGHTMAP_DEFAULT_HPP
+#endif // CUCCA_GRAPHICSEXTENSIONS_HEIGHTMAP_INIT_DEFAULT_HPP

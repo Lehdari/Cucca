@@ -37,11 +37,7 @@ namespace Cucca {
     struct MeshInitInfo_Default : public ResourceInitInfoBase { };
 
     /// Resource init and destroy template member function specializations
-    template<>
-    inline void Cucca::Mesh::init<MeshInitInfo_Default>(const MeshInitInfo_Default& initInfo,
-                                                        const std::vector<ResourceId>& initResources,
-                                                        const std::vector<ResourceId>& depResources,
-                                                        ResourceManager<ResourceId>* resourceManager) {
+    CUCCA_RESOURCE_INIT(Mesh, MeshInitInfo_Default) {
         if (initResources.size() < 1 || depResources.size() < 1)
             return;
 
@@ -95,8 +91,7 @@ namespace Cucca {
         glBindVertexArray(0);
     }
 
-    template<>
-    inline void Cucca::Mesh::destroy<MeshInitInfo_Default>(void) {
+    CUCCA_RESOURCE_DESTROY(Mesh, MeshInitInfo_Default) {
         if (vertexArrayObjectId_ != 0)
             glDeleteVertexArrays(1, &vertexArrayObjectId_);
 

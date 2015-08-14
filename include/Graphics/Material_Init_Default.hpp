@@ -1,5 +1,5 @@
 /**
-    Cucca Game Engine - Graphics - Material_Default.hpp
+    Cucca Game Engine - Graphics - Material_Init_Default.hpp
 
     This file is subject to the terms and conditions defined in
     file 'LICENSE.txt', which is part of this source code package.
@@ -23,8 +23,8 @@
 **/
 
 
-#ifndef CUCCA_GRAPHICS_MATERIAL_DEFAULT_HPP
-#define CUCCA_GRAPHICS_MATERIAL_DEFAULT_HPP
+#ifndef CUCCA_GRAPHICS_MATERIAL_INIT_DEFAULT_HPP
+#define CUCCA_GRAPHICS_MATERIAL_INIT_DEFAULT_HPP
 
 
 #include "../Core/ResourceManager.hpp"
@@ -38,11 +38,7 @@ namespace Cucca {
 
 
     /// Resource init and destroy template member function specializations
-    template<>
-    void Material::init<MaterialInitInfo_Default>(const MaterialInitInfo_Default& initInfo,
-                                                  const std::vector<ResourceId>& initResources,
-                                                  const std::vector<ResourceId>& depResources,
-                                                  ResourceManager<ResourceId>* resourceManager) {
+    CUCCA_RESOURCE_INIT(Material, MaterialInitInfo_Default) {
         if (depResources.size() < 1)
             return;
 
@@ -54,10 +50,9 @@ namespace Cucca {
         uniformPosition_MVP_ = glGetUniformLocation(shader_->getId(), "MVP");
     }
 
-    template<>
-    void Material::destroy<MaterialInitInfo_Default>(void) {}
+    CUCCA_RESOURCE_DESTROY(Material, MaterialInitInfo_Default) {}
 
 } // namespace Cucca
 
 
-#endif // CUCCA_GRAPHICS_MATERIAL_DEFAULT_HPP
+#endif // CUCCA_GRAPHICS_MATERIAL_INIT_DEFAULT_HPP

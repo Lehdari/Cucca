@@ -1,5 +1,5 @@
 /**
-    Cucca Game Engine - Core - Binary_File.hpp
+    Cucca Game Engine - Core - Binary_Init_File.hpp
 
     This file is subject to the terms and conditions defined in
     file 'LICENSE.txt', which is part of this source code package.
@@ -17,8 +17,8 @@
 **/
 
 
-#ifndef CUCCA_CORE_BINARY_FILE_HPP
-#define CUCCA_CORE_BINARY_FILE_HPP
+#ifndef CUCCA_CORE_BINARY_INIT_FILE_HPP
+#define CUCCA_CORE_BINARY_INIT_FILE_HPP
 
 
 #include "ResourceManager.hpp"
@@ -34,11 +34,7 @@ namespace Cucca {
 
 
     /// Resource init and destroy template member function specializations
-    template<>
-    void Binary::init<BinaryInitInfo_File>(const BinaryInitInfo_File& initInfo,
-                                          const std::vector<ResourceId>& initResources,
-                                          const std::vector<ResourceId>& depResources,
-                                          ResourceManager<ResourceId>* resourceManager) {
+    CUCCA_RESOURCE_INIT(Binary, BinaryInitInfo_File) {
         FILE* file = fopen(initInfo.fileName.c_str(), "rb");
         if (file) {
             if (fseek(file, 0, SEEK_END)) {
@@ -63,8 +59,7 @@ namespace Cucca {
             throw "Binary: unable to open file " + initInfo.fileName; // TODO_EXCEPTION: throw a proper exception
     }
 
-    template<>
-    void Binary::destroy<BinaryInitInfo_File>(void) {
+    CUCCA_RESOURCE_DESTROY(Binary, BinaryInitInfo_File) {
         if (buffer_) {
             delete[] buffer_;
             buffer_ = nullptr;
@@ -75,4 +70,4 @@ namespace Cucca {
 } // namespace Cucca
 
 
-#endif // CUCCA_CORE_BINARY_FILE_HPP
+#endif // CUCCA_CORE_BINARY_INIT_FILE_HPP

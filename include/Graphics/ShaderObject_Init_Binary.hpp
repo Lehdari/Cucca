@@ -1,5 +1,5 @@
 /**
-    Cucca Game Engine - Graphics - ShaderObject_Binary.hpp
+    Cucca Game Engine - Graphics - ShaderObject_Init_Binary.hpp
 
     This file is subject to the terms and conditions defined in
     file 'LICENSE.txt', which is part of this source code package.
@@ -22,8 +22,8 @@
 **/
 
 
-#ifndef CUCCA_GRAPHICS_SHADEROBJECT_BINARY_HPP
-#define CUCCA_GRAPHICS_SHADEROBJECT_BINARY_HPP
+#ifndef CUCCA_GRAPHICS_SHADEROBJECT_INIT_BINARY_HPP
+#define CUCCA_GRAPHICS_SHADEROBJECT_INIT_BINARY_HPP
 
 
 #include "../Core/ResourceManager.hpp"
@@ -45,11 +45,7 @@ namespace Cucca {
 
 
     /// Resource init and destroy template member function specializations
-    template<>
-    void ShaderObject::init<ShaderObjectInitInfo_Binary>(const ShaderObjectInitInfo_Binary& initInfo,
-                                                         const std::vector<ResourceId>& initResources,
-                                                         const std::vector<ResourceId>& depResources,
-                                                         ResourceManager<ResourceId>* resourceManager) {
+    CUCCA_RESOURCE_INIT(ShaderObject, ShaderObjectInitInfo_Binary) {
         switch (initInfo.source) {
         case ShaderObjectInitInfo_Binary::SOURCE_GLSL:
             {
@@ -84,8 +80,7 @@ namespace Cucca {
         }
     }
 
-    template<>
-    void ShaderObject::destroy<ShaderObjectInitInfo_Binary>(void) {
+    CUCCA_RESOURCE_DESTROY(ShaderObject, ShaderObjectInitInfo_Binary) {
         if (objectId_ != 0)
             glDeleteShader(objectId_);
     }
@@ -93,5 +88,5 @@ namespace Cucca {
 } // namespace Cucca
 
 
-#endif // CUCCA_GRAPHICS_SHADEROBJECT_BINARY_HPP
+#endif // CUCCA_GRAPHICS_SHADEROBJECT_INIT_BINARY_HPP
 

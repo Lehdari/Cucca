@@ -1,5 +1,5 @@
 /**
-    Cucca Game Engine - Graphics - VertexData_Binary.hpp
+    Cucca Game Engine - Graphics - VertexData_Init_Binary.hpp
 
     This file is subject to the terms and conditions defined in
     file 'LICENSE.txt', which is part of this source code package.
@@ -22,8 +22,8 @@
 **/
 
 
-#ifndef CUCCA_GRAPHICS_VERTEXDATA_BINARY_HPP
-#define CUCCA_GRAPHICS_VERTEXDATA_BINARY_HPP
+#ifndef CUCCA_GRAPHICS_VERTEXDATA_INIT_BINARY_HPP
+#define CUCCA_GRAPHICS_VERTEXDATA_INIT_BINARY_HPP
 
 
 #include "../Core/ResourceManager.hpp"
@@ -45,11 +45,7 @@ namespace Cucca {
 
 
     /// Resource init and destroy template member function specializations
-    template<>
-    void VertexData::init<VertexDataInitInfo_Binary>(const VertexDataInitInfo_Binary& initInfo,
-                                                     const std::vector<ResourceId>& initResources,
-                                                     const std::vector<ResourceId>& depResources,
-                                                     ResourceManager<ResourceId>* resourceManager) {
+    CUCCA_RESOURCE_INIT(VertexData, VertexDataInitInfo_Binary) {
         switch (initInfo.source) {
         case VertexDataInitInfo_Binary::SOURCE_BINARY_OBJ:
             {
@@ -164,10 +160,9 @@ namespace Cucca {
         }
     }
 
-    template<>
-    void VertexData::destroy<VertexDataInitInfo_Binary>(void) {}
+    CUCCA_RESOURCE_DESTROY(VertexData, VertexDataInitInfo_Binary) {}
 
 } // namespace Cucca
 
 
-#endif // CUCCA_GRAPHICS_VERTEXDATA_BINARY_HPP
+#endif // CUCCA_GRAPHICS_VERTEXDATA_INIT_BINARY_HPP

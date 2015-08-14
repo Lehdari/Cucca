@@ -22,10 +22,10 @@
 
 
 //  Print formatted output
-#define CUCCA_DPRINTF(format, ...) Cucca::debugPrintFormat(format, true, ##__VA_ARGS__);
+#define CUCCA_DPRINTF(FORMAT, ...) Cucca::debugPrintFormat(FORMAT, true, ##__VA_ARGS__);
 
 //  Print single variable output
-#define CUCCA_DPRINTS(var) Cucca::debugPrintSingle(#var, var);
+#define CUCCA_DPRINTS(VAR) Cucca::debugPrintSingle(#VAR, VAR);
 
 
 #include "Print.hpp"

@@ -25,8 +25,8 @@ namespace Cucca {
     //  Structs and Classes
     CUCCA_RESOURCE(Binary) {
     public:
-        //  Resource init and destroy template member functions
-        CUCCA_RESOURCE_INIT_DESTROY
+        //  Resource init and destroy template member function declarations
+        CUCCA_RESOURCE_INIT_DESTROY_DECL
 
         Binary(void);
         ~Binary(void);

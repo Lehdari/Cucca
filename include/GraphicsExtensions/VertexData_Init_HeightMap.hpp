@@ -41,11 +41,7 @@ namespace Cucca {
 
 
     /// Resource init and destroy template member function specializations
-    template<>
-    inline void VertexData::init<VertexDataInitInfo_HeightMap>(const VertexDataInitInfo_HeightMap& initInfo,
-                                                               const std::vector<ResourceId>& initResources,
-                                                               const std::vector<ResourceId>& depResources,
-                                                               ResourceManager<ResourceId>* resourceManager) {
+    CUCCA_RESOURCE_INIT(VertexData, VertexDataInitInfo_HeightMap) {
 
             if (initResources.size() == 0)
                 return; // TODO_EXCEPTION: maybe throw an exception?
@@ -60,8 +56,7 @@ namespace Cucca {
                                             positions_, texCoords_, normals_, indices_);
     }
 
-    template<>
-    inline void VertexData::destroy<VertexDataInitInfo_HeightMap>(void) {}
+    CUCCA_RESOURCE_DESTROY(VertexData, VertexDataInitInfo_HeightMap) {}
 
 } // namespace Cucca
 

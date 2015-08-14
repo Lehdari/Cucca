@@ -1,5 +1,5 @@
 /**
-    Cucca Game Engine - Graphics - ShaderProgram_Default.hpp
+    Cucca Game Engine - Graphics - ShaderProgram_Init_Default.hpp
 
     This file is subject to the terms and conditions defined in
     file 'LICENSE.txt', which is part of this source code package.
@@ -23,8 +23,8 @@
 **/
 
 
-#ifndef CUCCA_GRAPHICS_SHADERPROGRAM_DEFAULT_HPP
-#define CUCCA_GRAPHICS_SHADERPROGRAM_DEFAULT_HPP
+#ifndef CUCCA_GRAPHICS_SHADERPROGRAM_INIT_DEFAULT_HPP
+#define CUCCA_GRAPHICS_SHADERPROGRAM_INIT_DEFAULT_HPP
 
 
 #include "../Core/ResourceManager.hpp"
@@ -39,11 +39,7 @@ namespace Cucca {
 
 
     /// Resource init and destroy template member function specializations
-    template<>
-    void ShaderProgram::init<ShaderProgramInitInfo_Default>(const ShaderProgramInitInfo_Default& initInfo,
-                                                            const std::vector<ResourceId>& initResources,
-                                                            const std::vector<ResourceId>& depResources,
-                                                            ResourceManager<ResourceId>* resourceManager) {
+    CUCCA_RESOURCE_INIT(ShaderProgram, ShaderProgramInitInfo_Default) {
         if (initResources.size() == 0)
             return;
 
@@ -67,8 +63,7 @@ namespace Cucca {
         }
     }
 
-    template<>
-    void ShaderProgram::destroy<ShaderProgramInitInfo_Default>(void) {
+    CUCCA_RESOURCE_DESTROY(ShaderProgram, ShaderProgramInitInfo_Default) {
         if (programId_ != 0)
             glDeleteProgram(programId_);
     }
@@ -76,4 +71,4 @@ namespace Cucca {
 } // namespace Cucca
 
 
-#endif // CUCCA_GRAPHICS_SHADERPROGRAM_DEFAULT_HPP
+#endif // CUCCA_GRAPHICS_SHADERPROGRAM_INIT_DEFAULT_HPP

@@ -37,15 +37,25 @@
 #include <vector>
 
 
+//  macro for correct CRTP usage
 #define CUCCA_RESOURCE(RESOURCE_TYPE) class RESOURCE_TYPE : public Cucca::Resource<RESOURCE_TYPE, ResourceId>
 
-#define CUCCA_RESOURCE_INIT_DESTROY template<typename ResourceInitInfoType_T>\
-                                    void init(const ResourceInitInfoType_T& initInfo,\
-                                              const std::vector<ResourceId>& initResources,\
-                                              const std::vector<ResourceId>& depResources,\
-                                              ResourceManager<ResourceId>* resourceManager);\
-                                    template<typename ResourceInitInfoType_T>\
-                                    void destroy(void);\
+//  macro for resource init/destroy member functions (identical to every resource)
+#define CUCCA_RESOURCE_INIT_DESTROY_DECL template<typename ResourceInitInfoType_T>\
+                                         void init(const ResourceInitInfoType_T& initInfo,\
+                                                   const std::vector<ResourceId>& initResources,\
+                                                   const std::vector<ResourceId>& depResources,\
+                                                   ResourceManager<ResourceId>* resourceManager);\
+                                         template<typename ResourceInitInfoType_T>\
+                                         void destroy(void);\
+
+//  macros for init/destroy implementations in resource initialization files
+#define CUCCA_RESOURCE_INIT(RESOURCE_TYPE, RESOURCE_INIT_INFO_TYPE) template<> inline void Cucca::RESOURCE_TYPE::init<RESOURCE_INIT_INFO_TYPE>(const RESOURCE_INIT_INFO_TYPE& initInfo,\
+                                                                                                                                               const std::vector<ResourceId>& initResources,\
+                                                                                                                                               const std::vector<ResourceId>& depResources,\
+                                                                                                                                               ResourceManager<ResourceId>* resourceManager)
+#define CUCCA_RESOURCE_DESTROY(RESOURCE_TYPE, RESOURCE_INIT_INFO_TYPE) template<> inline void Cucca::RESOURCE_TYPE::destroy<RESOURCE_INIT_INFO_TYPE>(void)
+
 
 namespace Cucca {
 
