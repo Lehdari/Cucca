@@ -50,11 +50,7 @@ namespace Cucca {
 
 
     /// Resource init and destroy template member function specializations
-    template<>
-    void Texture::init<TextureInitInfo_Binary>(const TextureInitInfo_Binary& initInfo,
-                                               const std::vector<ResourceId>& initResources,
-                                               const std::vector<ResourceId>& depResources,
-                                               ResourceManager<ResourceId>* resourceManager) {
+    CUCCA_RESOURCE_INIT(Texture, TextureInitInfo_Binary) {
         if (initResources.size() < 1)
             return;
 
@@ -80,8 +76,7 @@ namespace Cucca {
         }
     }
 
-    template<>
-    void Texture::destroy<TextureInitInfo_Binary>(void) {
+    CUCCA_RESOURCE_DESTROY(Texture, TextureInitInfo_Binary) {
         if (textureId_ != 0)
             glDeleteTextures(1, &textureId_);
     }

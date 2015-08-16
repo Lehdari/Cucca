@@ -1,5 +1,5 @@
 /**
-    Cucca Game Engine - GraphicsExtensions - VertexData_Init_HeightMap.hpp
+    Cucca Game Engine - TerrainDemo - VertexData_Init_HeightMap.hpp
 
     This file is subject to the terms and conditions defined in
     file 'LICENSE.txt', which is part of this source code package.
@@ -26,9 +26,9 @@
 #define CUCCA_GRAPHICSEXTENSIONS_VERTEXDATA_INIT_HEIGHTMAP_HPP
 
 
-#include "../Core/ResourceManager.hpp"
-#include "../Graphics/VertexData.hpp"
 #include "HeightMap.hpp"
+#include "../../include/Core/ResourceManager.hpp"
+#include "../../include/Graphics/VertexData.hpp"
 
 
 namespace Cucca {

@@ -1,5 +1,5 @@
 /**
-    Cucca Game Engine - GraphicsExtensions - Terrain.hpp
+    Cucca Game Engine - TerrainDemo - Terrain.hpp
 
     Terrain class implements a dynamically loaded terrain demonstrating
     Cucca Game Engine's asynchronous resource loading capabilities.
@@ -17,11 +17,11 @@
 #define CUCCA_GRAPHICSEXTENSIONS_TERRAIN_HPP
 
 
-#include "../Core/ResourceId.hpp"
-#include "../Core/ResourcePointer.hpp"
-#include "../Core/LinearAlgebra.hpp"
 #include "HeightMap.hpp"
-#include "../Graphics/Material.hpp"
+#include "../../include/Core/ResourceId.hpp"
+#include "../../include/Core/ResourcePointer.hpp"
+#include "../../include/Core/LinearAlgebra.hpp"
+#include "../../include/Graphics/Material.hpp"
 
 
 namespace Cucca {

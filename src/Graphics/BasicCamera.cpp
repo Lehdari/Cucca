@@ -41,7 +41,7 @@ void BasicCamera::nodeExit(Node* node, MeshComponent* component) {
 }
 
 void BasicCamera::lookAt(const Vector3Glf& from, const Vector3Glf& to, const Vector3Glf& up) {
-    Vector3Glf xAxis, yAxis, zAxis, t;
+    Vector3Glf xAxis, yAxis, zAxis;
 
     zAxis = (to - from).normalized();
     xAxis = up.cross(zAxis).normalized();

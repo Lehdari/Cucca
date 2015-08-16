@@ -1,5 +1,5 @@
 /**
-    Cucca Game Engine - GraphicsExtensions - Terrain.cpp
+    Cucca Game Engine - TerrainDemo - Terrain.cpp
 
     This file is subject to the terms and conditions defined in
     file 'LICENSE.txt', which is part of this source code package.
@@ -10,11 +10,11 @@
 **/
 
 
+#include "../include/Terrain.hpp"
+#include "../include/VertexData_Init_HeightMap.hpp"
 #include "../../include/Debug/Debug.hpp"
-#include "../../include/GraphicsExtensions/Terrain.hpp"
 #include "../../include/Core/ResourceManager.hpp"
 #include "../../include/Core/Node.hpp"
-#include "../../include/GraphicsExtensions/VertexData_Init_HeightMap.hpp"
 #include "../../include/Graphics/Mesh_Init_Default.hpp"
 #include "../../include/Graphics/MeshComponent.hpp"
 #include "../../include/Graphics/TransformationComponent.hpp"

@@ -1,5 +1,5 @@
 /**
-    Cucca Game Engine - GraphicsExtensions - HeightMap.cpp
+    Cucca Game Engine - TerrainDemo - HeightMap.cpp
 
     This file is subject to the terms and conditions defined in
     file 'LICENSE.txt', which is part of this source code package.
@@ -10,7 +10,7 @@
 **/
 
 
-#include "../../include/GraphicsExtensions/HeightMap.hpp"
+#include "../include/HeightMap.hpp"
 #include "../../include/Core/ResourceManager.hpp"
 #include "../../include/Core/Binary.hpp"
 

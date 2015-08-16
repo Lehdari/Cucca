@@ -1,5 +1,5 @@
 /**
-    Cucca Game Engine - GraphicsExtensions - HeightMap_Init_Default.hpp
+    Cucca Game Engine - TerrainDemo - HeightMap_Init_Default.hpp
 
     This file is subject to the terms and conditions defined in
     file 'LICENSE.txt', which is part of this source code package.
@@ -26,8 +26,9 @@
 #define CUCCA_GRAPHICSEXTENSIONS_HEIGHTMAP_INIT_DEFAULT_HPP
 
 
-#include "../Core/ResourceManager.hpp"
 #include "HeightMap.hpp"
+#include "../../include/Core/ResourceManager.hpp"
+#include "../../include/Core/Binary.hpp"
 
 
 namespace Cucca {
