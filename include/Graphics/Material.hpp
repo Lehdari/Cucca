@@ -43,8 +43,10 @@ namespace Cucca {
         ResourcePointer<ShaderProgram, ResourceId> shader_;
         std::vector<ResourcePointer<Texture, ResourceId>> textures_;
 
-        std::vector<GLint> uniformLocations_Mat4_;
         std::vector<GLint> uniformLocations_Sampler2D_;
+        std::vector<GLint> uniformLocations_Mat4_;
+
+        void bindTextures(void) const;
     };
 
 };

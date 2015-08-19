@@ -59,7 +59,6 @@ int terrainDemo(void) {
     //  Vertex shader (VS)
     BinaryInitInfo_File terrainVSBinaryInitInfo;
     terrainVSBinaryInitInfo.fileName = "TerrainDemo/shaders/VS_Terrain.glsl";
-    //terrainVSBinaryInitInfo.fileName = "src/shaders/VS_SingleTexture.glsl";
     manager.addResourceInfo<Binary>("BINARY_VS_TERRAIN", terrainVSBinaryInitInfo);
 
     ShaderObjectInitInfo_Binary terrainVSInitInfo;
@@ -103,7 +102,6 @@ int terrainDemo(void) {
     //  Fragment shader (FS)
     BinaryInitInfo_File terrainFSBinaryInitInfo;
     terrainFSBinaryInitInfo.fileName = "TerrainDemo/shaders/FS_Terrain.glsl";
-    //terrainFSBinaryInitInfo.fileName = "src/shaders/FS_SingleTexture.glsl";
     manager.addResourceInfo<Binary>("BINARY_FS_TERRAIN", terrainFSBinaryInitInfo);
 
     ShaderObjectInitInfo_Binary terrainFSInitInfo;
@@ -119,7 +117,7 @@ int terrainDemo(void) {
     ShaderProgramInitInfo_Default terrainShaderInitInfo;
     manager.addResourceInfo<ShaderProgram>("SHADER_TERRAIN",
                                            terrainShaderInitInfo,
-                                           std::vector<ResourceId>{ "VS_TERRAIN"/*, "TCS_TERRAIN", "TES_TERRAIN"*/, "FS_TERRAIN" },
+                                           std::vector<ResourceId>{ "VS_TERRAIN", "TCS_TERRAIN", "TES_TERRAIN", "FS_TERRAIN" },
                                            std::vector<ResourceId>(),
                                            true);
 
@@ -140,13 +138,29 @@ int terrainDemo(void) {
                                      std::vector<ResourceId>(),
                                      true);
 
+    BinaryInitInfo_File terrainDisplacementBinaryInitInfo;
+    terrainDisplacementBinaryInitInfo.fileName = "res/heightmaps/displacementMap_01.png";
+    manager.addResourceInfo<Binary>("BINARY_DISPLACEMENT_TERRAIN", terrainDisplacementBinaryInitInfo);
+
+    TextureInitInfo_Binary terrainDisplacementInitInfo;
+    terrainDisplacementInitInfo.source = TextureInitInfo_Binary::SOURCE_BINARY_PNG;
+    terrainDisplacementInitInfo.wrapS = GL_REPEAT;
+    terrainDisplacementInitInfo.wrapT = GL_REPEAT;
+    terrainDisplacementInitInfo.minFiltering = GL_LINEAR_MIPMAP_LINEAR;
+    terrainDisplacementInitInfo.magFiltering = GL_LINEAR;
+    manager.addResourceInfo<Texture>("DISPLACEMENT_TERRAIN",
+                                     terrainDisplacementInitInfo,
+                                     std::vector<ResourceId>{ "BINARY_DISPLACEMENT_TERRAIN" },
+                                     std::vector<ResourceId>(),
+                                     true);
+
     MaterialInitInfo_Default terrainMaterialInitInfo;
-    terrainMaterialInitInfo.uniformMat4Names = std::vector<std::string>{ "model", "camera" };
     terrainMaterialInitInfo.uniformSampler2DNames = std::vector<std::string>{ "diffuse", "displacementMap" };
+    terrainMaterialInitInfo.uniformMat4Names = std::vector<std::string>{ "model", "camera" };
     manager.addResourceInfo<Material>("MATERIAL_TERRAIN",
                                       terrainMaterialInitInfo,
                                       std::vector<ResourceId>(),
-                                      std::vector<ResourceId>{ "SHADER_TERRAIN", "DIFFUSE_TERRAIN" },
+                                      std::vector<ResourceId>{ "SHADER_TERRAIN", "DIFFUSE_TERRAIN", "DISPLACEMENT_TERRAIN" },
                                       true);
 
     BinaryInitInfo_File terrainHeightMapMajorBinaryInitInfo;
@@ -181,7 +195,7 @@ int terrainDemo(void) {
     camera.lookAt(Vector3Glf{ 0.0f, 5.0f, 10.0f },
                   Vector3Glf{ 0.0f, 0.0f, 0.0f },
                   Vector3Glf{ 0.0f, 1.0f, 0.0f });
-    camera.projection(1.5708f, 4.0f/3.0f, 0.05f, 1024.0f);
+    camera.projection(1.5708f, 16.0f/9.0f, 0.05f, 1280.0f);
 
     EventVisitor_SFML sfmlEventVisitor;
 
@@ -192,7 +206,7 @@ int terrainDemo(void) {
         device->getRoot()->accept(sfmlEventVisitor);
         device->render();
 
-        terrain.update(camera.getPosition(), 768.0f, 512.0f);
+        terrain.update(camera.getPosition(), 1536.0f, 1280.0f);
     }
 
     return 0;

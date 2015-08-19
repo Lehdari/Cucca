@@ -26,16 +26,16 @@ out vec3 in_TES_texCoord[];
 out vec3 in_TES_normal[];
 
 
-const vec3 cameraWorldPosition = vec3(0.0, 0.0, 0.0);
+uniform vec3 cameraWorldPosition;
 
 
 float getTessLevel(float dis1, float dis2) {
     float avgDis = (dis1 + dis2) * 0.5;
 
-    if (avgDis > 1.0)
-        return 10.0 / avgDis;
+    if (avgDis > 64.0)
+        return 512.0 / avgDis;
     else
-        return 10.0;
+        return 8.0;
 }
 
 

@@ -174,6 +174,9 @@ void MovableCamera::nodeExit(Node* node, TransformationComponent* component) {
 
 void MovableCamera::nodeEnter(Node* node, MeshComponent* component) {
     //component->getMesh()->draw(projection_ * orientation_ * transformations_.top());
+
+    glUniform3fv(glGetUniformLocation(component->getMesh()->getMaterial()->getShaderId(), "cameraWorldPosition"), 1, position_.data());
+
     component->getMesh()->draw(transformations_.top(), projection_ * orientation_);
 }
 

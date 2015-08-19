@@ -60,6 +60,7 @@ Terrain::Terrain(ResourceManager<ResourceId>& resourceManager,
                                                          std::vector<ResourceId>());
 
             MeshInitInfo_Default meshInitInfo;
+            meshInitInfo.tessellated = true;
             resourceManager_.addResourceInfo<Mesh>(segData.meshResourceId,
                                                    meshInitInfo,
                                                    std::vector<ResourceId>{ segData.vertexDataResourceId },

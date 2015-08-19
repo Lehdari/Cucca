@@ -47,12 +47,12 @@ void Mesh::draw(const Matrix4Glf& model, const Matrix4Glf& camera) const {
     material_->useMaterial(model, camera);
     glBindVertexArray(vertexArrayObjectId_);
 
-    // TODO_IMPLEMENT: draw arrays if not using indexing
     if (tessellated_) {
         glPatchParameteri(GL_PATCH_VERTICES, 3);
+        glDrawElements(GL_PATCHES, nIndices_, GL_UNSIGNED_INT, (GLvoid*)0);
     }
     else
-    glDrawElements(GL_TRIANGLES, nIndices_, GL_UNSIGNED_INT, (GLvoid*)0);
+        glDrawElements(GL_TRIANGLES, nIndices_, GL_UNSIGNED_INT, (GLvoid*)0); // TODO_IMPLEMENT: draw arrays if not using indexing
 
     glBindVertexArray(0);
 }
@@ -63,4 +63,8 @@ void Mesh::setTessellation(bool tessellated) {
 
 bool Mesh::isTessellated(void) const {
     return tessellated_;
+}
+
+ResourcePointer<Material, ResourceId> Mesh::getMaterial(void) const {
+    return material_;
 }

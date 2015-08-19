@@ -34,7 +34,9 @@
 namespace Cucca {
 
     /// Initialization info struct
-    struct MeshInitInfo_Default : public ResourceInitInfoBase { };
+    struct MeshInitInfo_Default : public ResourceInitInfoBase {
+        bool tessellated;
+    };
 
     /// Resource init and destroy template member function specializations
     CUCCA_RESOURCE_INIT(Mesh, MeshInitInfo_Default) {
@@ -47,6 +49,8 @@ namespace Cucca {
         usingTexCoords_ = vertexData->usesTextureCoordinates();
         usingNormals_ = vertexData->usesNormals();
         usingIndexing_ = vertexData->usesIndexing();
+
+        tessellated_ = initInfo.tessellated;
 
         auto positions = vertexData->getPositions();
         auto texCoords = vertexData->getTextureCoordinates();
