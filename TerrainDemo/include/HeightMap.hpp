@@ -6,7 +6,7 @@
 
     @version    0.1
     @author     Miika Lehtimäki
-    @date       2015-02-03
+    @date       2015-08-19
 **/
 
 
@@ -32,7 +32,8 @@ namespace Cucca {
                                   std::vector<std::array<float, 4>>& positions,
                                   std::vector<std::array<float, 3>>& texCoords,
                                   std::vector<std::array<float, 3>>& normals,
-                                  std::vector<unsigned>& indices);
+                                  std::vector<unsigned>& indices,
+                                  bool quads = true);
 
         unsigned getNumXSegments(void) const;
         unsigned getNumYSegments(void) const;

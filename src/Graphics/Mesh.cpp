@@ -48,7 +48,7 @@ void Mesh::draw(const Matrix4Glf& model, const Matrix4Glf& camera) const {
     glBindVertexArray(vertexArrayObjectId_);
 
     if (tessellated_) {
-        glPatchParameteri(GL_PATCH_VERTICES, 3);
+        glPatchParameteri(GL_PATCH_VERTICES, 4);
         glDrawElements(GL_PATCHES, nIndices_, GL_UNSIGNED_INT, (GLvoid*)0);
     }
     else

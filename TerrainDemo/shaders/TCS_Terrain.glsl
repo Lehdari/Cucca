@@ -13,7 +13,7 @@
 #version 400 core
 
 // define the number of CPs in the output patch
-layout(vertices = 3) out;
+layout(vertices = 4) out;
 
 // attributes of the input CPs
 in vec4 in_TCS_position[];
@@ -49,10 +49,13 @@ void main() {
     float EyeToVertexDistance0 = distance(cameraWorldPosition, in_TES_position[0].xyz);
     float EyeToVertexDistance1 = distance(cameraWorldPosition, in_TES_position[1].xyz);
     float EyeToVertexDistance2 = distance(cameraWorldPosition, in_TES_position[2].xyz);
+    float EyeToVertexDistance3 = distance(cameraWorldPosition, in_TES_position[3].xyz);
 
     // Calculate the tessellation levels
-    gl_TessLevelOuter[0] = getTessLevel(EyeToVertexDistance1, EyeToVertexDistance2);
-    gl_TessLevelOuter[1] = getTessLevel(EyeToVertexDistance2, EyeToVertexDistance0);
-    gl_TessLevelOuter[2] = getTessLevel(EyeToVertexDistance0, EyeToVertexDistance1);
+    gl_TessLevelOuter[0] = getTessLevel(EyeToVertexDistance0, EyeToVertexDistance1);
+    gl_TessLevelOuter[1] = getTessLevel(EyeToVertexDistance1, EyeToVertexDistance2);
+    gl_TessLevelOuter[2] = getTessLevel(EyeToVertexDistance2, EyeToVertexDistance3);
+    gl_TessLevelOuter[3] = getTessLevel(EyeToVertexDistance3, EyeToVertexDistance0);
     gl_TessLevelInner[0] = gl_TessLevelOuter[2];
+    gl_TessLevelInner[1] = gl_TessLevelOuter[2];
 }

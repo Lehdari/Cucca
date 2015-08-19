@@ -6,7 +6,7 @@
 
     @version    0.1
     @author     Miika Lehtimäki
-    @date       2015-01-25
+    @date       2015-08-19
 **/
 
 
@@ -23,7 +23,8 @@ void HeightMap::fillAttributeVectors(unsigned segmentX,
                                      std::vector<std::array<float, 4>>& positions,
                                      std::vector<std::array<float, 3>>& texCoords,
                                      std::vector<std::array<float, 3>>& normals,
-                                     std::vector<unsigned>& indices) {
+                                     std::vector<unsigned>& indices,
+                                     bool quads) {
     if (status() != STATUS_READY)
         return; // TODO_EXCEPTION: maybe throw an exception instead?
 
@@ -69,12 +70,20 @@ void HeightMap::fillAttributeVectors(unsigned segmentX,
             normals.push_back({ 0.0f, 1.0f, 0.0f });
 
             if (x<segmentXResolution_ && y<segmentYResolution_) {
-                indices.push_back(x + (segmentXResolution_+1)*y);
-                indices.push_back(x + (segmentXResolution_+1)*(y+1));
-                indices.push_back(x + (segmentXResolution_+1)*y + 1);
-                indices.push_back(x + (segmentXResolution_+1)*y + 1);
-                indices.push_back(x + (segmentXResolution_+1)*(y+1));
-                indices.push_back(x + (segmentXResolution_+1)*(y+1) + 1);
+                if (quads) {
+                    indices.push_back(x + (segmentXResolution_+1)*y);
+                    indices.push_back(x + (segmentXResolution_+1)*y + 1);
+                    indices.push_back(x + (segmentXResolution_+1)*(y+1));
+                    indices.push_back(x + (segmentXResolution_+1)*(y+1) + 1);
+                }
+                else {
+                    indices.push_back(x + (segmentXResolution_+1)*y);
+                    indices.push_back(x + (segmentXResolution_+1)*(y+1));
+                    indices.push_back(x + (segmentXResolution_+1)*y + 1);
+                    indices.push_back(x + (segmentXResolution_+1)*y + 1);
+                    indices.push_back(x + (segmentXResolution_+1)*(y+1));
+                    indices.push_back(x + (segmentXResolution_+1)*(y+1) + 1);
+                }
             }
         }
     }
