@@ -6,7 +6,7 @@
 
     @version    0.1
     @author     Miika Lehtimäki
-    @date       2015-05-29
+    @date       2015-08-19
 **/
 
 
@@ -16,20 +16,29 @@
 using namespace Cucca;
 
 
-Material::Material(void) :
-    uniformPosition_MVP_(0)
-{}
+Material::Material(void) {}
 
-void Material::useMaterial(const Matrix4Glf& mvp) {
+void Material::useMaterial(const Matrix4Glf& mvp) const {
     glUseProgram(shader_->getId());
 
     //  TODO_IMPLEMENT: we're using just one texture here. fix this.
     glActiveTexture(GL_TEXTURE0);
     textures_[0]->bind(GL_TEXTURE_2D);
 
-    glUniformMatrix4fv(uniformPosition_MVP_, 1, GL_FALSE, mvp.data());
+    glUniformMatrix4fv(uniformLocations_Mat4_[0], 1, GL_FALSE, mvp.data());
 }
 
-GLuint Material::getShaderId(void) {
+void Material::useMaterial(const Matrix4Glf& model, const Matrix4Glf& camera) const {
+    glUseProgram(shader_->getId());
+
+    //  TODO_IMPLEMENT: we're using just one texture here. fix this.
+    glActiveTexture(GL_TEXTURE0);
+    textures_[0]->bind(GL_TEXTURE_2D);
+
+    glUniformMatrix4fv(uniformLocations_Mat4_[0], 1, GL_FALSE, model.data());
+    glUniformMatrix4fv(uniformLocations_Mat4_[1], 1, GL_FALSE, camera.data());
+}
+
+GLuint Material::getShaderId(void) const {
     return shader_->getId();
 }

@@ -6,7 +6,7 @@
 
     @version    0.1
     @author     Miika Lehtimäki
-    @date       2015-03-02
+    @date       2015-08-19
 **/
 
 
@@ -30,7 +30,11 @@ namespace Cucca {
 
         Mesh(void);
 
-        void draw(const Matrix4Glf& mvp);
+        void draw(const Matrix4Glf& mvp) const;
+        void draw(const Matrix4Glf& model, const Matrix4Glf& camera) const;
+
+        void setTessellation(bool tessellated);
+        bool isTessellated(void) const;
 
     private:
         ResourcePointer<Material, ResourceId> material_;
@@ -46,6 +50,8 @@ namespace Cucca {
         GLuint texCoordBufferId_;
         GLuint normalBufferId_;
         GLuint elementBufferId_;
+
+        bool tessellated_;
     };
 
 } // namespace Cucca

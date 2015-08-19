@@ -6,7 +6,7 @@
 
     @version    0.1
     @author     Miika Lehtimäki
-    @date       2015-03-02
+    @date       2015-08-19
 **/
 
 
@@ -32,15 +32,19 @@ namespace Cucca {
 
         Material(void);
 
-        void useMaterial(const Matrix4Glf& mvp);
+        void useMaterial(const Matrix4Glf& mvp) const;
+        //  note ordering in initialization info (model matrix name first)
+        //  also known as world and VP matrices
+        void useMaterial(const Matrix4Glf& model, const Matrix4Glf& camera) const;
 
-        GLuint getShaderId(void);
+        GLuint getShaderId(void) const;
 
     private:
         ResourcePointer<ShaderProgram, ResourceId> shader_;
         std::vector<ResourcePointer<Texture, ResourceId>> textures_;
 
-        GLuint uniformPosition_MVP_;
+        std::vector<GLint> uniformLocations_Mat4_;
+        std::vector<GLint> uniformLocations_Sampler2D_;
     };
 
 };

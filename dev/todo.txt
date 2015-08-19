@@ -40,6 +40,8 @@ ResourceManager:
 	~ make smarter destructor (multithreaded, skip destruction of destructed resources[add removeDestructedResources member function perhaps?])
 	~ fix double copying when passing arguments to Resource::init (forward/move diipadaapa)
 	make buffer for unreferenced resources and implement lazy uninitialization
+	what happens in case of dependency resource initialization failure?
+		nothing?
 
 Find more ways to break the resource system
 	multiple resource managers

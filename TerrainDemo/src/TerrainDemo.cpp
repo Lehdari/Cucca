@@ -56,83 +56,119 @@ int terrainDemo(void) {
     Node* root = device->getRoot();
 
     //  Shader
-    BinaryInitInfo_File vertexShaderBinaryInitInfo1;
-    vertexShaderBinaryInitInfo1.fileName = "src/shaders/VS_SingleTexture.glsl";
-    manager.addResourceInfo<Binary>("BINARY_SHADER_VERTEX_1", vertexShaderBinaryInitInfo1);
+    //  Vertex shader (VS)
+    BinaryInitInfo_File terrainVSBinaryInitInfo;
+    terrainVSBinaryInitInfo.fileName = "TerrainDemo/shaders/VS_Terrain.glsl";
+    //terrainVSBinaryInitInfo.fileName = "src/shaders/VS_SingleTexture.glsl";
+    manager.addResourceInfo<Binary>("BINARY_VS_TERRAIN", terrainVSBinaryInitInfo);
 
-    BinaryInitInfo_File fragmentShaderBinaryInitInfo1;
-    fragmentShaderBinaryInitInfo1.fileName = "src/shaders/FS_SingleTexture.glsl";
-    manager.addResourceInfo<Binary>("BINARY_SHADER_FRAGMENT_1", fragmentShaderBinaryInitInfo1);
-
-    ShaderObjectInitInfo_Binary vertexShaderInitInfo1;
-    vertexShaderInitInfo1.source = ShaderObjectInitInfo_Binary::SOURCE_GLSL;
-    vertexShaderInitInfo1.type = GL_VERTEX_SHADER;
-    manager.addResourceInfo<ShaderObject>("SHADER_VERTEX_1",
-                                          vertexShaderInitInfo1,
-                                          std::vector<ResourceId>{ "BINARY_SHADER_VERTEX_1" },
+    ShaderObjectInitInfo_Binary terrainVSInitInfo;
+    terrainVSInitInfo.source = ShaderObjectInitInfo_Binary::SOURCE_GLSL;
+    terrainVSInitInfo.type = GL_VERTEX_SHADER;
+    manager.addResourceInfo<ShaderObject>("VS_TERRAIN",
+                                          terrainVSInitInfo,
+                                          std::vector<ResourceId>{ "BINARY_VS_TERRAIN" },
                                           std::vector<ResourceId>(),
                                           true);
 
-    ShaderObjectInitInfo_Binary fragmentShaderInitInfo1;
-    fragmentShaderInitInfo1.source = ShaderObjectInitInfo_Binary::SOURCE_GLSL;
-    fragmentShaderInitInfo1.type = GL_FRAGMENT_SHADER;
-    manager.addResourceInfo<ShaderObject>("SHADER_FRAGMENT_1",
-                                          fragmentShaderInitInfo1,
-                                          std::vector<ResourceId>{ "BINARY_SHADER_FRAGMENT_1" },
+    //  Tesselation control shader (TCS)
+    BinaryInitInfo_File terrainTCSBinaryInitInfo;
+    terrainTCSBinaryInitInfo.fileName = "TerrainDemo/shaders/TCS_Terrain.glsl";
+    manager.addResourceInfo<Binary>("BINARY_TCS_TERRAIN", terrainTCSBinaryInitInfo);
+
+    ShaderObjectInitInfo_Binary terrainTCSInitInfo;
+    terrainTCSInitInfo.source = ShaderObjectInitInfo_Binary::SOURCE_GLSL;
+    terrainTCSInitInfo.type = GL_TESS_CONTROL_SHADER;
+    manager.addResourceInfo<ShaderObject>("TCS_TERRAIN",
+                                          terrainTCSInitInfo,
+                                          std::vector<ResourceId>{ "BINARY_TCS_TERRAIN" },
                                           std::vector<ResourceId>(),
                                           true);
 
-    ShaderProgramInitInfo_Default shaderProgramInitInfo1;
-    manager.addResourceInfo<ShaderProgram>("SHADER_PROGRAM_1",
-                                           shaderProgramInitInfo1,
-                                           std::vector<ResourceId>{ "SHADER_VERTEX_1", "SHADER_FRAGMENT_1" },
+    //  Tesselation evaluation shader (TES)
+    BinaryInitInfo_File terrainTESBinaryInitInfo;
+    terrainTESBinaryInitInfo.fileName = "TerrainDemo/shaders/TES_Terrain.glsl";
+    manager.addResourceInfo<Binary>("BINARY_TES_TERRAIN", terrainTESBinaryInitInfo);
+
+    ShaderObjectInitInfo_Binary terrainTESInitInfo;
+    terrainTESInitInfo.source = ShaderObjectInitInfo_Binary::SOURCE_GLSL;
+    terrainTESInitInfo.type = GL_TESS_EVALUATION_SHADER;
+    manager.addResourceInfo<ShaderObject>("TES_TERRAIN",
+                                          terrainTESInitInfo,
+                                          std::vector<ResourceId>{ "BINARY_TES_TERRAIN" },
+                                          std::vector<ResourceId>(),
+                                          true);
+
+
+    //  Fragment shader (FS)
+    BinaryInitInfo_File terrainFSBinaryInitInfo;
+    terrainFSBinaryInitInfo.fileName = "TerrainDemo/shaders/FS_Terrain.glsl";
+    //terrainFSBinaryInitInfo.fileName = "src/shaders/FS_SingleTexture.glsl";
+    manager.addResourceInfo<Binary>("BINARY_FS_TERRAIN", terrainFSBinaryInitInfo);
+
+    ShaderObjectInitInfo_Binary terrainFSInitInfo;
+    terrainFSInitInfo.source = ShaderObjectInitInfo_Binary::SOURCE_GLSL;
+    terrainFSInitInfo.type = GL_FRAGMENT_SHADER;
+    manager.addResourceInfo<ShaderObject>("FS_TERRAIN",
+                                          terrainFSInitInfo,
+                                          std::vector<ResourceId>{ "BINARY_FS_TERRAIN" },
+                                          std::vector<ResourceId>(),
+                                          true);
+
+    //  Shader program
+    ShaderProgramInitInfo_Default terrainShaderInitInfo;
+    manager.addResourceInfo<ShaderProgram>("SHADER_TERRAIN",
+                                           terrainShaderInitInfo,
+                                           std::vector<ResourceId>{ "VS_TERRAIN"/*, "TCS_TERRAIN", "TES_TERRAIN"*/, "FS_TERRAIN" },
                                            std::vector<ResourceId>(),
                                            true);
 
-    //  Terrain
-    BinaryInitInfo_File textureBinaryInitInfo2;
-    textureBinaryInitInfo2.fileName = "res/heightmaps/heightmap_diffuse_01.png";
-    manager.addResourceInfo<Binary>("BINARY_TEXTURE_2", textureBinaryInitInfo2);
+    //  Textures
+    BinaryInitInfo_File terrainDiffuseBinaryInitInfo;
+    terrainDiffuseBinaryInitInfo.fileName = "res/heightmaps/heightmap_diffuse_01.png";
+    manager.addResourceInfo<Binary>("BINARY_DIFFUSE_TERRAIN", terrainDiffuseBinaryInitInfo);
 
-    TextureInitInfo_Binary textureInitInfo2;
-    textureInitInfo2.source = TextureInitInfo_Binary::SOURCE_BINARY_PNG;
-    textureInitInfo2.wrapS = GL_REPEAT;
-    textureInitInfo2.wrapT = GL_REPEAT;
-    textureInitInfo2.minFiltering = GL_LINEAR_MIPMAP_LINEAR;
-    textureInitInfo2.magFiltering = GL_LINEAR;
-    manager.addResourceInfo<Texture>("TEXTURE_TERRAIN",
-                                     textureInitInfo2,
-                                     std::vector<ResourceId>{ "BINARY_TEXTURE_2" },
+    TextureInitInfo_Binary terrainDiffuseInitInfo;
+    terrainDiffuseInitInfo.source = TextureInitInfo_Binary::SOURCE_BINARY_PNG;
+    terrainDiffuseInitInfo.wrapS = GL_REPEAT;
+    terrainDiffuseInitInfo.wrapT = GL_REPEAT;
+    terrainDiffuseInitInfo.minFiltering = GL_LINEAR_MIPMAP_LINEAR;
+    terrainDiffuseInitInfo.magFiltering = GL_LINEAR;
+    manager.addResourceInfo<Texture>("DIFFUSE_TERRAIN",
+                                     terrainDiffuseInitInfo,
+                                     std::vector<ResourceId>{ "BINARY_DIFFUSE_TERRAIN" },
                                      std::vector<ResourceId>(),
                                      true);
 
-    MaterialInitInfo_Default materialInitInfo2;
+    MaterialInitInfo_Default terrainMaterialInitInfo;
+    terrainMaterialInitInfo.uniformMat4Names = std::vector<std::string>{ "model", "camera" };
+    terrainMaterialInitInfo.uniformSampler2DNames = std::vector<std::string>{ "diffuse", "displacementMap" };
     manager.addResourceInfo<Material>("MATERIAL_TERRAIN",
-                                      materialInitInfo2,
+                                      terrainMaterialInitInfo,
                                       std::vector<ResourceId>(),
-                                      std::vector<ResourceId>{ "SHADER_PROGRAM_1", "TEXTURE_TERRAIN" },
+                                      std::vector<ResourceId>{ "SHADER_TERRAIN", "DIFFUSE_TERRAIN" },
                                       true);
 
-    BinaryInitInfo_File heightMapMajorBinaryInitInfo;
-    heightMapMajorBinaryInitInfo.fileName = "res/heightmaps/heightmap_major_01.png";
-    manager.addResourceInfo<Binary>("BINARY_HEIGHTMAP_MAJOR", heightMapMajorBinaryInitInfo);
+    BinaryInitInfo_File terrainHeightMapMajorBinaryInitInfo;
+    terrainHeightMapMajorBinaryInitInfo.fileName = "res/heightmaps/heightmap_major_01.png";
+    manager.addResourceInfo<Binary>("BINARY_HEIGHTMAP_MAJOR_TERRAIN", terrainHeightMapMajorBinaryInitInfo);
 
     HeightMapInitInfo_Default terrainHeightMapInitInfo;
-    terrainHeightMapInitInfo.numXSegments = 256;
-    terrainHeightMapInitInfo.numYSegments = 256;
-    terrainHeightMapInitInfo.segmentXResolution = 32;
-    terrainHeightMapInitInfo.segmentYResolution = 32;
-    terrainHeightMapInitInfo.segmentXSize = 128.0f;
-    terrainHeightMapInitInfo.segmentYSize = 128.0f;
+    terrainHeightMapInitInfo.numXSegments = 128;
+    terrainHeightMapInitInfo.numYSegments = 128;
+    terrainHeightMapInitInfo.segmentXResolution = 8;
+    terrainHeightMapInitInfo.segmentYResolution = 8;
+    terrainHeightMapInitInfo.segmentXSize = 256.0f;
+    terrainHeightMapInitInfo.segmentYSize = 256.0f;
     terrainHeightMapInitInfo.offsetX = -16384.0f;
     terrainHeightMapInitInfo.offsetY = -16384.0f;
 
-    manager.addResourceInfo<HeightMap>("HEIGHTMAP",
+    manager.addResourceInfo<HeightMap>("HEIGHTMAP_TERRAIN",
                                        terrainHeightMapInitInfo,
-                                       std::vector<ResourceId>{ "BINARY_HEIGHTMAP_MAJOR" },
+                                       std::vector<ResourceId>{ "BINARY_HEIGHTMAP_MAJOR_TERRAIN" },
                                        std::vector<ResourceId>());
 
-    Terrain terrain(manager, root, "HEIGHTMAP", "MATERIAL_TERRAIN", "TERRAINSEGMENT");
+    Terrain terrain(manager, root, "HEIGHTMAP_TERRAIN", "MATERIAL_TERRAIN", "TERRAINSEGMENT");
 
     //  Nodes
     Node eventNode;
@@ -156,7 +192,7 @@ int terrainDemo(void) {
         device->getRoot()->accept(sfmlEventVisitor);
         device->render();
 
-        terrain.update(camera.getPosition(), 1024.0f, 800.0f);
+        terrain.update(camera.getPosition(), 768.0f, 512.0f);
     }
 
     return 0;

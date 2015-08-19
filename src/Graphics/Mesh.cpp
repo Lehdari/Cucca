@@ -6,7 +6,7 @@
 
     @version    0.1
     @author     Miika Lehtimäki
-    @date       2015-02-04
+    @date       2015-08-19
 **/
 
 
@@ -25,15 +25,42 @@ Mesh::Mesh(void) :
     positionBufferId_(0),
     texCoordBufferId_(0),
     normalBufferId_(0),
-    elementBufferId_(0)
+    elementBufferId_(0),
+    tessellated_(false)
 {}
 
-void Mesh::draw(const Matrix4Glf& mvp) {
-    material_->useMaterial(mvp);
+void Mesh::draw(const Matrix4Glf& mvp) const {
+    if (!tessellated_) {
+        material_->useMaterial(mvp);
+        glBindVertexArray(vertexArrayObjectId_);
+
+        // TODO_IMPLEMENT: draw arrays if not using indexing
+        glDrawElements(GL_TRIANGLES, nIndices_, GL_UNSIGNED_INT, (GLvoid*)0);
+
+        glBindVertexArray(0);
+    }
+}
+
+void Mesh::draw(const Matrix4Glf& model, const Matrix4Glf& camera) const {
+    glPolygonMode( GL_FRONT_AND_BACK, GL_LINE ); // TEMP
+
+    material_->useMaterial(model, camera);
     glBindVertexArray(vertexArrayObjectId_);
 
     // TODO_IMPLEMENT: draw arrays if not using indexing
+    if (tessellated_) {
+        glPatchParameteri(GL_PATCH_VERTICES, 3);
+    }
+    else
     glDrawElements(GL_TRIANGLES, nIndices_, GL_UNSIGNED_INT, (GLvoid*)0);
 
     glBindVertexArray(0);
+}
+
+void Mesh::setTessellation(bool tessellated) {
+    tessellated_ = tessellated;
+}
+
+bool Mesh::isTessellated(void) const {
+    return tessellated_;
 }

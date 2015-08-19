@@ -16,7 +16,7 @@
 
     @version    0.1
     @author     Miika Lehtimäki
-    @date       2015-05-21
+    @date       2015-08-19
 **/
 
 
@@ -52,6 +52,7 @@ namespace Cucca {
 
         ResourceType_T& operator*(void);
         ResourceType_T* operator->(void);
+        const ResourceType_T* operator->(void) const;
 
         //  get resource pointer
         ResourceType_T* get(void);
@@ -174,6 +175,11 @@ namespace Cucca {
 
     template<typename ResourceType_T, typename ResourceIdType_T>
     ResourceType_T* ResourcePointer<ResourceType_T, ResourceIdType_T>::operator->(void) {
+        return resource_;
+    }
+
+    template<typename ResourceType_T, typename ResourceIdType_T>
+    const ResourceType_T* ResourcePointer<ResourceType_T, ResourceIdType_T>::operator->(void) const {
         return resource_;
     }
 

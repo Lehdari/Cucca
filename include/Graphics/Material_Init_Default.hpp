@@ -19,7 +19,7 @@
 
     @version    0.1
     @author     Miika Lehtimäki
-    @date       2015-02-04
+    @date       2015-08-19
 **/
 
 
@@ -27,14 +27,25 @@
 #define CUCCA_GRAPHICS_MATERIAL_INIT_DEFAULT_HPP
 
 
+#include "../Debug/Debug.hpp"
 #include "../Core/ResourceManager.hpp"
 #include "Material.hpp"
+
+#include <vector>
+#include <string>
 
 
 namespace Cucca {
 
     /// Initialization info struct
-    struct MaterialInitInfo_Default : public ResourceInitInfoBase { };
+    struct MaterialInitInfo_Default : public ResourceInitInfoBase {
+        /*  1st mat4: mvp / model matrix
+            2nd mat4: camera matrix         */
+        std::vector<std::string> uniformMat4Names;
+
+        /*  1st sampler2D: diffuse  */
+        std::vector<std::string> uniformSampler2DNames;
+    };
 
 
     /// Resource init and destroy template member function specializations
@@ -47,7 +58,13 @@ namespace Cucca {
         for (auto i=1u; i<depResources.size(); ++i)
             textures_.push_back(resourceManager->getResource<Texture>(depResources[1]));
 
-        uniformPosition_MVP_ = glGetUniformLocation(shader_->getId(), "MVP");
+        //  fetch uniform locations
+        for (auto& name : initInfo.uniformMat4Names) {
+            uniformLocations_Mat4_.emplace_back(glGetUniformLocation(shader_->getId(), name.c_str()));
+            CUCCA_DPRINTS(uniformLocations_Mat4_.back());
+        }
+        for (auto& name : initInfo.uniformSampler2DNames)
+            uniformLocations_Sampler2D_.emplace_back(glGetUniformLocation(shader_->getId(), name.c_str()));
     }
 
     CUCCA_RESOURCE_DESTROY(Material, MaterialInitInfo_Default) {}

@@ -364,10 +364,14 @@ namespace Cucca {
         if (!resourceId)
             return 0;
 
+        if (resourceInfos_.find(resourceId) == resourceInfos_.end())
+            throw "ResourceManager: unable to build dependency resource tree (no resource info)"; // TODO_EXCEPTION: throw a proper exception
+
         unsigned depth = 0;
 
         for (auto& initResourceId : resourceInfos_[resourceId].initResources)
             depth = std::max(depth, getLoadOrder(initResourceId, depList) + 1);
+
         for (auto& depResourceId : resourceInfos_[resourceId].depResources)
             depth = std::max(depth, getLoadOrder(depResourceId, depList) + 1);
 

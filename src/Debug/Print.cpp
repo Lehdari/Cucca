@@ -56,5 +56,6 @@ namespace Cucca {
     template<> const char* FormatString<float>::value(void)             { return "%0.4f"; }
     template<> const char* FormatString<double>::value(void)            { return "%g"; }
     template<> const char* FormatString<char>::value(void)              { return "%c"; }
+    template<> const char* FormatString<bool>::value(void)              { return "%d"; }
 
 }   //  namespace Cucca
