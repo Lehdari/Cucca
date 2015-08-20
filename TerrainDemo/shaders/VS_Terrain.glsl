@@ -17,7 +17,7 @@ layout(location = 0) in vec4 in_VS_position;
 layout(location = 1) in vec3 in_VS_texCoord;
 layout(location = 2) in vec3 in_VS_normal;
 
-out vec4 in_TCS_position;
+//out vec4 in_TCS_position;
 out vec3 in_TCS_texCoord;
 out vec3 in_TCS_normal;
 
@@ -25,7 +25,8 @@ uniform mat4 model;
 
 
 void main() {
-    in_TCS_position =  model * in_VS_position;
+    //in_TCS_position = model * in_VS_position;
     in_TCS_texCoord = in_VS_texCoord;
     in_TCS_normal = (model * vec4(in_VS_normal, 0.0)).xyz;
+    gl_Position = model * in_VS_position;
 }

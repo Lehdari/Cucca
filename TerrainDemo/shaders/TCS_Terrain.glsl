@@ -16,7 +16,7 @@
 layout(vertices = 4) out;
 
 // attributes of the input CPs
-in vec4 in_TCS_position[];
+//in vec4 in_TCS_position[];
 in vec3 in_TCS_texCoord[];
 in vec3 in_TCS_normal[];
 
@@ -41,21 +41,23 @@ float getTessLevel(float dis1, float dis2) {
 
 void main() {
     // Set the control points of the output patch
-    in_TES_position[gl_InvocationID] = in_TCS_position[gl_InvocationID];
+    //in_TES_position[gl_InvocationID] = in_TCS_position[gl_InvocationID];
     in_TES_texCoord[gl_InvocationID] = in_TCS_texCoord[gl_InvocationID];
     in_TES_normal[gl_InvocationID] = in_TCS_normal[gl_InvocationID];
 
+    in_TES_position[gl_InvocationID] = gl_in[gl_InvocationID].gl_Position;
+
     // Calculate the distance from the camera to the three control points
-    float EyeToVertexDistance0 = distance(cameraWorldPosition, in_TES_position[0].xyz);
-    float EyeToVertexDistance1 = distance(cameraWorldPosition, in_TES_position[1].xyz);
-    float EyeToVertexDistance2 = distance(cameraWorldPosition, in_TES_position[2].xyz);
-    float EyeToVertexDistance3 = distance(cameraWorldPosition, in_TES_position[3].xyz);
+    float EyeToVertexDistance0 = distance(cameraWorldPosition, gl_in[0].gl_Position.xyz);
+    float EyeToVertexDistance1 = distance(cameraWorldPosition, gl_in[1].gl_Position.xyz);
+    float EyeToVertexDistance2 = distance(cameraWorldPosition, gl_in[2].gl_Position.xyz);
+    float EyeToVertexDistance3 = distance(cameraWorldPosition, gl_in[3].gl_Position.xyz);
 
     // Calculate the tessellation levels
-    gl_TessLevelOuter[0] = getTessLevel(EyeToVertexDistance0, EyeToVertexDistance1);
-    gl_TessLevelOuter[1] = getTessLevel(EyeToVertexDistance1, EyeToVertexDistance2);
-    gl_TessLevelOuter[2] = getTessLevel(EyeToVertexDistance2, EyeToVertexDistance3);
-    gl_TessLevelOuter[3] = getTessLevel(EyeToVertexDistance3, EyeToVertexDistance0);
-    gl_TessLevelInner[0] = gl_TessLevelOuter[2];
-    gl_TessLevelInner[1] = gl_TessLevelOuter[2];
+    gl_TessLevelOuter[0] = getTessLevel(EyeToVertexDistance0, EyeToVertexDistance2);
+    gl_TessLevelOuter[1] = getTessLevel(EyeToVertexDistance0, EyeToVertexDistance1);
+    gl_TessLevelOuter[2] = getTessLevel(EyeToVertexDistance1, EyeToVertexDistance3);
+    gl_TessLevelOuter[3] = getTessLevel(EyeToVertexDistance2, EyeToVertexDistance3);
+    gl_TessLevelInner[0] = min(gl_TessLevelOuter[0], gl_TessLevelOuter[1]);
+    gl_TessLevelInner[1] = gl_TessLevelInner[0];
 }

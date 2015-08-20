@@ -170,8 +170,8 @@ int terrainDemo(void) {
     HeightMapInitInfo_Default terrainHeightMapInitInfo;
     terrainHeightMapInitInfo.numXSegments = 128;
     terrainHeightMapInitInfo.numYSegments = 128;
-    terrainHeightMapInitInfo.segmentXResolution = 4;
-    terrainHeightMapInitInfo.segmentYResolution = 4;
+    terrainHeightMapInitInfo.segmentXResolution = 16;
+    terrainHeightMapInitInfo.segmentYResolution = 16;
     terrainHeightMapInitInfo.segmentXSize = 256.0f;
     terrainHeightMapInitInfo.segmentYSize = 256.0f;
     terrainHeightMapInitInfo.offsetX = -16384.0f;
@@ -195,7 +195,7 @@ int terrainDemo(void) {
     camera.lookAt(Vector3Glf{ 0.0f, 5.0f, 10.0f },
                   Vector3Glf{ 0.0f, 0.0f, 0.0f },
                   Vector3Glf{ 0.0f, 1.0f, 0.0f });
-    camera.projection(1.5708f, 16.0f/9.0f, 0.05f, 1280.0f);
+    camera.projection(1.5708f, 16.0f/9.0f, 0.05f, 1500.0f);
 
     EventVisitor_SFML sfmlEventVisitor;
 
