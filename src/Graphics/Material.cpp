@@ -26,11 +26,7 @@ void Material::useMaterial(const Matrix4Glf& mvp) const {
 
 void Material::useMaterial(const Matrix4Glf& model, const Matrix4Glf& camera) const {
     glUseProgram(shader_->getId());
-
-    //  TODO_IMPLEMENT: we're using just one texture here. fix this.
-    glActiveTexture(GL_TEXTURE0);
-    textures_[0]->bind(GL_TEXTURE_2D);
-
+    bindTextures();
     glUniformMatrix4fv(uniformLocations_Mat4_[0], 1, GL_FALSE, model.data());
     glUniformMatrix4fv(uniformLocations_Mat4_[1], 1, GL_FALSE, camera.data());
 }

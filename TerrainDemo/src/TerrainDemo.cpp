@@ -170,8 +170,8 @@ int terrainDemo(void) {
     HeightMapInitInfo_Default terrainHeightMapInitInfo;
     terrainHeightMapInitInfo.numXSegments = 128;
     terrainHeightMapInitInfo.numYSegments = 128;
-    terrainHeightMapInitInfo.segmentXResolution = 8;
-    terrainHeightMapInitInfo.segmentYResolution = 8;
+    terrainHeightMapInitInfo.segmentXResolution = 16;
+    terrainHeightMapInitInfo.segmentYResolution = 16;
     terrainHeightMapInitInfo.segmentXSize = 256.0f;
     terrainHeightMapInitInfo.segmentYSize = 256.0f;
     terrainHeightMapInitInfo.offsetX = -16384.0f;

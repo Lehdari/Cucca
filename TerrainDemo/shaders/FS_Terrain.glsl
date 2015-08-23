@@ -16,6 +16,7 @@
 in vec4 in_FS_position;
 in vec3 in_FS_texCoord;
 in vec3 in_FS_normal;
+in vec3 in_FS_color;    //  TEMP
 
 out vec4 out_color;
 
@@ -24,4 +25,5 @@ uniform sampler2D diffuse;
 
 void main() {
     out_color = texture(diffuse, in_FS_texCoord.xy);
+    //out_color = vec4(in_FS_color, 1.0);
 }

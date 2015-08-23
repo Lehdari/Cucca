@@ -52,6 +52,8 @@ namespace Cucca {
         float segmentYSize_;
         float offsetX_;
         float offsetY_;
+
+        void sampleMajor(float (&s)[4][4], unsigned x, unsigned y) const;
     };
 
 }; // namespace Cucca

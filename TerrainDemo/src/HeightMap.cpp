@@ -13,6 +13,7 @@
 #include "../include/HeightMap.hpp"
 #include "../../include/Core/ResourceManager.hpp"
 #include "../../include/Core/Binary.hpp"
+#include "../../include/Core/MathUtils.hpp"
 
 
 using namespace Cucca;
@@ -52,22 +53,26 @@ void HeightMap::fillAttributeVectors(unsigned segmentX,
             float majorSampleX = sampleX * majorSize.x;
             float majorSampleY = sampleY * majorSize.y;
 
-            float majorSample[2][2];
-            majorSample[0][0] = major_.getPixel((unsigned)majorSampleX,   (unsigned)majorSampleY  ).r;
-            majorSample[1][0] = major_.getPixel((unsigned)majorSampleX+1, (unsigned)majorSampleY  ).r;
-            majorSample[0][1] = major_.getPixel((unsigned)majorSampleX,   (unsigned)majorSampleY+1).r;
-            majorSample[1][1] = major_.getPixel((unsigned)majorSampleX+1, (unsigned)majorSampleY+1).r;
+            float majorSample[4][4];
+            sampleMajor(majorSample, (unsigned)majorSampleX, (unsigned)majorSampleY);
 
-            float majorSampleXdec = majorSampleX-(unsigned)majorSampleX;
+            /*float majorSampleXdec = majorSampleX-(unsigned)majorSampleX;
             float majorSampleYdec = majorSampleY-(unsigned)majorSampleY;
             float majorSampleX1 = majorSample[0][0] + majorSampleXdec * (majorSample[1][0] - majorSample[0][0]);
             float majorSampleX2 = majorSample[0][1] + majorSampleXdec * (majorSample[1][1] - majorSample[0][1]);
-            float majorSampleInterpolated = majorSampleX1 + majorSampleYdec * (majorSampleX2 - majorSampleX1);
+            float majorSampleInterpolated = majorSampleX1 + majorSampleYdec * (majorSampleX2 - majorSampleX1);*/
+            float majorSampleDx, majorSampleDy;
+            float majorSampleInterpolated = bicubicInterpolate(majorSample,
+                                                               majorSampleX-(unsigned)majorSampleX,
+                                                               majorSampleY-(unsigned)majorSampleY,
+                                                               &majorSampleDx, &majorSampleDy);
 
-            positions.push_back({ segmentXResInv*x*segmentXSize_, majorSampleInterpolated * 4.0f,
+            const float yScale = 4.0f;
+
+            positions.push_back({ segmentXResInv*x*segmentXSize_, majorSampleInterpolated * yScale,
                                   segmentYResInv*y*segmentYSize_, 1.0f });
             texCoords.push_back({ sampleX, sampleY, 0.0f });
-            normals.push_back({ 0.0f, 1.0f, 0.0f });
+            normals.push_back({ -majorSampleDx , 1.0f*yScale, -majorSampleDy });
 
             if (x<segmentXResolution_ && y<segmentYResolution_) {
                 if (quads) {
@@ -111,4 +116,21 @@ float HeightMap::getOffsetX(void) const {
 
 float HeightMap::getOffsetY(void) const {
     return offsetY_;
+}
+
+void HeightMap::sampleMajor(float (&s)[4][4], unsigned x, unsigned y) const {
+    auto majorSize = major_.getSize();
+    int xx, yy;
+    for (auto i=0u; i<4; ++i) {
+        for (auto j=0u; j<4; ++j) {
+            xx = x+i-1;
+            if (xx < 0)                         xx = 0;
+            if ((unsigned)xx >= majorSize.x)    xx = majorSize.x-1;
+            yy = y+j-1;
+            if (yy < 0)                         yy = 0;
+            if ((unsigned)yy >= majorSize.y)    yy = majorSize.y-1;
+
+            s[i][j] = major_.getPixel(xx, yy).r;
+        }
+    }
 }

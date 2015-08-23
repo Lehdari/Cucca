@@ -24,10 +24,11 @@ in vec3 in_TES_normal[];
 out vec4 in_FS_position;
 out vec3 in_FS_texCoord;
 out vec3 in_FS_normal;
+out vec3 in_FS_color;   //  TEMP
 
 uniform mat4 camera;
 uniform sampler2D displacementMap;
-const float displacementFactor = 0.0;
+const float displacementFactor = 16.0;
 
 
 vec3 interpolate3D(vec3 v0, vec3 v1, vec3 v2) {
@@ -43,16 +44,11 @@ vec3 interpolateQuad(vec3 v0, vec3 v1, vec3 v2, vec3 v3) {
 
 
 void main() {
-   	// Interpolate the attributes of the output vertex using the barycentric coordinates
-   	/*in_FS_position = vec4(interpolate3D(in_TES_position[0].xyz, in_TES_position[1].xyz, in_TES_position[2].xyz), 1.0);
-   	in_FS_texCoord = interpolate3D(in_TES_texCoord[0], in_TES_texCoord[1], in_TES_texCoord[2]);
-   	in_FS_normal = interpolate3D(in_TES_normal[0], in_TES_normal[1], in_TES_normal[2]);
-   	in_FS_normal = normalize(in_FS_normal);*/
-
     in_FS_position = vec4(interpolateQuad(in_TES_position[0].xyz, in_TES_position[1].xyz, in_TES_position[2].xyz, in_TES_position[3].xyz), 1.0);
    	in_FS_texCoord = interpolateQuad(in_TES_texCoord[0], in_TES_texCoord[1], in_TES_texCoord[2], in_TES_texCoord[3]);
    	in_FS_normal = interpolateQuad(in_TES_normal[0], in_TES_normal[1], in_TES_normal[2], in_TES_normal[3]);
    	in_FS_normal = normalize(in_FS_normal);
+   	in_FS_color = 0.5+0.5*in_FS_normal;
 
    	// Displace the vertex along the normal
    	float disp = texture(displacementMap, in_FS_texCoord.xy*64).x-0.5;
