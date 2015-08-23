@@ -20,7 +20,7 @@
 #include "HeightMap.hpp"
 #include "../../include/Core/ResourceId.hpp"
 #include "../../include/Core/ResourcePointer.hpp"
-#include "../../include/Core/LinearAlgebra.hpp"
+#include "../../include/Core/MathTypes.hpp"
 #include "../../include/Graphics/Material.hpp"
 
 

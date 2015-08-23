@@ -1,5 +1,5 @@
 /**
-    Cucca Game Engine - Core - LinearAlgebra.hpp
+    Cucca Game Engine - Core - MathTypes.hpp
 
     This file is subject to the terms and conditions defined in
     file 'LICENSE.txt', which is part of this source code package.
@@ -11,8 +11,8 @@
     @date       2015-01-10
 **/
 
-#ifndef CUCCA_CORE_LINEARALGEBRA_HPP
-#define CUCCA_CORE_LINEARALGEBRA_HPP
+#ifndef CUCCA_CORE_MATHTYPES_HPP
+#define CUCCA_CORE_MATHTYPES_HPP
 
 
 #include <Eigen/Dense>
@@ -45,27 +45,7 @@ namespace Cucca {
     typedef Eigen::Quaternion<float>  Quaternionf;
     typedef Eigen::Quaternion<GLfloat>  QuaternionGlf;
 
-
-    ///  Functions
-
-    template<typename T, int W, int H>
-    void clamp(Eigen::Matrix<T, W, H, Eigen::DontAlign>& matrix, const T& min, const T& max);
-
-
-    ///  Function definitions
-
-    //  Clamps all values in given matrix in range specified
-    template<typename T, int W, int H>
-    void clamp(Eigen::Matrix<T, W, H, Eigen::DontAlign>& matrix, const T& min, const T& max) {
-        for (auto x=0; x<W; ++x)
-            for (auto y=0; y<H; ++y)
-                if (matrix(x, y) < min)
-                    matrix(x, y) = min;
-                else if (matrix(x, y) > max)
-                    matrix(x, y) = max;
-    }
-
 } // namespace Cucca
 
 
-#endif // CUCCA_CORE_LINEARALGEBRA_HPP
+#endif // CUCCA_CORE_MATHTYPES_HPP

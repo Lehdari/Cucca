@@ -15,7 +15,7 @@
 
 
 #include "../../include/Core/Resource.hpp"
-#include "../../include/Core/LinearAlgebra.hpp"
+#include "../../include/Core/MathTypes.hpp"
 #include "ShaderProgram.hpp"
 #include "Texture.hpp"
 

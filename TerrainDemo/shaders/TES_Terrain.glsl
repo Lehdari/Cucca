@@ -27,7 +27,7 @@ out vec3 in_FS_normal;
 
 uniform mat4 camera;
 uniform sampler2D displacementMap;
-const float displacementFactor = 8.0;
+const float displacementFactor = 0.0;
 
 
 vec3 interpolate3D(vec3 v0, vec3 v1, vec3 v2) {
@@ -55,7 +55,7 @@ void main() {
    	in_FS_normal = normalize(in_FS_normal);
 
    	// Displace the vertex along the normal
-   	float disp = texture(displacementMap, in_FS_texCoord.xy*64).x;
+   	float disp = texture(displacementMap, in_FS_texCoord.xy*64).x-0.5;
    	in_FS_position += vec4(in_FS_normal * disp * displacementFactor, 0.0);
    	gl_Position = camera * in_FS_position;
 }

@@ -18,7 +18,7 @@
 #include "../Core/EventComponent.hpp"
 #include "../Graphics/TransformationComponent.hpp"
 #include "../Graphics/MeshComponent.hpp"
-#include "../Core/LinearAlgebra.hpp"
+#include "../Core/MathTypes.hpp"
 
 #include <stack>
 #include <SFML/Window.hpp>

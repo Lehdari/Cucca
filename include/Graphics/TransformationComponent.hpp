@@ -15,7 +15,7 @@
 
 
 #include "../Core/Component.hpp"
-#include "../Core/LinearAlgebra.hpp"
+#include "../Core/MathTypes.hpp"
 
 
 namespace Cucca {

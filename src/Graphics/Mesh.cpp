@@ -42,7 +42,7 @@ void Mesh::draw(const Matrix4Glf& mvp) const {
 }
 
 void Mesh::draw(const Matrix4Glf& model, const Matrix4Glf& camera) const {
-    //glPolygonMode( GL_FRONT_AND_BACK, GL_LINE ); // TEMP
+    glPolygonMode( GL_FRONT_AND_BACK, GL_LINE ); // TEMP
 
     material_->useMaterial(model, camera);
     glBindVertexArray(vertexArrayObjectId_);

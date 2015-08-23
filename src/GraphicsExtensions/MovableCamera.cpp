@@ -12,6 +12,7 @@
 
 #include "../../include/GraphicsExtensions/MovableCamera.hpp"
 #include "../../include/Core/Event.hpp"
+#include "../../include/Core/MathUtils.hpp"
 
 #include <SFML/Window/Event.hpp>
 
