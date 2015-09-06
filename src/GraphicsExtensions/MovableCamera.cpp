@@ -14,6 +14,9 @@
 #include "../../include/Core/Event.hpp"
 #include "../../include/Core/MathUtils.hpp"
 
+#include "../../include/Core/Device.hpp" // TEMP
+#include "../../include/CoreExtensions/Canvas_SFML.hpp" // TEMP
+
 #include <SFML/Window/Event.hpp>
 
 
@@ -147,6 +150,12 @@ void MovableCamera::nodeEnter(Node* node, EventComponent* component) {
             default: break;
             }
         break;
+
+        //  begin of TEMP
+        case sf::Event::Closed:
+            Device<Canvas_SFML>::getInstance()->terminate();
+        break;
+        //  end of TEMP
 
         default: break;
         }

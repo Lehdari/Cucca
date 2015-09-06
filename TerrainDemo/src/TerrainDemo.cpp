@@ -170,8 +170,8 @@ int terrainDemo(void) {
     HeightMapInitInfo_Default terrainHeightMapInitInfo;
     terrainHeightMapInitInfo.numXSegments = 128;
     terrainHeightMapInitInfo.numYSegments = 128;
-    terrainHeightMapInitInfo.segmentXResolution = 16;
-    terrainHeightMapInitInfo.segmentYResolution = 16;
+    terrainHeightMapInitInfo.segmentXResolution = 8;
+    terrainHeightMapInitInfo.segmentYResolution = 8;
     terrainHeightMapInitInfo.segmentXSize = 256.0f;
     terrainHeightMapInitInfo.segmentYSize = 256.0f;
     terrainHeightMapInitInfo.offsetX = -16384.0f;
@@ -207,6 +207,7 @@ int terrainDemo(void) {
         device->render();
 
         terrain.update(camera.getPosition(), 1536.0f, 1280.0f);
+        //terrain.update(camera.getPosition(), 300.0f, 200.0f);
     }
 
     return 0;

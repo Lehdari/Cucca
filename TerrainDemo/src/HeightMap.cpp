@@ -72,7 +72,7 @@ void HeightMap::fillAttributeVectors(unsigned segmentX,
             positions.push_back({ segmentXResInv*x*segmentXSize_, majorSampleInterpolated * yScale,
                                   segmentYResInv*y*segmentYSize_, 1.0f });
             texCoords.push_back({ sampleX, sampleY, 0.0f });
-            normals.push_back({ -majorSampleDx , 1.0f*yScale, -majorSampleDy });
+            normals.push_back({ -majorSampleDx , 1.0f*yScale, -majorSampleDy }); // TODO: correct normal calculation
 
             if (x<segmentXResolution_ && y<segmentYResolution_) {
                 if (quads) {
