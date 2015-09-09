@@ -66,7 +66,7 @@ void main() {
    	in_FS_texCoord = interpolateQuad(in_TES_texCoord[0], in_TES_texCoord[1], in_TES_texCoord[2], in_TES_texCoord[3]);
    	in_FS_normal = interpolateQuad(in_TES_normal[0], in_TES_normal[1], in_TES_normal[2], in_TES_normal[3]);
    	in_FS_normal = normalize(in_FS_normal);
-   	in_FS_color = vec3(gl_TessCoord.x, gl_TessCoord.y, 0.0);
+   	in_FS_color = in_FS_normal*0.5 + 0.5;//vec3(gl_TessCoord.x, gl_TessCoord.y, 0.0);
 
    	// Displace the vertex along the normal
    	float disp = texture(displacementMap, in_FS_texCoord.xy*64).x-0.5;

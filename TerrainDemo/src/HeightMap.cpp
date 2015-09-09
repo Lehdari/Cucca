@@ -39,6 +39,8 @@ void HeightMap::fillAttributeVectors(unsigned segmentX,
     const unsigned segmentDataSize = (segmentXResolution_+1) * (segmentYResolution_+1);
     const float segmentXResInv = 1.0f / segmentXResolution_;
     const float segmentYResInv = 1.0f / segmentYResolution_;
+    const float segmentStepXSize = segmentXSize_ * segmentXResInv;
+    const float segmentStepYSize = segmentYSize_ * segmentYResInv;
 
     positions.reserve(segmentDataSize);
     texCoords.reserve(segmentDataSize);
@@ -69,10 +71,13 @@ void HeightMap::fillAttributeVectors(unsigned segmentX,
 
             const float yScale = 4.0f;
 
-            positions.push_back({ segmentXResInv*x*segmentXSize_, majorSampleInterpolated * yScale,
-                                  segmentYResInv*y*segmentYSize_, 1.0f });
+            positions.push_back({ segmentStepXSize*x,
+                                  majorSampleInterpolated * yScale,
+                                  segmentStepYSize*y, 1.0f });
             texCoords.push_back({ sampleX, sampleY, 0.0f });
-            normals.push_back({ -majorSampleDx , 1.0f*yScale, -majorSampleDy }); // TODO: correct normal calculation
+            normals.push_back({ -majorSampleDx * yScale * segmentStepYSize ,
+                                segmentStepXSize * segmentStepYSize,
+                                -majorSampleDy * yScale * segmentStepXSize });
 
             if (x<segmentXResolution_ && y<segmentYResolution_) {
                 if (quads) {
