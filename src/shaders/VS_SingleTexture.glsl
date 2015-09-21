@@ -8,13 +8,11 @@ out vec2 texCoord_;
 out vec3 normal_;
 out vec3 normal_clip_;
 
-//uniform mat4 MVP;
-uniform mat4 model;
-uniform mat4 camera;
+uniform mat4 MVP;
 
 void main() {
-    gl_Position = camera * model * _position;
+    gl_Position = MVP * _position;
     texCoord_ = _texCoord.xy;
     normal_ = normalize(_normal);
-    normal_clip_ = normalize((camera * model * vec4(normal_, 1.0)).xyz);
+    normal_clip_ = normalize((MVP * vec4(normal_, 1.0)).xyz);
 }

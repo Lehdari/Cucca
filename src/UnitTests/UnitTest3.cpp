@@ -100,6 +100,8 @@ int unitTest(void) {
                                      true);
 
     MaterialInitInfo_Default materialInitInfo1;
+        materialInitInfo1.uniformSampler2DNames = { "diffuse" };
+        materialInitInfo1.uniformMat4Names = { "MVP" };
     manager.addResourceInfo<Material>("MATERIAL_1",
                                       materialInitInfo1,
                                       std::vector<ResourceId>(),
@@ -142,7 +144,7 @@ int unitTest(void) {
 
     //  Visitors
     BasicCamera camera;
-    camera.projection(1.5708f, 4.0f/3.0f, 0.05f, 1024.0f);
+    camera.projection(1.5708f, 16.0f/9.0f, 0.05f, 1024.0f);
     camera.lookAt(Vector3Glf{ 0.0f, 5.0f, 25.0f },
                   Vector3Glf{ 0.0f, 0.0f, 0.0f },
                   Vector3Glf{ 0.0f, 1.0f, 0.0f });
