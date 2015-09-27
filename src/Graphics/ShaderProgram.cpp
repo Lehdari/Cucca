@@ -10,7 +10,7 @@
 **/
 
 
-#include "../../include/Graphics/ShaderProgram.hpp"
+#include <Cucca/Graphics/ShaderProgram.hpp>
 
 
 using namespace Cucca;

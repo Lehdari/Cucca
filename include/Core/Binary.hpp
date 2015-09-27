@@ -17,7 +17,7 @@
 #define CUCCA_CORE_BINARY_HPP
 
 
-#include "Resource.hpp"
+#include <Cucca/Core/Resource.hpp>
 
 
 namespace Cucca {

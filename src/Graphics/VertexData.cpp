@@ -10,7 +10,7 @@
 **/
 
 
-#include "../../include/Graphics/VertexData.hpp"
+#include <Cucca/Graphics/VertexData.hpp>
 
 
 using namespace Cucca;

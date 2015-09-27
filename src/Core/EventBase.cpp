@@ -1,4 +1,4 @@
-#include "../../include/Core/EventBase.hpp"
+#include <Cucca/Core/EventBase.hpp>
 
 
 using namespace Cucca;

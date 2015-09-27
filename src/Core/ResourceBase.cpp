@@ -10,7 +10,7 @@
 **/
 
 
-#include "../../include/Core/ResourceBase.hpp"
+#include <Cucca/Core/ResourceBase.hpp>
 
 
 using namespace Cucca;

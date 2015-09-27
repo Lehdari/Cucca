@@ -10,7 +10,7 @@
 **/
 
 
-#include "../../include/Graphics/Texture.hpp"
+#include <Cucca/Graphics/Texture.hpp>
 
 
 using namespace Cucca;

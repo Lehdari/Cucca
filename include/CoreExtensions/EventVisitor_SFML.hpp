@@ -16,8 +16,8 @@
 #define CUCCA_COREEXTENSIONS_EVENTVISITOR_SFML_HPP
 
 
-#include "../Core/Visitor.hpp"
-#include "../Core/EventComponent.hpp"
+#include <Cucca/Core/Visitor.hpp>
+#include <Cucca/Core/EventComponent.hpp>
 
 
 namespace Cucca {

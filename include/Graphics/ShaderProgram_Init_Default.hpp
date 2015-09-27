@@ -27,9 +27,9 @@
 #define CUCCA_GRAPHICS_SHADERPROGRAM_INIT_DEFAULT_HPP
 
 
-#include "../Core/ResourceManager.hpp"
-#include "ShaderProgram.hpp"
-#include "ShaderObject.hpp"
+#include <Cucca/Core/ResourceManager.hpp>
+#include <Cucca/Graphics/ShaderProgram.hpp>
+#include <Cucca/Graphics/ShaderObject.hpp>
 
 
 namespace Cucca {

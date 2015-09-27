@@ -21,8 +21,8 @@
 #define CUCCA_CORE_BINARY_INIT_FILE_HPP
 
 
-#include "ResourceManager.hpp"
-#include "Binary.hpp"
+#include <Cucca/Core/ResourceManager.hpp>
+#include <Cucca/Core/Binary.hpp>
 
 
 namespace Cucca {

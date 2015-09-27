@@ -14,8 +14,8 @@
 #define CUCCA_GRAPHICS_MESHCOMPONENT_HPP
 
 
-#include "../Core/Component.hpp"
-#include "Mesh.hpp"
+#include <Cucca/Core/Component.hpp>
+#include <Cucca/Graphics/Mesh.hpp>
 
 
 namespace Cucca {

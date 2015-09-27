@@ -28,8 +28,8 @@
 #define CUCCA_DPRINTS(VAR) Cucca::debugPrintSingle(#VAR, VAR);
 
 
-#include "Print.hpp"
-#include "Time.hpp"
+#include <Cucca/Debug/Print.hpp>
+#include <Cucca/Debug/Time.hpp>
 
 
 #else   //  CUCCA_DEBUG

@@ -4,9 +4,9 @@
 #if CURRENT_TEST == 4
 
 
-#include "../../include/Core/ThreadPool.hpp"
-#include "../../include/Core/ResourceManager.hpp"
-#include "../../include/Core/Binary.hpp"
+#include <Cucca/Core/ThreadPool.hpp>
+#include <Cucca/Core/ResourceManager.hpp>
+#include <Cucca/Core/Binary.hpp>
 
 #include <iostream>
 #include <sstream>

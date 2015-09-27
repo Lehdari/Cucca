@@ -10,7 +10,7 @@
 **/
 
 
-#include "../../include/Core/ThreadPool.hpp"
+#include <Cucca/Core/ThreadPool.hpp>
 
 
 #include <algorithm>

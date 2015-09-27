@@ -29,10 +29,10 @@
 #define CUCCA_CORE_RESOURCE_HPP
 
 
-#include "../Debug/Debug.hpp"
-#include "ResourceBase.hpp"
-#include "ResourceId.hpp"
-#include "ResourcePointer.hpp"
+#include <Cucca/Debug/Debug.hpp>
+#include <Cucca/Core/ResourceBase.hpp>
+#include <Cucca/Core/ResourceId.hpp>
+#include <Cucca/Core/ResourcePointer.hpp>
 
 #include <vector>
 

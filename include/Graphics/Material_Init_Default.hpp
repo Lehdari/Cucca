@@ -27,9 +27,9 @@
 #define CUCCA_GRAPHICS_MATERIAL_INIT_DEFAULT_HPP
 
 
-#include "../Debug/Debug.hpp"
-#include "../Core/ResourceManager.hpp"
-#include "Material.hpp"
+#include <Cucca/Debug/Debug.hpp>
+#include <Cucca/Core/ResourceManager.hpp>
+#include <Cucca/Graphics/Material.hpp>
 
 #include <vector>
 #include <string>

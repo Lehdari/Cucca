@@ -10,7 +10,7 @@
 **/
 
 
-#include "../../include/Core/EventComponent.hpp"
+#include <Cucca/Core/EventComponent.hpp>
 
 
 using namespace Cucca;

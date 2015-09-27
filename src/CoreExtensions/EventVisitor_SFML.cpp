@@ -12,11 +12,11 @@
 **/
 
 
-#include "../../include/CoreExtensions/EventVisitor_SFML.hpp"
-#include "../../include/Core/Event.hpp"
+#include <Cucca/CoreExtensions/EventVisitor_SFML.hpp>
+#include <Cucca/Core/Event.hpp>
 
-#include "../../include/Core/Device.hpp" // TEMP?
-#include "../../include/CoreExtensions/Canvas_SFML.hpp" // TEMP?
+#include <Cucca/Core/Device.hpp> // TEMP?
+#include <Cucca/CoreExtensions/Canvas_SFML.hpp> // TEMP?
 
 #include <SFML/Window/Event.hpp>
 #include <iostream> // TEMP

@@ -17,7 +17,7 @@
 #define CUCCA_COREEXTENSIONS_CANVAS_SFML_HPP
 
 
-#include "../Core/Canvas.hpp"
+#include <Cucca/Core/Canvas.hpp>
 
 #include <SFML/Window.hpp>
 

@@ -14,8 +14,8 @@
 #define CUCCA_GRAPHICS_TRANSFORMATIONCOMPONENT_HPP
 
 
-#include "../Core/Component.hpp"
-#include "../Core/MathTypes.hpp"
+#include <Cucca/Core/Component.hpp>
+#include <Cucca/Core/MathTypes.hpp>
 
 
 namespace Cucca {

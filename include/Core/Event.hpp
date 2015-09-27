@@ -16,7 +16,7 @@
 #define CUCCA_CORE_EVENT_HPP
 
 
-#include "EventBase.hpp"
+#include <Cucca/Core/EventBase.hpp>
 
 #include <memory>
 

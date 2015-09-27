@@ -14,7 +14,7 @@
 #define CUCCA_GRAPHICS_VERTEXDATA_HPP
 
 
-#include "../../include/Core/Resource.hpp"
+#include <Cucca/Core/Resource.hpp>
 
 #include <vector>
 #include <array>

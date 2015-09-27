@@ -8,8 +8,8 @@
 #if CURRENT_TEST == 4
 
 
-#include "../Core/Resource.hpp"
-#include "../Core/ResourcePointer.hpp"
+#include <Cucca/Core/Resource.hpp>
+#include <Cucca/Core/ResourcePointer.hpp>
 
 
 namespace Cucca {

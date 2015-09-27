@@ -4,7 +4,7 @@
 #if CURRENT_TEST == 5
 
 
-#include "../../include/Core/ThreadPool.hpp"
+#include <Cucca/Core/ThreadPool.hpp>
 
 #include <iostream>
 #include <chrono>

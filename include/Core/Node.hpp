@@ -17,8 +17,8 @@
 #define CUCCA_CORE_NODE_HPP
 
 
-#include "Component.hpp"
-#include "Visitor.hpp"
+#include <Cucca/Core/Component.hpp>
+#include <Cucca/Core/Visitor.hpp>
 
 #include <unordered_map>
 #include <vector>

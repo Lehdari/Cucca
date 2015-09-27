@@ -10,7 +10,7 @@
 **/
 
 
-#include "../../include/Core/Platform.hpp"
+#include <Cucca/Core/Platform.hpp>
 
 
 #ifdef _WIN32 // Windows (32-bit and 64-bit, this part is common)

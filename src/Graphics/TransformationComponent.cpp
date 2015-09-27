@@ -10,7 +10,7 @@
 **/
 
 
-#include "../../include/Graphics/TransformationComponent.hpp"
+#include <Cucca/Graphics/TransformationComponent.hpp>
 
 
 using namespace Cucca;

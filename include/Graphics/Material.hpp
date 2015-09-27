@@ -14,10 +14,10 @@
 #define CUCCA_GRAPHICS_MATERIAL_HPP
 
 
-#include "../../include/Core/Resource.hpp"
-#include "../../include/Core/MathTypes.hpp"
-#include "ShaderProgram.hpp"
-#include "Texture.hpp"
+#include <Cucca/Core/Resource.hpp>
+#include <Cucca/Core/MathTypes.hpp>
+#include <Cucca/Graphics/ShaderProgram.hpp>
+#include <Cucca/Graphics/Texture.hpp>
 
 #include <vector>
 #include <GL/glew.h>

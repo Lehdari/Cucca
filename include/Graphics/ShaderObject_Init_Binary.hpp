@@ -26,9 +26,9 @@
 #define CUCCA_GRAPHICS_SHADEROBJECT_INIT_BINARY_HPP
 
 
-#include "../Core/ResourceManager.hpp"
-#include "ShaderObject.hpp"
-#include "../Core/Binary.hpp"
+#include <Cucca/Core/ResourceManager.hpp>
+#include <Cucca/Graphics/ShaderObject.hpp>
+#include <Cucca/Core/Binary.hpp>
 
 
 namespace Cucca {

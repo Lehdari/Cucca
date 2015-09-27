@@ -10,7 +10,7 @@
 **/
 
 
-#include "../../include/Core/Binary.hpp"
+#include <Cucca/Core/Binary.hpp>
 
 
 #include <cstdio>

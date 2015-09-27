@@ -10,7 +10,7 @@
 **/
 
 
-#include "../../include/Debug/Print.hpp"
+#include <Cucca/Debug/Print.hpp>
 
 #include <thread>
 #include <ctime>

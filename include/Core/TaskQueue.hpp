@@ -14,7 +14,7 @@
 #define CUCCA_CORE_TASKQUEUE_HPP
 
 
-#include "Task.hpp"
+#include <Cucca/Core/Task.hpp>
 
 #include <deque>
 #include <mutex>

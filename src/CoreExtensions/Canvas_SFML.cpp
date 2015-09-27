@@ -10,8 +10,8 @@
 **/
 
 
-#include "../../include/CoreExtensions/Canvas_SFML.hpp"
-#include "../../include/Core/Event.hpp"
+#include <Cucca/CoreExtensions/Canvas_SFML.hpp>
+#include <Cucca/Core/Event.hpp>
 
 
 using namespace Cucca;

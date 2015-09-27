@@ -14,9 +14,9 @@
 #define CUCCA_GRAPHICS_MESH_HPP
 
 
-#include "../../include/Core/Resource.hpp"
-#include "../../include/Core/MathTypes.hpp"
-#include "Material.hpp"
+#include <Cucca/Core/Resource.hpp>
+#include <Cucca/Core/MathTypes.hpp>
+#include <Cucca/Graphics/Material.hpp>
 
 #include <GL/glew.h>
 

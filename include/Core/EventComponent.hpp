@@ -16,8 +16,8 @@
 #define CUCCA_CORE_EVENTCOMPONENT_HPP
 
 
-#include "Component.hpp"
-#include "EventBase.hpp"
+#include <Cucca/Core/Component.hpp>
+#include <Cucca/Core/EventBase.hpp>
 
 #include <unordered_map>
 #include <deque>

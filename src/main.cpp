@@ -1,5 +1,4 @@
-#include "../include/UnitTests/UnitTests.hpp"
-//#include "../TerrainDemo/include/TerrainDemo.hpp"
+#include "../include/UnitTests/UnitTests.hpp"\
 
 
 #define GLEW_STATIC

@@ -10,7 +10,7 @@
 **/
 
 
-#include "../../include/Debug/Time.hpp"
+#include <Cucca/Debug/Time.hpp>
 
 #include <cstdio>
 

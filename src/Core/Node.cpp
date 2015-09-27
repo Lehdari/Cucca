@@ -10,7 +10,7 @@
 **/
 
 
-#include "../../include/Core/Node.hpp"
+#include <Cucca/Core/Node.hpp>
 
 
 using namespace Cucca;

@@ -4,26 +4,26 @@
 #if CURRENT_TEST == 3
 
 
-#include "../../include/Core/Device.hpp"
-#include "../../include/Core/ThreadPool.hpp"
-#include "../../include/Core/ResourceManager.hpp"
-#include "../../include/Core/Binary_Init_File.hpp"
+#include <Cucca/Core/Device.hpp>
+#include <Cucca/Core/ThreadPool.hpp>
+#include <Cucca/Core/ResourceManager.hpp>
+#include <Cucca/Core/Binary_Init_File.hpp>
 
-#include "../../include/CoreExtensions/Canvas_SFML.hpp"
-#include "../../include/CoreExtensions/EventVisitor_SFML.hpp"
+#include <Cucca/CoreExtensions/Canvas_SFML.hpp>
+#include <Cucca/CoreExtensions/EventVisitor_SFML.hpp>
 
-#include "../../include/Graphics/ShaderObject_Init_Binary.hpp"
-#include "../../include/Graphics/ShaderProgram_Init_Default.hpp"
-#include "../../include/Graphics/Texture_Init_Binary.hpp"
-#include "../../include/Graphics/Material_Init_Default.hpp"
-#include "../../include/Graphics/VertexData_Init_Binary.hpp"
-#include "../../include/Graphics/Mesh_Init_Default.hpp"
-#include "../../include/Graphics/TransformationComponent.hpp"
-#include "../../include/Graphics/MeshComponent.hpp"
-#include "../../include/Graphics/BasicCamera.hpp"
+#include <Cucca/Graphics/ShaderObject_Init_Binary.hpp>
+#include <Cucca/Graphics/ShaderProgram_Init_Default.hpp>
+#include <Cucca/Graphics/Texture_Init_Binary.hpp>
+#include <Cucca/Graphics/Material_Init_Default.hpp>
+#include <Cucca/Graphics/VertexData_Init_Binary.hpp>
+#include <Cucca/Graphics/Mesh_Init_Default.hpp>
+#include <Cucca/Graphics/TransformationComponent.hpp>
+#include <Cucca/Graphics/MeshComponent.hpp>
+#include <Cucca/Graphics/BasicCamera.hpp>
 
 #include <random>
-#include "../../include/Debug/Debug.hpp" // TEMP
+#include <Cucca/Debug/Debug.hpp> // TEMP
 
 
 #define rndf ((float)rnd() / rnd.max())

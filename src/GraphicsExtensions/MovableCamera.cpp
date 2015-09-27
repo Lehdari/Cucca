@@ -10,12 +10,12 @@
 **/
 
 
-#include "../../include/GraphicsExtensions/MovableCamera.hpp"
-#include "../../include/Core/Event.hpp"
-#include "../../include/Core/MathUtils.hpp"
+#include <Cucca/GraphicsExtensions/MovableCamera.hpp>
+#include <Cucca/Core/Event.hpp>
+#include <Cucca/Core/MathUtils.hpp>
 
-#include "../../include/Core/Device.hpp" // TEMP
-#include "../../include/CoreExtensions/Canvas_SFML.hpp" // TEMP
+#include <Cucca/Core/Device.hpp> // TEMP
+#include <Cucca/CoreExtensions/Canvas_SFML.hpp> // TEMP
 
 #include <SFML/Window/Event.hpp>
 

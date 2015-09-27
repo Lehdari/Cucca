@@ -26,9 +26,9 @@
 #define CUCCA_GRAPHICS_MESH_INIT_DEFAULT_HPP
 
 
-#include "../Core/ResourceManager.hpp"
-#include "Mesh.hpp"
-#include "VertexData.hpp"
+#include <Cucca/Core/ResourceManager.hpp>
+#include <Cucca/Graphics/Mesh.hpp>
+#include <Cucca/Graphics/VertexData.hpp>
 
 
 namespace Cucca {

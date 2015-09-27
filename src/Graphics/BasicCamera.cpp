@@ -10,7 +10,7 @@
 **/
 
 
-#include "../../include/Graphics/BasicCamera.hpp"
+#include <Cucca/Graphics/BasicCamera.hpp>
 
 
 using namespace Cucca;

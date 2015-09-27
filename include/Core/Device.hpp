@@ -14,11 +14,11 @@
 #define CUCCA_CORE_DEVICE_HPP
 
 
-#include "Node.hpp"
-#include "Canvas.hpp"
-#include "Event.hpp"
-#include "EventComponent.hpp"
-#include "TaskQueue.hpp"
+#include <Cucca/Core/Node.hpp>
+#include <Cucca/Core/Canvas.hpp>
+#include <Cucca/Core/Event.hpp>
+#include <Cucca/Core/EventComponent.hpp>
+#include <Cucca/Core/TaskQueue.hpp>
 
 #include <deque>
 #include <unordered_map>

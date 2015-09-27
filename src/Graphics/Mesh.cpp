@@ -10,7 +10,7 @@
 **/
 
 
-#include "../../include/Graphics/Mesh.hpp"
+#include <Cucca/Graphics/Mesh.hpp>
 
 
 using namespace Cucca;

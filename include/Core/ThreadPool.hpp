@@ -14,7 +14,7 @@
 #define CUCCA_CORE_THREADPOOL_HPP
 
 
-#include "TaskQueue.hpp"
+#include <Cucca/Core/TaskQueue.hpp>
 
 #include <thread>
 #include <mutex>

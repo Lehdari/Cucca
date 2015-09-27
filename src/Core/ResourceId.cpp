@@ -10,7 +10,7 @@
 **/
 
 
-#include "../../include/Core/ResourceId.hpp"
+#include <Cucca/Core/ResourceId.hpp>
 
 
 using namespace Cucca;

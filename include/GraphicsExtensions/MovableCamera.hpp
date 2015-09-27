@@ -14,11 +14,11 @@
 #define CUCCA_GRAPHICSEXTENSIONS_MOVABLECAMERA_HPP
 
 
-#include "../Core/Visitor.hpp"
-#include "../Core/EventComponent.hpp"
-#include "../Graphics/TransformationComponent.hpp"
-#include "../Graphics/MeshComponent.hpp"
-#include "../Core/MathTypes.hpp"
+#include <Cucca/Core/Visitor.hpp>
+#include <Cucca/Core/EventComponent.hpp>
+#include <Cucca/Graphics/TransformationComponent.hpp>
+#include <Cucca/Graphics/MeshComponent.hpp>
+#include <Cucca/Core/MathTypes.hpp>
 
 #include <stack>
 #include <SFML/Window.hpp>

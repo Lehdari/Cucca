@@ -8,9 +8,9 @@
 #if CURRENT_TEST == 1
 
 
-#include "../../include/Core/Component.hpp"
-#include "../../include/Core/Node.hpp"
-#include "../../include/Core/Visitor.hpp"
+#include <Cucca/Core/Component.hpp>
+#include <Cucca/Core/Node.hpp>
+#include <Cucca/Core/Visitor.hpp>
 
 #include <iostream>
 

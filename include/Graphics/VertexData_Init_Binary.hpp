@@ -26,9 +26,9 @@
 #define CUCCA_GRAPHICS_VERTEXDATA_INIT_BINARY_HPP
 
 
-#include "../Core/ResourceManager.hpp"
-#include "VertexData.hpp"
-#include "../Core/Binary.hpp"
+#include <Cucca/Core/ResourceManager.hpp>
+#include <Cucca/Graphics/VertexData.hpp>
+#include <Cucca/Core/Binary.hpp>
 
 #include <map>
 #include <cstring>

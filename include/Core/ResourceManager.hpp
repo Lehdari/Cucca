@@ -16,13 +16,13 @@
 #define CUCCA_CORE_RESOURCEMANAGER_HPP
 
 
-#include "../Debug/Debug.hpp"
-#include "Platform.hpp"
-#include "Resource.hpp"
-#include "ResourcePointer.hpp"
-#include "ResourceInitInfoBase.hpp"
-#include "TaskQueue.hpp"
-#include "Device.hpp"
+#include <Cucca/Debug/Debug.hpp>
+#include <Cucca/Core/Platform.hpp>
+#include <Cucca/Core/Resource.hpp>
+#include <Cucca/Core/ResourcePointer.hpp>
+#include <Cucca/Core/ResourceInitInfoBase.hpp>
+#include <Cucca/Core/TaskQueue.hpp>
+#include <Cucca/Core/Device.hpp>
 
 #include <unordered_map>
 #include <vector>

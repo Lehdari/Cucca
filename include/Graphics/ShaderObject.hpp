@@ -14,7 +14,7 @@
 #define CUCCA_GRAPHICS_SHADEROBJECT_HPP
 
 
-#include "../../include/Core/Resource.hpp"
+#include <Cucca/Core/Resource.hpp>
 
 #include <GL/glew.h>
 

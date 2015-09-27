@@ -8,7 +8,7 @@
 #if CURRENT_TEST == 2
 
 
-#include "../../include/Core/Event.hpp"
+#include <Cucca/Core/Event.hpp>
 
 
 struct TestEvent1 {

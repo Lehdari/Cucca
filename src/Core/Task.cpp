@@ -10,7 +10,7 @@
 **/
 
 
-#include "../../include/Core/Task.hpp"
+#include <Cucca/Core/Task.hpp>
 
 
 using namespace Cucca;

@@ -26,9 +26,9 @@
 #define CUCCA_GRAPHICS_TEXTURE_BINARY_HPP
 
 
-#include "../Core/ResourceManager.hpp"
-#include "Texture.hpp"
-#include "../Core/Binary.hpp"
+#include <Cucca/Core/ResourceManager.hpp>
+#include <Cucca/Graphics/Texture.hpp>
+#include <Cucca/Core/Binary.hpp>
 
 // TODO_IMPLEMENT: provide a proper level of abstraction between Cucca and external libraries
 #include <SFML/Graphics/Image.hpp> // TEMP
