@@ -12,7 +12,7 @@ find_package(SFML 2 COMPONENTS system window)
 
 if(SFML_FOUND)
     include_directories(${SFML_INCLUDE_DIR})
-    target_link_libraries(cucca-graphicsext cucca-graphics ${SFML_LIBRARIES})
+    target_link_libraries(cucca-graphicsext cucca-graphics cucca-coreext ${SFML_LIBRARIES})
 else()
     target_link_libraries(cucca-graphicsext cucca-graphics cucca-coreext sfml-system sfml-window) #todo cucca-coreext should not be required
 endif()

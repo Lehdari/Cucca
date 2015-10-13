@@ -23,22 +23,25 @@
 using namespace Cucca;
 
 
+// TEMP TODO implement better constructor
 MovableCamera::MovableCamera(sf::Window* window,
                              const Matrix4Glf& orientation,
                              const Matrix4Glf& projection,
                              float near, float far, float fov,
                              const Vector3Glf& up) :
+    Camera(Vector3Glf(0.0f, 0.0f, 0.0f), Vector3Glf(0.0f, 0.0f, -1.0f), up,
+           fov, 4.0/3.0, near, far),
     window_(window),
     lockCursor_(false),
     cursorLockPosition_(sf::Vector2i(0, 0)),
-    rotationQ_(QuaternionGlf::Identity()),
-    position_(0.0f, 0.0f, 0.0f),
-    orientation_(orientation),
-    projection_(projection),
-    near_(near),
-    far_(far),
-    fov_(fov),
-    up_(up),
+    //rotationQ_(QuaternionGlf::Identity()),
+    //position_(0.0f, 0.0f, 0.0f),
+    //orientation_(orientation),
+    //projection_(projection),
+    //near_(near),
+    //far_(far),
+    //fov_(fov),
+    //up_(up),
     localSpeed_(0.0f, 0.0f, 0.0f),
     localAcceleration_(0.0f, 0.0f, 0.0f),
     acceleration_(0.1f),
@@ -229,9 +232,4 @@ void MovableCamera::projection(float fov, float aspectRatio, float near, float f
 
 const Vector3Glf& MovableCamera::getPosition(void) const {
     return position_;
-}
-
-void MovableCamera::updateOrientation(void) {
-    orientation_ << rotationQ_.matrix(), rotationQ_.matrix() * -position_,
-                    0.0f, 0.0f, 0.0f, 1.0f;
 }

@@ -22,7 +22,7 @@ namespace Cucca {
 
     class MeshComponent : public Component {
     public:
-        friend class BasicCamera;
+        friend class Camera;
 
         MeshComponent(ResourcePointer<Mesh, ResourceId>& mesh);
 
