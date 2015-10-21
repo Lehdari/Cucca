@@ -33,6 +33,7 @@ add_subdirectory(src/GraphicsExtensions)
 
 if (DEBUG)
     add_subdirectory(src/Debug)
+    add_definitions(-DCUCCA_DEBUG)
 endif (DEBUG)
 
 

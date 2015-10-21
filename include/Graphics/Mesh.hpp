@@ -6,7 +6,7 @@
 
     @version    0.1
     @author     Miika Lehtimäki
-    @date       2015-08-19
+    @date       2015-10-21
 **/
 
 
@@ -36,7 +36,9 @@ namespace Cucca {
         void setTessellation(bool tessellated);
         bool isTessellated(void) const;
 
-        ResourcePointer<Material, ResourceId> getMaterial(void) const;
+
+        const Material& getMaterial(void) const;
+        ResourcePointer<Material, ResourceId> getMaterialPointer(void) const;
 
     private:
         ResourcePointer<Material, ResourceId> material_;

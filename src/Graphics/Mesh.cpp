@@ -6,7 +6,7 @@
 
     @version    0.1
     @author     Miika Lehtimäki
-    @date       2015-08-19
+    @date       2015-10-21
 **/
 
 
@@ -65,6 +65,10 @@ bool Mesh::isTessellated(void) const {
     return tessellated_;
 }
 
-ResourcePointer<Material, ResourceId> Mesh::getMaterial(void) const {
+const Material& Mesh::getMaterial(void) const {
+    return *material_;
+}
+
+ResourcePointer<Material, ResourceId> Mesh::getMaterialPointer(void) const {
     return material_;
 }

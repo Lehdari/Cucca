@@ -33,7 +33,7 @@ void BasicCamera::nodeExit(Node* node, TransformationComponent* component) {
 }
 
 void BasicCamera::nodeEnter(Node* node, MeshComponent* component) {
-    component->mesh_->draw(projection_ * orientation_ * transformations_.top());
+    component->getMesh().draw(projection_ * orientation_ * transformations_.top());
 }
 
 void BasicCamera::nodeExit(Node* node, MeshComponent* component) {

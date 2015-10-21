@@ -22,11 +22,9 @@ namespace Cucca {
 
     class MeshComponent : public Component {
     public:
-        friend class Camera;
-
         MeshComponent(ResourcePointer<Mesh, ResourceId>& mesh);
 
-        ResourcePointer<Mesh, ResourceId> getMesh(void);
+        const Mesh& getMesh(void) const;
 
     private:
         ResourcePointer<Mesh, ResourceId> mesh_;
