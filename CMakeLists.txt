@@ -15,7 +15,7 @@ else()
 endif()
 
 
-option (DEBUG "Build debug build" ON)
+option (BUILD_DEBUG "Build debug build" ON)
 
 
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake_modules" ${CMAKE_MODULE_PATH})
@@ -25,16 +25,19 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
+#include_directories(include)
+#configure_file("${PROJECT_SOURCE_DIR}/include/CMakeConfig.hpp.in"
+#               "${PROJECT_BINARY_DIR}/include/CMakeConfig.hpp")
+
+if (BUILD_DEBUG)
+    add_definitions(-DCUCCA_DEBUG)
+    add_subdirectory(src/Debug)
+endif (BUILD_DEBUG)
 
 add_subdirectory(src/Core)
 add_subdirectory(src/CoreExtensions)
 add_subdirectory(src/Graphics)
 add_subdirectory(src/GraphicsExtensions)
-
-if (DEBUG)
-    add_subdirectory(src/Debug)
-    add_definitions(-DCUCCA_DEBUG)
-endif (DEBUG)
 
 
 file(GLOB cucca_core_INCLUDE "${CMAKE_SOURCE_DIR}/include/Core/*.hpp")

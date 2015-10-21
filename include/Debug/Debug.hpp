@@ -18,25 +18,26 @@
 #define CUCCA_DEBUG_DEBUG_HPP
 
 
+//#include "CMakeConfig.hpp"
+
+
 #ifdef CUCCA_DEBUG
 
+    #warning Building debug target
 
-//  Print formatted output
-#define CUCCA_DPRINTF(FORMAT, ...) Cucca::debugPrintFormat(FORMAT, true, ##__VA_ARGS__);
+    //  Print formatted output
+    #define CUCCA_DPRINTF(FORMAT, ...) Cucca::debugPrintFormat(FORMAT, true, ##__VA_ARGS__);
 
-//  Print single variable output
-#define CUCCA_DPRINTS(VAR) Cucca::debugPrintSingle(#VAR, VAR);
+    //  Print single variable output
+    #define CUCCA_DPRINTS(VAR) Cucca::debugPrintSingle(#VAR, VAR);
 
 
-#include <Cucca/Debug/Print.hpp>
-#include <Cucca/Debug/Time.hpp>
-
+    #include <Cucca/Debug/Print.hpp>
+    #include <Cucca/Debug/Time.hpp>
 
 #else   //  CUCCA_DEBUG
 
-
-#define CUCCA_DPRINTF(fstr, params...)
-
+    #define CUCCA_DPRINTF(fstr, params...)
 
 #endif  //  CUCCA_DEBUG
 

@@ -23,4 +23,4 @@ cp -u ${BUILD_PREFIX}/lib/*.${LIB_STATIC_POSTFIX} ${DEST_LIB_STATIC}/
 if [ ! -d "${DEST_INCLUDE}" ]; then
 	mkdir ${DEST_INCLUDE}
 fi
-cp -ru ${SRC_INCLUDE}/* ${DEST_INCLUDE}/
+cp -ru ${SRC_INCLUDE}/*  ${DEST_INCLUDE}/

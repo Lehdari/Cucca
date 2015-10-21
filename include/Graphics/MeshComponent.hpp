@@ -25,6 +25,7 @@ namespace Cucca {
         MeshComponent(ResourcePointer<Mesh, ResourceId>& mesh);
 
         const Mesh& getMesh(void) const;
+        ResourcePointer<Mesh, ResourceId> getMeshPointer(void) const;
 
     private:
         ResourcePointer<Mesh, ResourceId> mesh_;

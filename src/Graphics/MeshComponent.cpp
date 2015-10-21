@@ -23,3 +23,7 @@ MeshComponent::MeshComponent(ResourcePointer<Mesh, ResourceId>& mesh) :
 const Mesh& MeshComponent::getMesh(void) const {
     return *mesh_;
 }
+
+ResourcePointer<Mesh, ResourceId> MeshComponent::getMeshPointer(void) const {
+    return mesh_;
+}
