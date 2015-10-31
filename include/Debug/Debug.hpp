@@ -23,8 +23,6 @@
 
 #ifdef CUCCA_DEBUG
 
-    #warning Building debug target
-
     //  Print formatted output
     #define CUCCA_DPRINTF(FORMAT, ...) Cucca::debugPrintFormat(FORMAT, true, ##__VA_ARGS__);
 
