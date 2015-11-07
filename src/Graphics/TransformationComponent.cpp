@@ -6,7 +6,7 @@
 
     @version    0.1
     @author     Miika Lehtimäki
-    @date       2015-01-10
+    @date       2015-11-07
 **/
 
 
@@ -17,15 +17,25 @@ using namespace Cucca;
 
 
 TransformationComponent::TransformationComponent(void) :
-    transformation_(Matrix4Glf::Identity())
+    transformation_(Matrix4Glf::Identity()),
+    cumulatedTransformation_(Matrix4Glf::Identity())
 {}
 
 TransformationComponent::TransformationComponent(const Matrix4Glf& transformation) :
-    transformation_(transformation)
+    transformation_(transformation),
+    cumulatedTransformation_(transformation)
 {}
+
+void TransformationComponent::setTransformation(const Matrix4Glf& transformation) {
+    transformation_ = transformation;
+}
 
 const Matrix4Glf& TransformationComponent::getTransformation(void) const {
     return transformation_;
+}
+
+const Matrix4Glf& TransformationComponent::getCumulatedTransformation(void) const {
+    return cumulatedTransformation_;
 }
 
 void TransformationComponent::translate(const Vector3Glf& to, bool absolute) {

@@ -6,7 +6,7 @@
 
     @version    0.1
     @author     Miika Lehtimäki
-    @date       2015-01-10
+    @date       2015-11-07
 **/
 
 
@@ -16,8 +16,10 @@
 using namespace Cucca;
 
 
-MeshComponent::MeshComponent(ResourcePointer<Mesh, ResourceId>& mesh) :
-    mesh_(mesh)
+MeshComponent::MeshComponent(ResourcePointer<Mesh, ResourceId>& mesh,
+                             const Matrix4Glf& transformation) :
+    mesh_(mesh),
+    transformation_(transformation)
 {}
 
 const Mesh& MeshComponent::getMesh(void) const {
@@ -26,4 +28,12 @@ const Mesh& MeshComponent::getMesh(void) const {
 
 ResourcePointer<Mesh, ResourceId> MeshComponent::getMeshPointer(void) const {
     return mesh_;
+}
+
+void MeshComponent::setTransformation(const Matrix4Glf& transformation) {
+    transformation_ = transformation;
+}
+
+void MeshComponent::draw(const Matrix4Glf& camera) const {
+    mesh_->draw(transformation_, camera);
 }

@@ -6,7 +6,7 @@
 
     @version    0.1
     @author     Miika Lehtimäki
-    @date       2015-01-10
+    @date       2015-11-07
 **/
 
 
@@ -16,7 +16,6 @@
 
 #include <Cucca/Core/Visitor.hpp>
 #include <Cucca/Graphics/Camera.hpp>
-#include <Cucca/Graphics/TransformationComponent.hpp>
 #include <Cucca/Graphics/MeshComponent.hpp>
 #include <Cucca/Core/MathTypes.hpp>
 
@@ -25,17 +24,10 @@
 
 namespace Cucca {
 
-    CUCCA_VISITOR(BasicCamera, TransformationComponent, MeshComponent), public Camera {
+    CUCCA_VISITOR(BasicCamera, MeshComponent), public Camera {
     public:
-        //BasicCamera(void);
-
-        void nodeEnter(Node* node, TransformationComponent* component);
-        void nodeExit(Node* node, TransformationComponent* component);
         void nodeEnter(Node* node, MeshComponent* component);
         void nodeExit(Node* node, MeshComponent* component);
-
-    private:
-        std::stack<Matrix4Glf> transformations_;
     };
 
 } // namespace Cucca

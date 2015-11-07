@@ -18,6 +18,7 @@
 #include <Cucca/CoreExtensions/Canvas_SFML.hpp> // TEMP
 
 #include <SFML/Window/Event.hpp>
+#include <Cucca/Debug/Debug.hpp> // TEMP
 
 
 using namespace Cucca;
@@ -34,14 +35,6 @@ MovableCamera::MovableCamera(sf::Window* window,
     window_(window),
     lockCursor_(false),
     cursorLockPosition_(sf::Vector2i(0, 0)),
-    //rotationQ_(QuaternionGlf::Identity()),
-    //position_(0.0f, 0.0f, 0.0f),
-    //orientation_(orientation),
-    //projection_(projection),
-    //near_(near),
-    //far_(far),
-    //fov_(fov),
-    //up_(up),
     localSpeed_(0.0f, 0.0f, 0.0f),
     localAcceleration_(0.0f, 0.0f, 0.0f),
     acceleration_(0.1f),
@@ -186,11 +179,17 @@ void MovableCamera::nodeExit(Node* node, TransformationComponent* component) {
 }
 
 void MovableCamera::nodeEnter(Node* node, MeshComponent* component) {
-    //component->getMesh()->draw(projection_ * orientation_ * transformations_.top());
-
     glUniform3fv(glGetUniformLocation(component->getMesh().getMaterial().getShaderId(), "cameraWorldPosition"), 1, position_.data());
 
-    component->getMesh().draw(transformations_.top(), projection_ * orientation_);
+    //  TODO_IMPLEMENT: use dirty flag to check if transformation update is necessary
+    auto transformationComponents = node->getComponents<TransformationComponent>();
+    auto meshComponents = node->getComponents<MeshComponent>();
+    //CUCCA_DPRINTF("%", transformationComponents.size());
+    //CUCCA_DPRINTF("%", Node::getComponentTypeId<MeshComponent>());
+    //if (transformationComponents.size() > 0)
+        //component->setTransformation(transformationComponents.front()->getCumulatedTransformation());
+
+    component->draw(projection_ * orientation_);
 }
 
 void MovableCamera::lookAt(const Vector3Glf& from, const Vector3Glf& to, const Vector3Glf& up) {

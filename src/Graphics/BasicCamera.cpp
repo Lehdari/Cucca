@@ -6,34 +6,23 @@
 
     @version    0.1
     @author     Miika Lehtimäki
-    @date       2015-10-11
+    @date       2015-11-07
 **/
 
 
 #include <Cucca/Graphics/BasicCamera.hpp>
+#include <Cucca/Core/Node.hpp>
+#include <Cucca/Graphics/TransformationComponent.hpp>
 
 
 using namespace Cucca;
 
 
-/*BasicCamera::BasicCamera(void) :
-    orientation_(Matrix4Glf::Identity()),
-    projection_(Matrix4Glf::Identity())
-{}*/
-
-void BasicCamera::nodeEnter(Node* node, TransformationComponent* component) {
-    if (transformations_.size() > 0)
-        transformations_.push(transformations_.top() * component->transformation_);
-    else
-        transformations_.push(component->transformation_);
-}
-
-void BasicCamera::nodeExit(Node* node, TransformationComponent* component) {
-    transformations_.pop();
-}
-
 void BasicCamera::nodeEnter(Node* node, MeshComponent* component) {
-    component->getMesh().draw(projection_ * orientation_ * transformations_.top());
+    //  TODO_IMPLEMENT: use dirty flag to check if transformation update is necessary
+    auto transformationComponent = node->getComponents<TransformationComponent>().front();
+    component->setTransformation(transformationComponent->getCumulatedTransformation());
+    component->draw(projection_ * orientation_);
 }
 
 void BasicCamera::nodeExit(Node* node, MeshComponent* component) {

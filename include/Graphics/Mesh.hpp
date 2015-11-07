@@ -36,7 +36,6 @@ namespace Cucca {
         void setTessellation(bool tessellated);
         bool isTessellated(void) const;
 
-
         const Material& getMaterial(void) const;
         ResourcePointer<Material, ResourceId> getMaterialPointer(void) const;
 

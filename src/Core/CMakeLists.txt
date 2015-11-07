@@ -14,6 +14,10 @@ add_definitions(${OpenGL_DEFINITIONS})
 
 target_link_libraries(cucca-core ${OPENGL_LIBRARIES})
 
+if(BUILD_DEBUG)
+    target_link_libraries(cucca-core cucca-debug)
+endif()
+
 
 #install
 install (TARGETS cucca-core     DESTINATION lib)

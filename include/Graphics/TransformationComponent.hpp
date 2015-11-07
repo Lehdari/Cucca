@@ -6,7 +6,7 @@
 
     @version    0.1
     @author     Miika Lehtimäki
-    @date       2014-01-10
+    @date       2015-11-07
 **/
 
 
@@ -22,17 +22,20 @@ namespace Cucca {
 
     class TransformationComponent : public Component {
     public:
-        friend class BasicCamera;
+        friend class TransformationVisitor;
 
         TransformationComponent(void);
         TransformationComponent(const Matrix4Glf& transformation);
 
+        void setTransformation(const Matrix4Glf& transformation);
         const Matrix4Glf& getTransformation(void) const;
+        const Matrix4Glf& getCumulatedTransformation(void) const;
 
         void translate(const Vector3Glf& to, bool absolute = false);
 
     private:
-        Matrix4Glf transformation_;
+        Matrix4Glf transformation_;             //  relative transformation
+        Matrix4Glf cumulatedTransformation_;    //  cumulated transformation
     };
 
 } // namespace Cucca

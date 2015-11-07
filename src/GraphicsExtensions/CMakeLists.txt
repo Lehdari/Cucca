@@ -17,6 +17,10 @@ else()
     target_link_libraries(cucca-graphicsext cucca-graphics cucca-coreext sfml-system sfml-window) #todo cucca-coreext should not be required
 endif()
 
+if(BUILD_DEBUG)
+    target_link_libraries(cucca-graphicsext cucca-debug)
+endif()
+
 
 #install
 install (TARGETS cucca-graphicsext  DESTINATION lib)

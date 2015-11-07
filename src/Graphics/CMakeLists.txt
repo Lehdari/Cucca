@@ -17,6 +17,10 @@ find_library(GLEW_LIBRARY NAMES GLEW glew32 glew glew32s PATH_SUFFIXES lib64)
 
 target_link_libraries(cucca-graphics cucca-core ${OPENGL_LIBRARIES} ${GLEW_LIBRARY})
 
+if(BUILD_DEBUG)
+    target_link_libraries(cucca-graphics cucca-debug)
+endif()
+
 
 #install
 install (TARGETS cucca-graphics     DESTINATION lib)

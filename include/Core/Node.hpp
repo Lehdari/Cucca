@@ -19,11 +19,12 @@
 
 #include <Cucca/Core/Component.hpp>
 #include <Cucca/Core/Visitor.hpp>
+#include <Cucca/Debug/Debug.hpp>   //  TEMP
 
 #include <unordered_map>
 #include <vector>
 #include <memory>
-
+#include <iostream> // TEMP
 
 namespace Cucca {
 
@@ -53,16 +54,17 @@ namespace Cucca {
         //  Get reference to a vector of children of the node
         std::vector<std::unique_ptr<Node>>& getChildren(void);
 
-    private:
-        /*  Component type information system. For every new component type, an
-            unique identifier will be created in compile-time. */
-        static unsigned numComponentTypes__;
-
         template<typename ComponentType_T>
         static unsigned getComponentTypeId(void) {
             static unsigned componentTypeId__ = numComponentTypes__++;
             return componentTypeId__;
         }
+    private:
+        /*  Component type information system. For every new component type, an
+            unique identifier will be created in compile-time. */
+        static unsigned numComponentTypes__;
+
+
 
         //  Component/child pointer data
         std::unordered_map<unsigned, std::vector<std::unique_ptr<Component>>> components_;
@@ -93,9 +95,11 @@ namespace Cucca {
 
     template<typename ComponentType_T>
     std::vector<ComponentType_T*> Node::getComponents(void) {
-        unsigned typeId = getComponentTypeId<ComponentType_T>();
-        std::vector<ComponentType_T*> components(components_[typeId].size());
-        for (auto& component : components_[typeId])
+        auto componentTypeId = getComponentTypeId<ComponentType_T>();
+        CUCCA_DPRINTF("node: % typeId: % size: %", this, componentTypeId, components_[componentTypeId].size());
+        std::vector<ComponentType_T*> components;
+        components.reserve(components_[componentTypeId].size());
+        for (auto& component : components_[componentTypeId])
             components.push_back(static_cast<ComponentType_T*>(component.get()));
         return components;
     }
@@ -113,6 +117,7 @@ namespace Cucca {
     template<typename VisitorType_T, typename FirstComponentType_T, typename ...RestComponentTypes_T>
     void Node::nodeEnterRecursive(VisitorInterface<VisitorType_T, FirstComponentType_T, RestComponentTypes_T...>& visitor) {
         auto& componentVector = components_[getComponentTypeId<FirstComponentType_T>()];
+        CUCCA_DPRINTF("node: % typeId: % componentVector size: %", this, getComponentTypeId<FirstComponentType_T>(), componentVector.size());
         for (auto it = componentVector.begin(); it != componentVector.end(); ++it)
             visitor.nodeEnter(this, static_cast<FirstComponentType_T*>(it->get()));
 

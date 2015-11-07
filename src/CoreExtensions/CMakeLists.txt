@@ -17,6 +17,10 @@ else()
     target_link_libraries(cucca-coreext cucca-core sfml-system sfml-window)
 endif()
 
+if(BUILD_DEBUG)
+    target_link_libraries(cucca-coreext cucca-debug)
+endif()
+
 
 #install
 install (TARGETS cucca-coreext      DESTINATION lib)

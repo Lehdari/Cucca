@@ -6,7 +6,7 @@
 
     @version    0.1
     @author     Miika Lehtimäki
-    @date       2015-01-10
+    @date       2015-11-07
 **/
 
 
@@ -16,19 +16,25 @@
 
 #include <Cucca/Core/Component.hpp>
 #include <Cucca/Graphics/Mesh.hpp>
+#include <Cucca/Core/MathTypes.hpp>
 
 
 namespace Cucca {
 
     class MeshComponent : public Component {
     public:
-        MeshComponent(ResourcePointer<Mesh, ResourceId>& mesh);
+        MeshComponent(ResourcePointer<Mesh, ResourceId>& mesh,
+                      const Matrix4Glf& transformation = Matrix4Glf::Identity());
 
         const Mesh& getMesh(void) const;
         ResourcePointer<Mesh, ResourceId> getMeshPointer(void) const;
 
+        void setTransformation(const Matrix4Glf& transformation);
+        void draw(const Matrix4Glf& camera) const;
+
     private:
         ResourcePointer<Mesh, ResourceId> mesh_;
+        Matrix4Glf transformation_;
     };
 
 } // namespace Cucca
