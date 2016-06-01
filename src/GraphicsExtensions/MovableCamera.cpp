@@ -10,7 +10,9 @@
 **/
 
 
+
 #include <Cucca/GraphicsExtensions/MovableCamera.hpp>
+
 #include <Cucca/Core/Event.hpp>
 #include <Cucca/Core/MathUtils.hpp>
 

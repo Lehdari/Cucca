@@ -49,13 +49,15 @@ namespace Cucca {
     }
 
     //  FormatString values
-    template<> const char* FormatString<int>::value(void)               { return "%d"; }
-    template<> const char* FormatString<long int>::value(void)          { return "%ld"; }
-    template<> const char* FormatString<long long int>::value(void)     { return "%lld"; }
-    template<> const char* FormatString<unsigned int>::value(void)      { return "%u"; }
-    template<> const char* FormatString<float>::value(void)             { return "%0.4f"; }
-    template<> const char* FormatString<double>::value(void)            { return "%g"; }
-    template<> const char* FormatString<char>::value(void)              { return "%c"; }
-    template<> const char* FormatString<bool>::value(void)              { return "%d"; }
+    template<> const char* FormatString<int>::value(void)                       { return "%d"; }
+    template<> const char* FormatString<long int>::value(void)                  { return "%ld"; }
+    template<> const char* FormatString<long long int>::value(void)             { return "%lld"; }
+    template<> const char* FormatString<unsigned int>::value(void)              { return "%u"; }
+    template<> const char* FormatString<long unsigned int>::value(void)         { return "%lu"; }
+    template<> const char* FormatString<long long unsigned int>::value(void)    { return "%llu"; }
+    template<> const char* FormatString<float>::value(void)                     { return "%0.4f"; }
+    template<> const char* FormatString<double>::value(void)                    { return "%g"; }
+    template<> const char* FormatString<char>::value(void)                      { return "%c"; }
+    template<> const char* FormatString<bool>::value(void)                      { return "%d"; }
 
 }   //  namespace Cucca

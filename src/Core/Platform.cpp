@@ -18,7 +18,8 @@
     #include <windows.h>
 
     bool Cucca::threadHasGlContext(void) {
-        return (wglGetCurrentContext() == NULL) ? false : true;
+        return true;
+        //return (wglGetCurrentContext() == NULL) ? false : true;
     }
 
     #ifdef _WIN64 // Windows (64-bit only)

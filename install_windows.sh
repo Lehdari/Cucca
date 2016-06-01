@@ -8,10 +8,10 @@ LIB_STATIC_POSTFIX=dll.a
 
 SRC_INCLUDE=${BASEDIR}/include
 
-DEST_LIB_DYNAMIC=/c/Windows/SysWOW64
+DEST_LIB_DYNAMIC=/c/Windows/System32
 
-DEST_PREFIX=/c/minGW/i686-5.1.0-posix-dwarf-rt_v4-rev0/mingw32/i686-w64-mingw32
-DEST_INCLUDE=${DEST_PREFIX}/include/Cucca
+DEST_PREFIX=/c/minGW/x86_64-5.3.0-posix-seh-rt_v4-rev0/mingw64
+DEST_INCLUDE=${DEST_PREFIX}/include
 DEST_LIB_STATIC=${DEST_PREFIX}/lib
 
 
