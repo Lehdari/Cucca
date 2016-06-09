@@ -49,18 +49,24 @@
         #error "Unsupported platform"
     #endif
 #elif __linux // Linux
+	#include <GL/gl.h>
+	#include <GL/glx.h>
 
     bool Cucca::threadHasGlContext(void) {
-        return (glxGetCurrentContext() == NULL) ? false : true;
+        return (glXGetCurrentContext() == NULL) ? false : true;
     }
 
 #elif __unix // All unices not caught above
+	#include <GL/gl.h>
+	#include <GL/glx.h>
 
     bool Cucca::threadHasGlContext(void) {
         return (glxGetCurrentContext() == NULL) ? false : true;
     }
 
 #elif __posix // POSIX
+	#include <GL/gl.h>
+	#include <GL/glx.h>
 
     bool Cucca::threadHasGlContext(void) {
         return (glxGetCurrentContext() == NULL) ? false : true;
